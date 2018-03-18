@@ -1,0 +1,15 @@
+Stations_ID;Stationsname;Geo. Laenge [Grad];Geo. Breite [Grad];Stationshoehe [m];Geberhoehe ueber Grund [m];Von_Datum;Bis_Datum;Geraetetyp Name;Messverfahren;eor;
+282;Bamberg;10.91;49.88;239;-.02;19600601;19911031;Erdbodenthermometer;Temperaturmessung, konv.;eor;
+282;Bamberg;10.91;49.88;239;-.05;19950309;20081125;PT 100 (Erdboden);Temperaturmessung, elektr.;eor;
+282;Bamberg;10.92;49.87;240;-.05;20081126;;PT 100 (Erdboden);Temperaturmessung, elektr.;eor;
+282;Bamberg;10.91;49.88;239;-.1;19950309;20081125;PT 100 (Erdboden);Temperaturmessung, elektr.;eor;
+282;Bamberg;10.92;49.87;240;-.1;20081126;;PT 100 (Erdboden);Temperaturmessung, elektr.;eor;
+282;Bamberg;10.91;49.88;239;-.2;19600601;19950308;Erdbodenthermometer;Temperaturmessung, konv.;eor;
+282;Bamberg;10.91;49.88;239;-.2;19950309;20081125;PT 100 (Erdboden);Temperaturmessung, elektr.;eor;
+282;Bamberg;10.91;49.88;239;-.2;19950309;20030530;Erdbodenthermometer;Temperaturmessung, konv.;eor;
+282;Bamberg;10.92;49.87;240;-.2;20081126;;PT 100 (Erdboden);Temperaturmessung, elektr.;eor;
+282;Bamberg;10.91;49.88;239;-.5;19950309;20081125;PT 100 (Erdboden);Temperaturmessung, elektr.;eor;
+282;Bamberg;10.92;49.87;240;-.5;20081126;;PT 100 (Erdboden);Temperaturmessung, elektr.;eor;
+282;Bamberg;10.91;49.88;239;-1;19950309;20081125;PT 100 (Erdboden);Temperaturmessung, elektr.;eor;
+282;Bamberg;10.92;49.87;240;-1;20081126;;PT 100 (Erdboden);Temperaturmessung, elektr.;eor;
+generiert: 15.03.2018 --  Deutscher Wetterdienst  --
