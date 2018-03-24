@@ -1,5 +1,9 @@
 import csv
 import datetime
+import logging
+
+logging.basicConfig(filename='data_processing_log.log', level=logging.DEBUG)
+logger = logging.getLogger(__file__)
 
 
 class FangBuch:
@@ -27,7 +31,7 @@ class FangBuch:
 
     output_line_list = list()
 
-    MAX_PREVIOUS_DAYS = 3
+    MAX_PREVIOUS_DAYS = 1
 
     # fertig
     def read_wasser_temp(self, file_path):
@@ -163,6 +167,8 @@ class FangBuch:
         with open(import_file, newline='') as csvfile:
             csv_reader = csv.reader(csvfile, delimiter=';', quotechar='"')
 
+            counter = 0
+
             for row in csv_reader:
 
                 klasse, datum, uhrzeit = row
@@ -183,7 +189,11 @@ class FangBuch:
 
                     value = (klasse, datum_string, full_string, hour_int, date_int)
 
+                    logger.info("Eingelesen: {} Fischart: {} Fangdatum: {}".format(counter, klasse, full_string))
+
                     self.fish_catch_values.append(value)
+
+                    counter += 1
 
     def get_wasser_temp(self, full_string):
         if full_string in self.wasser_temp:
@@ -284,7 +294,7 @@ class FangBuch:
     def format_float(self, value):
         return "{0:.1f}".format(round(value, 2))
 
-    def get_full_tuple_values(self, datum_hour_string, datum_string, day_string):
+    def get_full_tuple_values(self, counter, fish_class, datum_hour_string, datum_string, day_string):
         wasser_temp = self.get_wasser_temp(datum_hour_string)
         luft_temp = self.get_luft_temp(datum_hour_string)
         relative_feuchte = self.get_relative_feuchte(datum_hour_string)
@@ -316,6 +326,10 @@ class FangBuch:
                 (day_string + '_sonnen_stunden', str(sonnen_stunden)),
                 (day_string + '_niederschlag_menge', str(niederschlag_menge)),
             ]
+
+            logger.info(
+                "Verarbeitet: {} Fischart: {} Fangdatum: {} Daten: {}".format(counter, fish_class, datum_string,
+                                                                              str(return_list)))
         else:
             return_list = []
 
@@ -372,7 +386,8 @@ class FangBuch:
                 current_date = self.get_previous_date(datum_string, previous_day)
                 current_hour_date = self.get_previous_hour_date(datum_hour_string, previous_day)
 
-                data_value_tuples = self.get_full_tuple_values(current_hour_date, current_date, str(previous_day))
+                data_value_tuples = self.get_full_tuple_values(counter, fish_class, current_hour_date,
+                                                               current_date, str(previous_day))
                 data_points = self.get_second_tuple_value(data_value_tuples)
 
                 if counter == 0:
@@ -410,18 +425,18 @@ class FangBuch:
 
 # Klimadaten stand 2018 März
 # Fangbuch stand 2017
-s = FangBuch()
+fang_buch = FangBuch()
 
-s.read_wasser_temp('wetter_daten/wassertemperatur/wassertemperatur_603100044.csv')
-s.read_luft_temp_luft_feuchte('wetter_daten/temperaturfeuchte/produkt_tu_stunde_19490101_20171231_00282.txt')
-s.read_boden_temp('wetter_daten/bodentemperatur/produkt_eb_stunde_19490101_20171231_00282.txt')
-s.read_wind('wetter_daten/windstaerke/produkt_ff_stunde_19490101_20171231_00282.txt')
-s.read_sonnenstunden('wetter_daten/sonnenstunden/produkt_sd_stunde_19490101_20171231_00282.txt')
-s.read_niederschlag('wetter_daten/niederschlag/produkt_rr_stunde_19490101_20171231_00282.txt')
+fang_buch.read_input_data('rohdaten/fangbuch_gesamt.csv')
 
-s.read_input_data('rohdaten/fangbuch_gesamt.csv')
+fang_buch.read_wasser_temp('wetter_daten/wassertemperatur/wassertemperatur_603100044.csv')
+fang_buch.read_luft_temp_luft_feuchte('wetter_daten/temperaturfeuchte/produkt_tu_stunde_19490101_20171231_00282.txt')
+fang_buch.read_boden_temp('wetter_daten/bodentemperatur/produkt_eb_stunde_19490101_20171231_00282.txt')
+fang_buch.read_wind('wetter_daten/windstaerke/produkt_ff_stunde_19490101_20171231_00282.txt')
+fang_buch.read_sonnenstunden('wetter_daten/sonnenstunden/produkt_sd_stunde_19490101_20171231_00282.txt')
+fang_buch.read_niederschlag('wetter_daten/niederschlag/produkt_rr_stunde_19490101_20171231_00282.txt')
 
-s.merge_data_attributes()
+fang_buch.merge_data_attributes()
 
-s.print_output_data()
-s.store_output_data()
+fang_buch.print_output_data()
+fang_buch.store_output_data()
