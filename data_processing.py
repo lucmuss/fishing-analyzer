@@ -1,47 +1,47 @@
 import csv
 import datetime
 import logging
+import settings
 
 logging.basicConfig(filename='data_processing_log.log', level=logging.DEBUG)
 logger = logging.getLogger(__file__)
 
 
-class FangBuch:
-    wasser_temp = dict()
+class FishDatabase:
+    __water_temperature = dict()
 
-    luft_temp = dict()
-    relative_feuchte = dict()
+    __air_temperature = dict()
+    __relative_humidity = dict()
 
-    boden_temp_5 = dict()
-    boden_temp_10 = dict()
-    boden_temp_20 = dict()
-    boden_temp_50 = dict()
-    boden_temp_100 = dict()
+    __ground_temperature_5 = dict()
+    __ground_temperature_10 = dict()
+    __ground_temperature_20 = dict()
+    __ground_temperature_50 = dict()
+    __ground_temperature_100 = dict()
 
-    wind_staerke = dict()
-    wind_richtung = dict()
+    __wind_strength = dict()
+    __wind_direction = dict()
 
-    sonnen_stunden = dict()
-    niederschlag_menge = dict()
+    __sun_hours = dict()
+    __precipitation_amount = dict()
 
-    fish_catch_values = list()
+    __fish_catch_values = list()
 
-    arff_data_values = list()
-    arff_label_values = list()
+    __arff_data_values = list()
+    __arff_label_values = list()
 
-    output_line_list = list()
+    __output_line_list = list()
 
-    MAX_PREVIOUS_DAYS = 1
+    __added_counter = 0
 
-    # fertig
-    def read_wasser_temp(self, file_path):
-        with open(file_path, newline='') as csvfile:
-            csv_reader = csv.reader(csvfile, delimiter=';', quotechar='"')
+    def read_watter_temperature(self, file_path):
+        with open(file_path, newline='') as csv_file:
+            csv_reader = csv.reader(csv_file, delimiter=';', quotechar='"')
 
             for row in csv_reader:
                 if len(row) >= 3 and row[2] == "Rohdaten":
-                    datum, temp, typ = row
-                    date_time = datetime.datetime.strptime(datum, "%Y-%m-%d %H:%M")
+                    date, temp, typ = row
+                    date_time = datetime.datetime.strptime(date, "%Y-%m-%d %H:%M")
                     formatted_string = date_time.strftime("%d.%m.%Y %H")
 
                     replaced_temp = temp.replace(',', '.')
@@ -49,316 +49,317 @@ class FangBuch:
                         replaced_temp = "0.0"
                     float_temp = float(replaced_temp)
 
-                    self.wasser_temp[formatted_string] = float_temp
-                    d = 0
+                    self.__water_temperature[formatted_string] = float_temp
 
-    # fertig
-    def read_luft_temp_luft_feuchte(self, file_path):
+    def read_air_temperature_relative_humidity(self, file_path):
         with open(file_path,
-                  newline='') as csvfile:
-            csv_reader = csv.reader(csvfile, delimiter=';', quotechar='"')
+                  newline='') as csv_file:
+            csv_reader = csv.reader(csv_file, delimiter=';', quotechar='"')
 
             for row in csv_reader:
 
-                station, datum, typ, temp, feuchte, error = row
-                station, datum, typ, temp, feuchte, error = station.strip(), datum.strip(), typ.strip(), temp.strip(), feuchte.strip(), error.strip()
+                station, date, typ, temp, humidity, error = row
+                station, date, typ, temp, humidity, error = station.strip(), date.strip(), typ.strip(), temp.strip(), humidity.strip(), error.strip()
 
                 if len(row) >= 5 and station == "282":
-                    date_time = datetime.datetime.strptime(datum, "%Y%m%d%H")
+                    date_time = datetime.datetime.strptime(date, "%Y%m%d%H")
                     formatted_string = date_time.strftime("%d.%m.%Y %H")
 
-                    float_feuchte = float(feuchte)
-                    self.relative_feuchte[formatted_string] = float_feuchte
+                    float_humidity = float(humidity)
+                    self.__relative_humidity[formatted_string] = float_humidity
 
                     float_temp = float(temp)
-                    self.luft_temp[formatted_string] = float_temp
+                    self.__air_temperature[formatted_string] = float_temp
 
-    # fertig
-    def read_boden_temp(self, file_path):
-        with open(file_path, newline='') as csvfile:
-            csv_reader = csv.reader(csvfile, delimiter=';', quotechar='"')
+    def read_ground_temperature(self, file_path):
+        with open(file_path, newline='') as csv_file:
+            csv_reader = csv.reader(csv_file, delimiter=';', quotechar='"')
 
             for row in csv_reader:
 
-                station, datum, typ, temp2, temp5, temp10, temp20, temp50, temp100, e = row
-                station, datum, typ, temp2, temp5, temp10, temp20, temp50, temp100 = station.strip(), datum.strip(), typ.strip(), temp2.strip(), temp5.strip(), temp10.strip(), temp20.strip(), temp50.strip(), temp100.strip()
+                station, date, typ, temp2, temp5, temp10, temp20, temp50, temp100, e = row
+                station, date, typ, temp2, temp5, temp10, temp20, temp50, temp100 = station.strip(), date.strip(), typ.strip(), temp2.strip(), temp5.strip(), temp10.strip(), temp20.strip(), temp50.strip(), temp100.strip()
 
                 if len(row) >= 5 and station == "282":
-                    date_time = datetime.datetime.strptime(datum, "%Y%m%d%H")
+                    date_time = datetime.datetime.strptime(date, "%Y%m%d%H")
                     formatted_string = date_time.strftime("%d.%m.%Y %H")
 
-                    boden_temp_5 = float(temp5)
-                    boden_temp_10 = float(temp10)
-                    boden_temp_20 = float(temp20)
-                    boden_temp_50 = float(temp50)
-                    boden_temp_100 = float(temp100)
+                    ground_temperature_5 = float(temp5)
+                    ground_temperature_10 = float(temp10)
+                    ground_temperature_20 = float(temp20)
+                    ground_temperature_50 = float(temp50)
+                    ground_temperature_100 = float(temp100)
 
-                    self.boden_temp_5[formatted_string] = boden_temp_5
-                    self.boden_temp_10[formatted_string] = boden_temp_10
-                    self.boden_temp_20[formatted_string] = boden_temp_20
-                    self.boden_temp_50[formatted_string] = boden_temp_50
-                    self.boden_temp_100[formatted_string] = boden_temp_100
+                    self.__ground_temperature_5[formatted_string] = ground_temperature_5
+                    self.__ground_temperature_10[formatted_string] = ground_temperature_10
+                    self.__ground_temperature_20[formatted_string] = ground_temperature_20
+                    self.__ground_temperature_50[formatted_string] = ground_temperature_50
+                    self.__ground_temperature_100[formatted_string] = ground_temperature_100
 
-    # fertig
-    def read_wind(self, file_path):
-        with open(file_path, newline='') as csvfile:
-            csv_reader = csv.reader(csvfile, delimiter=';', quotechar='"')
+    def read_wind_strength(self, file_path):
+        with open(file_path, newline='') as csv_file:
+            csv_reader = csv.reader(csv_file, delimiter=';', quotechar='"')
 
             for row in csv_reader:
 
-                station, datum, typ, strongness, richtung, a, = row
-                station, datum, typ, strongness, richtung = station.strip(), datum.strip(), typ.strip(), strongness.strip(), richtung.strip()
+                station, date, typ, strenth, direction, a, = row
+                station, date, typ, strenth, direction = station.strip(), date.strip(), typ.strip(), strenth.strip(), direction.strip()
 
                 if len(row) >= 5 and station == "282":
-                    date_time = datetime.datetime.strptime(datum, "%Y%m%d%H")
+                    date_time = datetime.datetime.strptime(date, "%Y%m%d%H")
                     formatted_string = date_time.strftime("%d.%m.%Y %H")
 
-                    staerke_temp = float(strongness)
-                    self.wind_staerke[formatted_string] = staerke_temp
+                    wind_strength = float(strenth)
+                    self.__wind_strength[formatted_string] = wind_strength
 
-                    richtung_temp = float(richtung)
-                    self.wind_richtung[formatted_string] = richtung_temp
+                    wind_direction = float(direction)
+                    self.__wind_direction[formatted_string] = wind_direction
 
-    # fertig
-    def read_sonnenstunden(self, file_path):
-        with open(file_path, newline='') as csvfile:
-            csv_reader = csv.reader(csvfile, delimiter=';', quotechar='"')
+    def read_sun_hours(self, file_path):
+        with open(file_path, newline='') as csv_file:
+            csv_reader = csv.reader(csv_file, delimiter=';', quotechar='"')
 
             for row in csv_reader:
 
-                station, datum, typ, sonnenminuten, error = row
-                station, datum, typ, sonnenminuten, error = station.strip(), datum.strip(), typ.strip(), sonnenminuten.strip(), error.strip()
+                station, date, typ, sun_minutes, error = row
+                station, date, typ, sun_minutes, error = station.strip(), date.strip(), typ.strip(), sun_minutes.strip(), error.strip()
 
                 if len(row) >= 5 and station == "282":
-                    date_time = datetime.datetime.strptime(datum, "%Y%m%d%H")
+                    date_time = datetime.datetime.strptime(date, "%Y%m%d%H")
                     formatted_string = date_time.strftime("%d.%m.%Y")
-                    sonnen_temp = float(sonnenminuten)
+                    sun_minutes = float(sun_minutes)
 
-                    if sonnen_temp:
-                        sonnen_temp = sonnen_temp / 60.0
+                    if sun_minutes:
+                        sun_minutes = sun_minutes / 60.0
 
-                    if formatted_string in self.sonnen_stunden:
-                        self.sonnen_stunden[formatted_string] += sonnen_temp
+                    if formatted_string in self.__sun_hours:
+                        self.__sun_hours[formatted_string] += sun_minutes
                     else:
-                        self.sonnen_stunden[formatted_string] = sonnen_temp
+                        self.__sun_hours[formatted_string] = sun_minutes
 
-    # fertig
-    def read_niederschlag(self, file_path):
-        with open(file_path, newline='') as csvfile:
-            csv_reader = csv.reader(csvfile, delimiter=';', quotechar='"')
+    def read_precipitation_amount(self, file_path):
+        with open(file_path, newline='') as csv_file:
+            csv_reader = csv.reader(csv_file, delimiter=';', quotechar='"')
 
             for row in csv_reader:
 
-                station, datum, typ, niederschlag, a, b, error = row
-                station, datum, typ, niederschlag, error = station.strip(), datum.strip(), typ.strip(), niederschlag.strip(), error.strip()
+                station, date, typ, precipitation_amount, a, b, error = row
+                station, date, typ, precipitation_amount, error = station.strip(), date.strip(), typ.strip(), precipitation_amount.strip(), error.strip()
 
                 if len(row) >= 5 and station == "282":
-                    date_time = datetime.datetime.strptime(datum, "%Y%m%d%H")
+                    date_time = datetime.datetime.strptime(date, "%Y%m%d%H")
                     formatted_string = date_time.strftime("%d.%m.%Y")
-                    niederschlag_temp = float(niederschlag)
+                    precipitation_amount = float(precipitation_amount)
 
-                    if formatted_string in self.niederschlag_menge:
-                        self.niederschlag_menge[formatted_string] += niederschlag_temp
+                    if formatted_string in self.__precipitation_amount:
+                        self.__precipitation_amount[formatted_string] += precipitation_amount
                     else:
-                        self.niederschlag_menge[formatted_string] = niederschlag_temp
+                        self.__precipitation_amount[formatted_string] = precipitation_amount
 
-    # fertig
-    def read_input_data(self, import_file):
-        with open(import_file, newline='') as csvfile:
-            csv_reader = csv.reader(csvfile, delimiter=';', quotechar='"')
-
-            counter = 0
+    def read_raw_data(self, import_file):
+        with open(import_file, newline='') as csv_file:
+            csv_reader = csv.reader(csv_file, delimiter=';', quotechar='"')
 
             for row in csv_reader:
 
-                klasse, datum, uhrzeit = row
-                klasse, datum, uhrzeit = klasse.strip(), datum.strip(), uhrzeit.strip()
+                fish_class, date, hour = row
+                fish_class, date, hour = fish_class.strip(), date.strip(), hour.strip()
 
                 if len(row) >= 3:
-                    full_date_string = datum + "-" + uhrzeit
+                    full_date_string = date + "-" + hour
 
                     date_time = datetime.datetime.strptime(full_date_string, "%d.%m.%Y-%H:%M:%S")
 
-                    full_string = date_time.strftime("%d.%m.%Y %H")
-                    hour_string = date_time.strftime("%H%M")
-                    datum_string = date_time.strftime("%d.%m.%Y")
-                    date_string = date_time.strftime("%m%d")
+                    self.add_fish(fish_class, date_time)
 
-                    hour_int = int(hour_string)
-                    date_int = int(date_string)
+    def add_fish(self, fish_type, date_time):
 
-                    value = (klasse, datum_string, full_string, hour_int, date_int)
+        date_time_year = date_time.year
 
-                    logger.info("Eingelesen: {} Fischart: {} Fangdatum: {}".format(counter, klasse, full_string))
+        if (fish_type in settings.ALLOWED_FISH_TYPES) and (settings.MINIMAL_YEAR <= date_time_year):
+            full_string = date_time.strftime("%d.%m.%Y %H")
+            hour_string = date_time.strftime("%H%M")
+            datum_string = date_time.strftime("%d.%m.%Y")
+            date_string = date_time.strftime("%m%d")
 
-                    self.fish_catch_values.append(value)
+            hour_int = int(hour_string)
+            date_int = int(date_string)
 
-                    counter += 1
+            value = (fish_type, datum_string, full_string, hour_int, date_int)
 
-    def get_wasser_temp(self, full_string):
-        if full_string in self.wasser_temp:
-            wasser_temp = self.wasser_temp[full_string]
+            logger.info(
+                "Add: {} Fishtype: {} Catchdate: {}".format(self.__added_counter, fish_type, full_string))
+
+            self.__fish_catch_values.append(value)
+            self.__added_counter += 1
         else:
-            wasser_temp = 0.0
-        return wasser_temp
+            logger.warning(
+                "Year: {} Fishtype: {} is unknown. Or the year is incorrect.".format(date_time_year,
+                                                                                     fish_type))
 
-    def get_luft_temp(self, full_string):
-        if full_string in self.luft_temp:
-            luft_temp = self.luft_temp[full_string]
+    def __get_water_temperature(self, datum_hour_string):
+        if datum_hour_string in self.__water_temperature:
+            water_temperature = self.__water_temperature[datum_hour_string]
         else:
-            luft_temp = 0.0
-        return luft_temp
+            water_temperature = 0.0
+        return water_temperature
 
-    def get_relative_feuchte(self, full_string):
-        if full_string in self.relative_feuchte:
-            relative_feuchte = self.relative_feuchte[full_string]
+    def __get_air_temperature(self, datum_hour_string):
+        if datum_hour_string in self.__air_temperature:
+            air_temperature = self.__air_temperature[datum_hour_string]
         else:
-            relative_feuchte = 0.0
-        return relative_feuchte
+            air_temperature = 0.0
+        return air_temperature
 
-    def get_boden_temp_5(self, full_string):
-        if full_string in self.boden_temp_5:
-            boden_temp = self.boden_temp_5[full_string]
+    def __get_relative_humidity(self, datum_hour_string):
+        if datum_hour_string in self.__relative_humidity:
+            relative_humidity = self.__relative_humidity[datum_hour_string]
         else:
-            boden_temp = 0.0
-        return boden_temp
+            relative_humidity = 0.0
+        return relative_humidity
 
-    def get_boden_temp_10(self, full_string):
-        if full_string in self.boden_temp_10:
-            boden_temp = self.boden_temp_10[full_string]
+    def __get_ground_temperature_5(self, datum_hour_string):
+        if datum_hour_string in self.__ground_temperature_5:
+            ground_temperature_5 = self.__ground_temperature_5[datum_hour_string]
         else:
-            boden_temp = 0.0
-        return boden_temp
+            ground_temperature_5 = 0.0
+        return ground_temperature_5
 
-    def get_boden_temp_20(self, full_string):
-        if full_string in self.boden_temp_20:
-            boden_temp = self.boden_temp_20[full_string]
+    def __get_ground_temperature_10(self, datum_hour_string):
+        if datum_hour_string in self.__ground_temperature_10:
+            get_ground_temperature_10 = self.__ground_temperature_10[datum_hour_string]
         else:
-            boden_temp = 0.0
-        return boden_temp
+            get_ground_temperature_10 = 0.0
+        return get_ground_temperature_10
 
-    def get_boden_temp_50(self, full_string):
-        if full_string in self.boden_temp_50:
-            boden_temp = self.boden_temp_50[full_string]
+    def __get_ground_temperature_20(self, datum_hour_string):
+        if datum_hour_string in self.__ground_temperature_20:
+            ground_temperature_20 = self.__ground_temperature_20[datum_hour_string]
         else:
-            boden_temp = 0.0
-        return boden_temp
+            ground_temperature_20 = 0.0
+        return ground_temperature_20
 
-    def get_boden_temp_100(self, full_string):
-        if full_string in self.boden_temp_100:
-            boden_temp = self.boden_temp_100[full_string]
+    def __get_ground_temperature_50(self, datum_hour_string):
+        if datum_hour_string in self.__ground_temperature_50:
+            ground_temperature_50 = self.__ground_temperature_50[datum_hour_string]
         else:
-            boden_temp = 0.0
-        return boden_temp
+            ground_temperature_50 = 0.0
+        return ground_temperature_50
 
-    def get_wind_staerke(self, full_string):
-        if full_string in self.wind_staerke:
-            wind_staerke = self.wind_staerke[full_string]
+    def __get_ground_temperature_100(self, datum_hour_string):
+        if datum_hour_string in self.__ground_temperature_100:
+            ground_temperature_100 = self.__ground_temperature_100[datum_hour_string]
         else:
-            wind_staerke = 0.0
-        return wind_staerke
+            ground_temperature_100 = 0.0
+        return ground_temperature_100
 
-    def get_wind_richtung(self, full_string):
-        if full_string in self.wind_richtung:
-            wind_richtung = self.wind_richtung[full_string]
+    def __get_wind_strength(self, datum_hour_string):
+        if datum_hour_string in self.__wind_strength:
+            wind_strength = self.__wind_strength[datum_hour_string]
         else:
-            wind_richtung = 0.0
-        return wind_richtung
+            wind_strength = 0.0
+        return wind_strength
 
-    def get_sonnen_stunden(self, date_string):
-        if date_string in self.sonnen_stunden:
-            sonnen_stunden = self.sonnen_stunden[date_string]
+    def __get_wind_direction(self, datum_hour_string):
+        if datum_hour_string in self.__wind_direction:
+            wind_direction = self.__wind_direction[datum_hour_string]
         else:
-            sonnen_stunden = 0.0
-        return self.format_float(sonnen_stunden)
+            wind_direction = 0.0
+        return wind_direction
 
-    def get_niederschlag_menge(self, date_string):
-        if date_string in self.niederschlag_menge:
-            niederschlag_menge = self.niederschlag_menge[date_string]
+    def __get_sun_hours(self, date_string):
+        if date_string in self.__sun_hours:
+            sun_hours = self.__sun_hours[date_string]
         else:
-            niederschlag_menge = 0.0
-        return self.format_float(niederschlag_menge)
+            sun_hours = 0.0
+        return self.__format_float(sun_hours)
 
-    def get_previous_date(self, full_string, days_int):
-        aktueller_tag = datetime.datetime.strptime(full_string, "%d.%m.%Y")
-        vorheriger_tag = aktueller_tag - datetime.timedelta(days=days_int)
-        string_date = vorheriger_tag.strftime("%d.%m.%Y")
+    def __get_precipitation_amount(self, date_string):
+        if date_string in self.__precipitation_amount:
+            precipitation_amount = self.__precipitation_amount[date_string]
+        else:
+            precipitation_amount = 0.0
+        return self.__format_float(precipitation_amount)
+
+    def __get_previous_date(self, full_string, days_int):
+        current_day = datetime.datetime.strptime(full_string, "%d.%m.%Y")
+        previous_day = current_day - datetime.timedelta(days=days_int)
+        string_date = previous_day.strftime("%d.%m.%Y")
         return string_date
 
-    def get_previous_hour_date(self, date_hour_string, days_int):
-        aktueller_tag = datetime.datetime.strptime(date_hour_string, "%d.%m.%Y %H")
-        vorheriger_tag = aktueller_tag - datetime.timedelta(days=days_int)
-        string_date = vorheriger_tag.strftime("%d.%m.%Y %H")
+    def __get_previous_hour_date(self, date_hour_string, days_int):
+        current_day = datetime.datetime.strptime(date_hour_string, "%d.%m.%Y %H")
+        previous_day = current_day - datetime.timedelta(days=days_int)
+        string_date = previous_day.strftime("%d.%m.%Y %H")
         return string_date
 
-    def format_float(self, value):
+    def __format_float(self, value):
         return "{0:.1f}".format(round(value, 2))
 
-    def get_full_tuple_values(self, counter, fish_class, datum_hour_string, datum_string, day_string):
-        wasser_temp = self.get_wasser_temp(datum_hour_string)
-        luft_temp = self.get_luft_temp(datum_hour_string)
-        relative_feuchte = self.get_relative_feuchte(datum_hour_string)
+    def __get_full_tuple_values(self, counter, fish_type, datum_hour_string, datum_string, day_string):
+        water_temperature = self.__get_water_temperature(datum_hour_string)
+        air_temperature = self.__get_air_temperature(datum_hour_string)
+        relative_humidity = self.__get_relative_humidity(datum_hour_string)
 
-        boden_temp_5 = self.get_boden_temp_5(datum_hour_string)
-        boden_temp_10 = self.get_boden_temp_10(datum_hour_string)
-        boden_temp_20 = self.get_boden_temp_20(datum_hour_string)
-        boden_temp_50 = self.get_boden_temp_50(datum_hour_string)
-        boden_temp_100 = self.get_boden_temp_100(datum_hour_string)
+        ground_temperature_5 = self.__get_ground_temperature_5(datum_hour_string)
+        ground_temperature_10 = self.__get_ground_temperature_10(datum_hour_string)
+        ground_temperature_20 = self.__get_ground_temperature_20(datum_hour_string)
+        ground_temperature_50 = self.__get_ground_temperature_50(datum_hour_string)
+        ground_temperature_100 = self.__get_ground_temperature_100(datum_hour_string)
 
-        wind_staerke = self.get_wind_staerke(datum_hour_string)
-        wind_richtung = self.get_wind_richtung(datum_hour_string)
+        wind_strength = self.__get_wind_strength(datum_hour_string)
+        wind_direction = self.__get_wind_direction(datum_hour_string)
 
-        sonnen_stunden = self.get_sonnen_stunden(datum_string)
-        niederschlag_menge = self.get_niederschlag_menge(datum_string)
+        sun_hours = self.__get_sun_hours(datum_string)
+        precipitation_amount = self.__get_precipitation_amount(datum_string)
 
-        if luft_temp:
+        if air_temperature:
             return_list = [
-                (day_string + '_wasser_temperatur', str(wasser_temp)),
-                (day_string + '_luft_temperatur', str(luft_temp)),
-                (day_string + '_relative_luft_feuchte', str(relative_feuchte)),
-                (day_string + '_boden_temperatur_5cm', str(boden_temp_5)),
-                (day_string + '_boden_temperatur_10cm', str(boden_temp_10)),
-                (day_string + '_boden_temperatur_20cm', str(boden_temp_20)),
-                (day_string + '_boden_temperatur_50cm', str(boden_temp_50)),
-                (day_string + '_boden_temperatur_100cm', str(boden_temp_100)),
-                (day_string + '_wind_staerke', str(wind_staerke)),
-                (day_string + '_wind_richtung', str(wind_richtung)),
-                (day_string + '_sonnen_stunden', str(sonnen_stunden)),
-                (day_string + '_niederschlag_menge', str(niederschlag_menge)),
+                (day_string + '_wasser_temperatur', str(water_temperature)),
+                (day_string + '_luft_temperatur', str(air_temperature)),
+                (day_string + '_relative_luft_feuchte', str(relative_humidity)),
+                (day_string + '_boden_temperatur_5cm', str(ground_temperature_5)),
+                (day_string + '_boden_temperatur_10cm', str(ground_temperature_10)),
+                (day_string + '_boden_temperatur_20cm', str(ground_temperature_20)),
+                (day_string + '_boden_temperatur_50cm', str(ground_temperature_50)),
+                (day_string + '_boden_temperatur_100cm', str(ground_temperature_100)),
+                (day_string + '_wind_staerke', str(wind_strength)),
+                (day_string + '_wind_richtung', str(wind_direction)),
+                (day_string + '_sonnen_stunden', str(sun_hours)),
+                (day_string + '_niederschlag_menge', str(precipitation_amount)),
             ]
 
             logger.info(
-                "Verarbeitet: {} Fischart: {} Fangdatum: {} Daten: {}".format(counter, fish_class, datum_string,
-                                                                              str(return_list)))
+                "Processed: {} Fishtype: {} Catchdate: {} Data: {}".format(counter, fish_type,
+                                                                           datum_string,
+                                                                           str(return_list)))
         else:
             return_list = []
 
         return return_list
 
-    def get_full_class_value(self, fish_class, hour_24_int, date_int):
-
+    def __get_full_class_value(self, fish_type, hour_24_int, date_int):
         return_list = [
             ('datum_monat_tag', str(date_int)),
             ('fangzeit_24_stunden', str(hour_24_int)),
-            ('class_label', str(fish_class)),
+            ('class_label', str(fish_type)),
         ]
 
         return return_list
 
-    def get_second_tuple_value(self, data_tuple_list):
+    def __get_second_tuple_value(self, data_tuple_list):
         return [value for key, value in data_tuple_list]
 
-    def get_first_tuple_values(self, data_tuple_list):
+    def __get_first_tuple_values(self, data_tuple_list):
         return [key for key, value in data_tuple_list]
 
-    def generate_output_list(self, label_list, data_list):
-
+    def generate_arff_data(self):
         return_list = list()
 
         return_list.append("")
         return_list.append("@RELATION AngelDaten")
 
-        for label_item in label_list:
+        for label_item in self.__arff_label_values:
 
             if label_item == 'class_label':
                 return_list.append("@ATTRIBUTE class {Karpfen, Forelle, Brachse, Barbe, Hecht, Aal}")
@@ -368,75 +369,78 @@ class FangBuch:
         return_list.append("")
         return_list.append("@DATA")
 
-        for data_point in data_list:
+        for data_point in self.__arff_data_values:
             data_string = ','.join(data_point)
             return_list.append(data_string)
 
-        self.output_line_list = return_list
+        self.__output_line_list = return_list
 
-    def merge_data_attributes(self):
-
+    def process_data_attributes(self):
         counter = 0
 
-        for fish_class, datum_string, datum_hour_string, hour_24_int, date_int in self.fish_catch_values:
+        for fish_type, datum_string, datum_hour_string, hour_24_int, date_int in self.__fish_catch_values:
 
-            full_data_set = []
+            one_data_point = []
 
-            for previous_day in range(0, self.MAX_PREVIOUS_DAYS):
-                current_date = self.get_previous_date(datum_string, previous_day)
-                current_hour_date = self.get_previous_hour_date(datum_hour_string, previous_day)
+            for previous_day in range(0, settings.MAX_PREVIOUS_DAYS):
+                current_date = self.__get_previous_date(datum_string, previous_day)
+                current_hour_date = self.__get_previous_hour_date(datum_hour_string, previous_day)
 
-                data_value_tuples = self.get_full_tuple_values(counter, fish_class, current_hour_date,
-                                                               current_date, str(previous_day))
-                data_points = self.get_second_tuple_value(data_value_tuples)
-
-                if counter == 0:
-                    day_labels = self.get_first_tuple_values(data_value_tuples)
-                    self.arff_label_values.extend(day_labels)
-
-                full_data_set.extend(data_points)
-
-            if full_data_set:
-                data_value_tuples = self.get_full_class_value(fish_class, hour_24_int, date_int)
-                data_points = self.get_second_tuple_value(data_value_tuples)
+                data_value_tuples = self.__get_full_tuple_values(counter, fish_type, current_hour_date,
+                                                                 current_date, str(previous_day))
+                data_points = self.__get_second_tuple_value(data_value_tuples)
 
                 if counter == 0:
-                    class_labels = self.get_first_tuple_values(data_value_tuples)
-                    self.arff_label_values.extend(class_labels)
+                    day_labels = self.__get_first_tuple_values(data_value_tuples)
+                    self.__arff_label_values.extend(day_labels)
 
-                full_data_set.extend(data_points)
+                one_data_point.extend(data_points)
 
-                self.arff_data_values.append(full_data_set)
+            if one_data_point:
+                data_value_tuples = self.__get_full_class_value(fish_type, hour_24_int, date_int)
+                data_points = self.__get_second_tuple_value(data_value_tuples)
+
+                if counter == 0:
+                    class_labels = self.__get_first_tuple_values(data_value_tuples)
+                    self.__arff_label_values.extend(class_labels)
+
+                one_data_point.extend(data_points)
+
+                self.__arff_data_values.append(one_data_point)
 
             counter += 1
 
-        self.generate_output_list(self.arff_label_values, self.arff_data_values)
-
-    def print_output_data(self):
-        for row in self.output_line_list:
+    def print_arff_data(self):
+        for row in self.__output_line_list:
             print(row)
 
-    def store_output_data(self):
+    def store_arff_data(self):
         with open('output_arff.csv', 'w') as file:
-            for line in self.output_line_list:
+            for line in self.__output_line_list:
                 file.write(line)
                 file.write("\n")
 
 
-# Klimadaten stand 2018 März
-# Fangbuch stand 2017
-fang_buch = FangBuch()
+# Climate Data 2018 Marc
+# Fish Database
+fang_buch = FishDatabase()
 
-fang_buch.read_input_data('rohdaten/fangbuch_gesamt.csv')
+fang_buch.read_raw_data('rawdata/fish_database.csv')
 
-fang_buch.read_wasser_temp('wetter_daten/wassertemperatur/wassertemperatur_603100044.csv')
-fang_buch.read_luft_temp_luft_feuchte('wetter_daten/temperaturfeuchte/produkt_tu_stunde_19490101_20171231_00282.txt')
-fang_buch.read_boden_temp('wetter_daten/bodentemperatur/produkt_eb_stunde_19490101_20171231_00282.txt')
-fang_buch.read_wind('wetter_daten/windstaerke/produkt_ff_stunde_19490101_20171231_00282.txt')
-fang_buch.read_sonnenstunden('wetter_daten/sonnenstunden/produkt_sd_stunde_19490101_20171231_00282.txt')
-fang_buch.read_niederschlag('wetter_daten/niederschlag/produkt_rr_stunde_19490101_20171231_00282.txt')
+fang_buch.read_watter_temperature('weather_data/water_temperature/wassertemperatur_603100044.csv')
+fang_buch.read_air_temperature_relative_humidity(
+    'weather_data/relativ_humidity_air_temperature/produkt_tu_stunde_19490101_20171231_00282.txt')
+fang_buch.read_ground_temperature(
+    'weather_data/ground_temperature/produkt_eb_stunde_19490101_20171231_00282.txt')
+fang_buch.read_wind_strength('weather_data/wind_strength/produkt_ff_stunde_19490101_20171231_00282.txt')
+fang_buch.read_sun_hours('weather_data/sun_hours/produkt_sd_stunde_19490101_20171231_00282.txt')
+fang_buch.read_precipitation_amount(
+    'weather_data/precipitation_amount/produkt_rr_stunde_19490101_20171231_00282.txt')
 
-fang_buch.merge_data_attributes()
+fang_buch.process_data_attributes()
 
-fang_buch.print_output_data()
-fang_buch.store_output_data()
+fang_buch.generate_arff_data()
+
+fang_buch.print_arff_data()
+
+fang_buch.store_arff_data()
