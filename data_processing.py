@@ -49,6 +49,9 @@ class FishDatabase:
         if os.path.exists(pickle_path):
             pickle_file = open(pickle_path, "rb")
             temp_object = pickle.Unpickler(pickle_file).load()
+
+            logger.info(
+                "Load Cached Attribute: Name: {} Path: {}".format(file_path, pickle_path))
             pickle_file.close()
 
             return_object = temp_object
@@ -61,6 +64,9 @@ class FishDatabase:
             pickle_file = open(pickle_path, "wb")
             pickle.Pickler(pickle_file, pickle.HIGHEST_PROTOCOL).dump(object_data)
             pickle_file.close()
+
+            logger.info(
+                "Store Cached Attribute: Name: {} Path: {}".format(file_path, pickle_path))
 
     def read_water_temperature(self, file_path):
         self.__water_temperature = self.__load_cache('water_temperature', self.__water_temperature)
