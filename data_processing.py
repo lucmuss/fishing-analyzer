@@ -520,7 +520,7 @@ class FishDatabase:
             print(row)
 
     def store_arff_file(self):
-        with open('output_arff.csv', 'w') as file:
+        with open('output_data_set.arff', 'w') as file:
             for line in self.__output_line_list:
                 file.write(line)
                 file.write("\n")
