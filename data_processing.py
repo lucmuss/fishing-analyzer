@@ -1,12 +1,12 @@
 import csv
 import datetime
-import logging
 import settings
 import os
 import pickle
+import custom_logger
 
-logging.basicConfig(filename='data_processing_log.log', level=logging.DEBUG)
-logger = logging.getLogger(__file__)
+custom_logger = custom_logger.CustomLogger()
+logger = custom_logger.get_logger(__name__)
 
 
 class FishDatabase:
@@ -29,8 +29,8 @@ class FishDatabase:
 
     __fish_catch_values = list()
 
-    __arff_data_values = list()
-    __arff_label_values = list()
+    __arff_data_list = list()
+    __arff_label_list = list()
 
     __output_line_list = list()
 
@@ -39,8 +39,9 @@ class FishDatabase:
     def __get_pickle_file_path(self, file_path):
         base_name = os.path.basename(file_path)
         file_name = base_name.split('.')[0]
+        full_name = ''.join([file_name, ".", "cache"])
 
-        pickle_path = os.path.join('weather_data_cache', file_name + '.' + 'cache')
+        pickle_path = os.path.join('weather_data_cache', full_name)
         return pickle_path
 
     def __load_cache(self, file_path, return_object):
@@ -51,10 +52,15 @@ class FishDatabase:
             temp_object = pickle.Unpickler(pickle_file).load()
 
             logger.info(
-                "Load Cached Attribute: Name: {} Path: {}".format(file_path, pickle_path))
+                "Cached Database was loaded. | Database Name: {} | Path: {}".format(file_path, pickle_path))
             pickle_file.close()
 
             return_object = temp_object
+        else:
+            logger.warning(
+                "Cached Database was not found. | Database Name: {} | Path: {}".format(file_path,
+                                                                                       pickle_path))
+
         return return_object
 
     def __store_cache(self, file_path, object_data):
@@ -66,7 +72,8 @@ class FishDatabase:
             pickle_file.close()
 
             logger.info(
-                "Store Cached Attribute: Name: {} Path: {}".format(file_path, pickle_path))
+                "Cached Database was created successfully. | Database Name: {} | Path: {}".format(file_path,
+                                                                                                  pickle_path))
 
     def read_water_temperature(self, file_path):
         self.__water_temperature = self.__load_cache('water_temperature', self.__water_temperature)
@@ -154,14 +161,14 @@ class FishDatabase:
 
             for row in csv_reader:
 
-                station, date, typ, strenth, direction, a, = row
-                station, date, typ, strenth, direction = station.strip(), date.strip(), typ.strip(), strenth.strip(), direction.strip()
+                station, date, typ, strength, direction, a, = row
+                station, date, typ, strength, direction = station.strip(), date.strip(), typ.strip(), strength.strip(), direction.strip()
 
                 if len(row) >= 5 and station == "282":
                     date_time = datetime.datetime.strptime(date, "%Y%m%d%H")
                     formatted_string = date_time.strftime("%d.%m.%Y %H")
 
-                    wind_strength = float(strenth)
+                    wind_strength = float(strength)
                     self.__wind_strength[formatted_string] = wind_strength
 
         self.__store_cache('wind_strength', self.__wind_strength)
@@ -178,8 +185,8 @@ class FishDatabase:
 
             for row in csv_reader:
 
-                station, date, typ, strenth, direction, a, = row
-                station, date, typ, strenth, direction = station.strip(), date.strip(), typ.strip(), strenth.strip(), direction.strip()
+                station, date, typ, strength, direction, a, = row
+                station, date, typ, strength, direction = station.strip(), date.strip(), typ.strip(), strength.strip(), direction.strip()
 
                 if len(row) >= 5 and station == "282":
                     date_time = datetime.datetime.strptime(date, "%Y%m%d%H")
@@ -307,6 +314,10 @@ class FishDatabase:
                     date_time = datetime.datetime.strptime(full_date_string, "%d.%m.%Y-%H:%M:%S")
 
                     self.add_fish(fish_class, date_time)
+                else:
+                    logger.warning("Fish with wrong parameter set was ignored. | Data: {}".format(row))
+
+        logger.info("Fish data was extracted correctly form CSV file. | Filename: {}".format(import_file))
 
     def add_fish(self, fish_type, date_time):
 
@@ -323,99 +334,61 @@ class FishDatabase:
 
             value = (fish_type, datum_string, full_string, hour_int, date_int)
 
-            logger.info(
-                "Add: {} Fishtype: {} Catchdate: {}".format(self.__added_counter, fish_type, full_string))
-
             self.__fish_catch_values.append(value)
             self.__added_counter += 1
+
+            logger.debug(
+                "New Fish was added to the data set. | Data: {}".format(value))
+
+            logger.info(
+                "New Fish was added to the data set. | Class: {} | Catch Date: {}".format(fish_type,
+                                                                                          full_string))
         else:
             logger.warning(
-                "Year: {} Fishtype: {} is unknown. Or the year is incorrect.".format(date_time_year,
-                                                                                     fish_type))
+                "Fish with wrong attributes was identified. | Year: {} | Class: {}".format(date_time_year,
+                                                                                           fish_type))
 
     def __get_water_temperature(self, datum_hour_string):
-        if datum_hour_string in self.__water_temperature:
-            water_temperature = self.__water_temperature[datum_hour_string]
-        else:
-            water_temperature = 0.0
-        return water_temperature
+        return self.__water_temperature.get(datum_hour_string, 0.0)
 
     def __get_air_temperature(self, datum_hour_string):
-        if datum_hour_string in self.__air_temperature:
-            air_temperature = self.__air_temperature[datum_hour_string]
-        else:
-            air_temperature = 0.0
-        return air_temperature
+        return self.__air_temperature.get(datum_hour_string, 0.0)
 
     def __get_relative_humidity(self, datum_hour_string):
-        if datum_hour_string in self.__relative_humidity:
-            relative_humidity = self.__relative_humidity[datum_hour_string]
-        else:
-            relative_humidity = 0.0
-        return relative_humidity
+        return self.__relative_humidity.get(datum_hour_string, 0.0)
 
     def __get_ground_temperature_5(self, datum_hour_string):
-        if datum_hour_string in self.__ground_temperature_5:
-            ground_temperature_5 = self.__ground_temperature_5[datum_hour_string]
-        else:
-            ground_temperature_5 = 0.0
-        return ground_temperature_5
+        return self.__ground_temperature_5.get(datum_hour_string, 0.0)
 
     def __get_ground_temperature_10(self, datum_hour_string):
-        if datum_hour_string in self.__ground_temperature_10:
-            get_ground_temperature_10 = self.__ground_temperature_10[datum_hour_string]
-        else:
-            get_ground_temperature_10 = 0.0
-        return get_ground_temperature_10
+        return self.__ground_temperature_10.get(datum_hour_string, 0.0)
 
     def __get_ground_temperature_20(self, datum_hour_string):
-        if datum_hour_string in self.__ground_temperature_20:
-            ground_temperature_20 = self.__ground_temperature_20[datum_hour_string]
-        else:
-            ground_temperature_20 = 0.0
-        return ground_temperature_20
+        return self.__ground_temperature_20.get(datum_hour_string, 0.0)
 
     def __get_ground_temperature_50(self, datum_hour_string):
-        if datum_hour_string in self.__ground_temperature_50:
-            ground_temperature_50 = self.__ground_temperature_50[datum_hour_string]
-        else:
-            ground_temperature_50 = 0.0
-        return ground_temperature_50
+        return self.__ground_temperature_50.get(datum_hour_string, 0.0)
 
     def __get_ground_temperature_100(self, datum_hour_string):
-        if datum_hour_string in self.__ground_temperature_100:
-            ground_temperature_100 = self.__ground_temperature_100[datum_hour_string]
-        else:
-            ground_temperature_100 = 0.0
-        return ground_temperature_100
+        return self.__ground_temperature_100.get(datum_hour_string, 0.0)
 
     def __get_wind_strength(self, datum_hour_string):
-        if datum_hour_string in self.__wind_strength:
-            wind_strength = self.__wind_strength[datum_hour_string]
-        else:
-            wind_strength = 0.0
-        return wind_strength
+        return self.__wind_strength.get(datum_hour_string, 0.0)
 
     def __get_wind_direction(self, datum_hour_string):
-        if datum_hour_string in self.__wind_direction:
-            wind_direction = self.__wind_direction[datum_hour_string]
-        else:
-            wind_direction = 0.0
-        return wind_direction
+        return self.__wind_direction.get(datum_hour_string, 0.0)
 
     def __get_sun_hours(self, date_string):
-        if date_string in self.__sun_hours:
-            sun_hours = self.__sun_hours[date_string]
-        else:
-            sun_hours = 0.0
-        return self.__format_float(sun_hours)
+        return_value = self.__sun_hours.get(date_string, 0.0)
+        string_value = "{0:.1f}".format(return_value)
+        float_value = float(string_value)
+        return float_value
 
     def __get_precipitation_amount(self, date_string):
-        if date_string in self.__precipitation_amount:
-            precipitation_amount = self.__precipitation_amount[date_string]
-        else:
-            precipitation_amount = 0.0
-        return self.__format_float(precipitation_amount)
+        return_value = self.__precipitation_amount.get(date_string, 0.0)
+        string_value = "{0:.1f}".format(return_value)
+        float_value = float(string_value)
+        return float_value
 
     def __get_previous_date(self, full_string, days_int):
         current_day = datetime.datetime.strptime(full_string, "%d.%m.%Y")
@@ -429,10 +402,7 @@ class FishDatabase:
         string_date = previous_day.strftime("%d.%m.%Y %H")
         return string_date
 
-    def __format_float(self, value):
-        return "{0:.1f}".format(round(value, 2))
-
-    def __get_full_tuple_values(self, counter, fish_type, datum_hour_string, datum_string, day_string):
+    def __get_data_values(self, fish_type, datum_hour_string, datum_string, day_string):
         water_temperature = self.__get_water_temperature(datum_hour_string)
         air_temperature = self.__get_air_temperature(datum_hour_string)
         relative_humidity = self.__get_relative_humidity(datum_hour_string)
@@ -465,16 +435,17 @@ class FishDatabase:
                 (day_string + '_niederschlag_menge', str(precipitation_amount)),
             ]
 
-            logger.info(
-                "Processed: {} Fishtype: {} Catchdate: {} Data: {}".format(counter, fish_type,
-                                                                           datum_string,
-                                                                           str(return_list)))
+            logger.debug(
+                "Fish data was extracted correctly. | Class: {} Catch Date: {} Data: {}".format(fish_type,
+                                                                                                datum_string,
+                                                                                                str(
+                                                                                                    return_list)))
         else:
             return_list = []
 
         return return_list
 
-    def __get_full_class_value(self, fish_type, hour_24_int, date_int):
+    def __get_class_values(self, fish_type, hour_24_int, date_int):
         return_list = [
             ('datum_monat_tag', str(date_int)),
             ('fangzeit_24_stunden', str(hour_24_int)),
@@ -483,33 +454,30 @@ class FishDatabase:
 
         return return_list
 
-    def __get_second_tuple_value(self, data_tuple_list):
-        return [value for key, value in data_tuple_list]
-
-    def __get_first_tuple_values(self, data_tuple_list):
-        return [key for key, value in data_tuple_list]
-
-    def generate_arff_data(self):
+    def generate_arff_content(self):
         return_list = list()
 
         return_list.append("")
         return_list.append("@RELATION AngelDaten")
 
-        for label_item in self.__arff_label_values:
+        for label_item in self.__arff_label_list:
 
             if label_item == 'class_label':
                 return_list.append("@ATTRIBUTE class {Karpfen, Forelle, Brachse, Barbe, Hecht, Aal}")
             else:
-                return_list.append("@ATTRIBUTE %s NUMERIC" % label_item)
+                return_list.append("@ATTRIBUTE {} NUMERIC".format(label_item))
 
         return_list.append("")
         return_list.append("@DATA")
 
-        for data_point in self.__arff_data_values:
+        for data_point in self.__arff_data_list:
             data_string = ','.join(data_point)
             return_list.append(data_string)
 
         self.__output_line_list = return_list
+
+        logger.info(
+            "ARFF File content was correctly built.")
 
     def process_data_attributes(self):
         counter = 0
@@ -522,43 +490,49 @@ class FishDatabase:
                 current_date = self.__get_previous_date(datum_string, previous_day)
                 current_hour_date = self.__get_previous_hour_date(datum_hour_string, previous_day)
 
-                data_value_tuples = self.__get_full_tuple_values(counter, fish_type, current_hour_date,
-                                                                 current_date, str(previous_day))
-                data_points = self.__get_second_tuple_value(data_value_tuples)
+                data_value_tuples = self.__get_data_values(fish_type, current_hour_date,
+                                                           current_date, str(previous_day))
 
-                if counter == 0:
-                    day_labels = self.__get_first_tuple_values(data_value_tuples)
-                    self.__arff_label_values.extend(day_labels)
+                data_points = [value for key, value in data_value_tuples]
+
+                if not counter:
+                    day_labels = [key for key, value in data_value_tuples]
+                    self.__arff_label_list.extend(day_labels)
 
                 one_data_point.extend(data_points)
 
             if one_data_point:
-                data_value_tuples = self.__get_full_class_value(fish_type, hour_24_int, date_int)
-                data_points = self.__get_second_tuple_value(data_value_tuples)
+                data_value_tuples = self.__get_class_values(fish_type, hour_24_int, date_int)
+                data_points = [value for key, value in data_value_tuples]
 
-                if counter == 0:
-                    class_labels = self.__get_first_tuple_values(data_value_tuples)
-                    self.__arff_label_values.extend(class_labels)
+                if not counter:
+                    class_labels = [key for key, value in data_value_tuples]
+                    self.__arff_label_list.extend(class_labels)
 
                 one_data_point.extend(data_points)
 
-                self.__arff_data_values.append(one_data_point)
+                self.__arff_data_list.append(one_data_point)
 
             counter += 1
 
-    def print_arff_data(self):
+    def print_arff_content(self):
         for row in self.__output_line_list:
             print(row)
 
-    def store_arff_data(self):
+    def store_arff_file(self):
         with open('output_arff.csv', 'w') as file:
             for line in self.__output_line_list:
                 file.write(line)
                 file.write("\n")
 
+        logger.info(
+            "ARFF File was correctly stored.")
+
 
 # Climate Data 2018 Marc
 # Fish Database
+
+
 fish_database = FishDatabase()
 
 fish_database.read_raw_data('rawdata/fish_database.csv')
@@ -585,8 +559,8 @@ fish_database.read_precipitation_amount(
 
 fish_database.process_data_attributes()
 
-fish_database.generate_arff_data()
+fish_database.generate_arff_content()
 
-fish_database.print_arff_data()
+fish_database.print_arff_content()
 
-fish_database.store_arff_data()
+fish_database.store_arff_file()
