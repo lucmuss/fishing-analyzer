@@ -1,13 +1,10 @@
 import csv
 import datetime
 import settings
-import os
-import pickle
-import custom_logger
+from container import custom_logger
 
 custom_logger = custom_logger.CustomLogger()
 logger = custom_logger.get_logger(__name__)
-
 
 class FishDatabase:
     __water_temperature = dict()
@@ -35,69 +32,6 @@ class FishDatabase:
     __output_line_list = list()
 
     __added_counter = 0
-
-    def __get_pickle_file_path(self, file_path):
-        base_name = os.path.basename(file_path)
-        file_name = base_name.split('.')[0]
-        full_name = ''.join([file_name, ".", "cache"])
-
-        pickle_path = os.path.join('weather_data_cache', full_name)
-        return pickle_path
-
-    def __load_cache(self, file_path, return_object):
-        pickle_path = self.__get_pickle_file_path(file_path)
-
-        if os.path.exists(pickle_path):
-            pickle_file = open(pickle_path, "rb")
-            temp_object = pickle.Unpickler(pickle_file).load()
-
-            logger.info(
-                "Cached Database was loaded. | Database Name: {} | Path: {}".format(file_path, pickle_path))
-            pickle_file.close()
-
-            return_object = temp_object
-        else:
-            logger.warning(
-                "Cached Database was not found. | Database Name: {} | Path: {}".format(file_path,
-                                                                                       pickle_path))
-
-        return return_object
-
-    def __store_cache(self, file_path, object_data):
-        pickle_path = self.__get_pickle_file_path(file_path)
-
-        if not os.path.exists(pickle_path):
-            pickle_file = open(pickle_path, "wb")
-            pickle.Pickler(pickle_file, pickle.HIGHEST_PROTOCOL).dump(object_data)
-            pickle_file.close()
-
-            logger.info(
-                "Cached Database was created successfully. | Database Name: {} | Path: {}".format(file_path,
-                                                                                                  pickle_path))
-
-    def read_water_temperature(self, file_path):
-        self.__water_temperature = self.__load_cache('water_temperature', self.__water_temperature)
-
-        if self.__water_temperature:
-            return True
-
-        with open(file_path, newline='') as csv_file:
-            csv_reader = csv.reader(csv_file, delimiter=';', quotechar='"')
-
-            for row in csv_reader:
-                if len(row) >= 3 and row[2] == "Rohdaten":
-                    date, temp, typ = row
-                    date_time = datetime.datetime.strptime(date, "%Y-%m-%d %H:%M")
-                    formatted_string = date_time.strftime("%d.%m.%Y %H")
-
-                    replaced_temp = temp.replace(',', '.')
-                    if not replaced_temp:
-                        replaced_temp = "0.0"
-                    float_temp = float(replaced_temp)
-
-                    self.__water_temperature[formatted_string] = float_temp
-
-        self.__store_cache('water_temperature', self.__water_temperature)
 
     def read_air_temperature(self, file_path):
 
@@ -317,7 +251,7 @@ class FishDatabase:
                 else:
                     logger.warning("Fish with wrong parameter set was ignored. | Data: {}".format(row))
 
-        logger.info("Fish data was extracted correctly form CSV file. | Filename: {}".format(import_file))
+        logger.info("Fish container was extracted correctly form CSV file. | Filename: {}".format(import_file))
 
     def add_fish(self, fish_type, date_time):
 
@@ -338,10 +272,10 @@ class FishDatabase:
             self.__added_counter += 1
 
             logger.debug(
-                "New Fish was added to the data set. | Data: {}".format(value))
+                "New Fish was added to the container set. | Data: {}".format(value))
 
             logger.info(
-                "New Fish was added to the data set. | Class: {} | Catch Date: {}".format(fish_type,
+                "New Fish was added to the container set. | Class: {} | Catch Date: {}".format(fish_type,
                                                                                           full_string))
         else:
             logger.warning(
@@ -436,7 +370,7 @@ class FishDatabase:
             ]
 
             logger.debug(
-                "Fish data was extracted correctly. | Class: {} Catch Date: {} Data: {}".format(fish_type,
+                "Fish container was extracted correctly. | Class: {} Catch Date: {} Data: {}".format(fish_type,
                                                                                                 datum_string,
                                                                                                 str(
                                                                                                     return_list)))
@@ -514,6 +448,10 @@ class FishDatabase:
                 self.__arff_data_list.append(one_data_point)
 
             counter += 1
+
+    #    def get_dataframe(self):
+    #        for row in self.__arff_data_list:
+    #           pass
 
     def print_arff_content(self):
         for row in self.__output_line_list:
