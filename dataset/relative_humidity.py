@@ -4,39 +4,40 @@ import pandas as pd
 from settings import MINIMAL_SERIES_START_YEAR
 from settings import MAXIMAL_SERIES_END_YEAR
 
-from container.data_cache import DataCache
+from dataset.data_cache import DataCache
 
 
-class AirTemperature:
+class RelativeHumidity:
     location = 'weather_data/relativ_humidity_air_temperature/produkt_tu_stunde_19490101_20171231_00282.txt'
     __data_cache = DataCache()
-    __air_temperature = dict()
+    __data_dict = dict()
+    data_name = 'relative_humidity'
 
     def __init__(self):
         self.__init_data()
 
     def __init_data(self):
 
-        self.__air_temperature = self.__data_cache.load_cache('air_temperature', self.__air_temperature)
+        self.__data_dict = self.__data_cache.load_cache(self.data_name, self.__data_dict)
 
-        if self.__air_temperature:
+        if self.__data_dict:
             return True
 
         self.__read()
 
-        self.__data_cache.store_cache('air_temperature', self.__air_temperature)
+        self.__data_cache.store_cache(self.data_name, self.__data_dict)
 
     def get_dict(self):
-        return self.__air_temperature
+        return self.__data_dict
 
     def get_list(self):
-        items_iterator = self.__air_temperature.items()
+        items_iterator = self.__data_dict.items()
         return list(items_iterator)
 
     def get_series(self):
-        data_values = list(self.__air_temperature.values())
-        index_values = list(self.__air_temperature.keys())
-        series = pd.Series(data_values, index=index_values, name='air_temperature')
+        data_values = list(self.__data_dict.values())
+        index_values = list(self.__data_dict.keys())
+        series = pd.Series(data_values, index=index_values, name=self.data_name)
 
         reduced_series = series[MINIMAL_SERIES_START_YEAR:MAXIMAL_SERIES_END_YEAR]
         return reduced_series
@@ -55,5 +56,5 @@ class AirTemperature:
                     date_time = datetime.datetime.strptime(date, "%Y%m%d%H")
                     formatted_string = date_time.strftime("%Y-%m-%d %H:00:00")
 
-                    float_temp = float(temperature)
-                    self.__air_temperature[formatted_string] = float_temp
+                    float_humidity = float(humidity)
+                    self.__data_dict[formatted_string] = float_humidity

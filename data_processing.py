@@ -1,29 +1,13 @@
 import csv
 import datetime
 import settings
-from container import custom_logger
+from dataset import custom_logger
 
 custom_logger = custom_logger.CustomLogger()
 logger = custom_logger.get_logger(__name__)
 
+
 class FishDatabase:
-    __water_temperature = dict()
-
-    __air_temperature = dict()
-    __relative_humidity = dict()
-
-    __ground_temperature_5 = dict()
-    __ground_temperature_10 = dict()
-    __ground_temperature_20 = dict()
-    __ground_temperature_50 = dict()
-    __ground_temperature_100 = dict()
-
-    __wind_strength = dict()
-    __wind_direction = dict()
-
-    __sun_hours = dict()
-    __precipitation_amount = dict()
-
     __fish_catch_values = list()
 
     __arff_data_list = list()
@@ -32,206 +16,6 @@ class FishDatabase:
     __output_line_list = list()
 
     __added_counter = 0
-
-    def read_air_temperature(self, file_path):
-
-        self.__air_temperature = self.__load_cache('air_temperature', self.__air_temperature)
-
-        if self.__air_temperature:
-            return True
-
-        with open(file_path,
-                  newline='') as csv_file:
-            csv_reader = csv.reader(csv_file, delimiter=';', quotechar='"')
-
-            for row in csv_reader:
-
-                station, date, typ, temperature, humidity, error = row
-                station, date, typ, temperature, humidity, error = station.strip(), date.strip(), typ.strip(), temperature.strip(), humidity.strip(), error.strip()
-
-                if len(row) >= 5 and station == "282":
-                    date_time = datetime.datetime.strptime(date, "%Y%m%d%H")
-                    formatted_string = date_time.strftime("%d.%m.%Y %H")
-
-                    float_temp = float(temperature)
-                    self.__air_temperature[formatted_string] = float_temp
-
-        self.__store_cache('air_temperature', self.__air_temperature)
-
-    def read_relative_humidity(self, file_path):
-
-        self.__relative_humidity = self.__load_cache('relative_humidity', self.__relative_humidity)
-
-        if self.__relative_humidity:
-            return True
-
-        with open(file_path,
-                  newline='') as csv_file:
-            csv_reader = csv.reader(csv_file, delimiter=';', quotechar='"')
-
-            for row in csv_reader:
-
-                station, date, typ, temperature, humidity, error = row
-                station, date, typ, temperature, humidity, error = station.strip(), date.strip(), typ.strip(), temperature.strip(), humidity.strip(), error.strip()
-
-                if len(row) >= 5 and station == "282":
-                    date_time = datetime.datetime.strptime(date, "%Y%m%d%H")
-                    formatted_string = date_time.strftime("%d.%m.%Y %H")
-
-                    float_humidity = float(humidity)
-                    self.__relative_humidity[formatted_string] = float_humidity
-
-        self.__store_cache('relative_humidity', self.__relative_humidity)
-
-    def read_wind_strength(self, file_path):
-
-        self.__wind_strength = self.__load_cache('wind_strength', self.__wind_strength)
-
-        if self.__wind_strength:
-            return True
-
-        with open(file_path, newline='') as csv_file:
-            csv_reader = csv.reader(csv_file, delimiter=';', quotechar='"')
-
-            for row in csv_reader:
-
-                station, date, typ, strength, direction, a, = row
-                station, date, typ, strength, direction = station.strip(), date.strip(), typ.strip(), strength.strip(), direction.strip()
-
-                if len(row) >= 5 and station == "282":
-                    date_time = datetime.datetime.strptime(date, "%Y%m%d%H")
-                    formatted_string = date_time.strftime("%d.%m.%Y %H")
-
-                    wind_strength = float(strength)
-                    self.__wind_strength[formatted_string] = wind_strength
-
-        self.__store_cache('wind_strength', self.__wind_strength)
-
-    def read_wind_direction(self, file_path):
-
-        self.__wind_direction = self.__load_cache('wind_direction', self.__wind_direction)
-
-        if self.__wind_direction:
-            return True
-
-        with open(file_path, newline='') as csv_file:
-            csv_reader = csv.reader(csv_file, delimiter=';', quotechar='"')
-
-            for row in csv_reader:
-
-                station, date, typ, strength, direction, a, = row
-                station, date, typ, strength, direction = station.strip(), date.strip(), typ.strip(), strength.strip(), direction.strip()
-
-                if len(row) >= 5 and station == "282":
-                    date_time = datetime.datetime.strptime(date, "%Y%m%d%H")
-                    formatted_string = date_time.strftime("%d.%m.%Y %H")
-
-                    wind_direction = float(direction)
-                    self.__wind_direction[formatted_string] = wind_direction
-
-        self.__store_cache('wind_direction', self.__wind_direction)
-
-    def read_sun_hours(self, file_path):
-
-        self.__sun_hours = self.__load_cache('sun_hours', self.__sun_hours)
-
-        if self.__sun_hours:
-            return True
-
-        with open(file_path, newline='') as csv_file:
-            csv_reader = csv.reader(csv_file, delimiter=';', quotechar='"')
-
-            for row in csv_reader:
-
-                station, date, typ, sun_minutes, error = row
-                station, date, typ, sun_minutes, error = station.strip(), date.strip(), typ.strip(), sun_minutes.strip(), error.strip()
-
-                if len(row) >= 5 and station == "282":
-                    date_time = datetime.datetime.strptime(date, "%Y%m%d%H")
-                    formatted_string = date_time.strftime("%d.%m.%Y")
-                    sun_minutes = float(sun_minutes)
-
-                    if sun_minutes:
-                        sun_minutes = sun_minutes / 60.0
-
-                    if formatted_string in self.__sun_hours:
-                        self.__sun_hours[formatted_string] += sun_minutes
-                    else:
-                        self.__sun_hours[formatted_string] = sun_minutes
-
-        self.__store_cache('sun_hours', self.__sun_hours)
-
-    def read_precipitation_amount(self, file_path):
-
-        self.__precipitation_amount = self.__load_cache('precipitation_amount', self.__precipitation_amount)
-
-        if self.__precipitation_amount:
-            return True
-
-        with open(file_path, newline='') as csv_file:
-            csv_reader = csv.reader(csv_file, delimiter=';', quotechar='"')
-
-            for row in csv_reader:
-
-                station, date, typ, precipitation_amount, a, b, error = row
-                station, date, typ, precipitation_amount, error = station.strip(), date.strip(), typ.strip(), precipitation_amount.strip(), error.strip()
-
-                if len(row) >= 5 and station == "282":
-                    date_time = datetime.datetime.strptime(date, "%Y%m%d%H")
-                    formatted_string = date_time.strftime("%d.%m.%Y")
-                    precipitation_amount = float(precipitation_amount)
-
-                    if formatted_string in self.__precipitation_amount:
-                        self.__precipitation_amount[formatted_string] += precipitation_amount
-                    else:
-                        self.__precipitation_amount[formatted_string] = precipitation_amount
-
-        self.__store_cache('precipitation_amount', self.__precipitation_amount)
-
-    def read_ground_temperature(self, file_path):
-
-        self.__ground_temperature_5 = self.__load_cache('ground_temperature_5', self.__ground_temperature_5)
-        self.__ground_temperature_10 = self.__load_cache('ground_temperature_10',
-                                                         self.__ground_temperature_10)
-        self.__ground_temperature_20 = self.__load_cache('ground_temperature_20',
-                                                         self.__ground_temperature_20)
-        self.__ground_temperature_50 = self.__load_cache('ground_temperature_50',
-                                                         self.__ground_temperature_50)
-        self.__ground_temperature_100 = self.__load_cache('ground_temperature_100',
-                                                          self.__ground_temperature_100)
-
-        if self.__ground_temperature_5 and self.__ground_temperature_10 and self.__ground_temperature_20 and self.__ground_temperature_50 and self.__ground_temperature_100:
-            return True
-
-        with open(file_path, newline='') as csv_file:
-            csv_reader = csv.reader(csv_file, delimiter=';', quotechar='"')
-
-            for row in csv_reader:
-
-                station, date, typ, temp2, temp5, temp10, temp20, temp50, temp100, e = row
-                station, date, typ, temp2, temp5, temp10, temp20, temp50, temp100 = station.strip(), date.strip(), typ.strip(), temp2.strip(), temp5.strip(), temp10.strip(), temp20.strip(), temp50.strip(), temp100.strip()
-
-                if len(row) >= 5 and station == "282":
-                    date_time = datetime.datetime.strptime(date, "%Y%m%d%H")
-                    formatted_string = date_time.strftime("%d.%m.%Y %H")
-
-                    ground_temperature_5 = float(temp5)
-                    ground_temperature_10 = float(temp10)
-                    ground_temperature_20 = float(temp20)
-                    ground_temperature_50 = float(temp50)
-                    ground_temperature_100 = float(temp100)
-
-                    self.__ground_temperature_5[formatted_string] = ground_temperature_5
-                    self.__ground_temperature_10[formatted_string] = ground_temperature_10
-                    self.__ground_temperature_20[formatted_string] = ground_temperature_20
-                    self.__ground_temperature_50[formatted_string] = ground_temperature_50
-                    self.__ground_temperature_100[formatted_string] = ground_temperature_100
-
-        self.__store_cache('ground_temperature_5', self.__ground_temperature_5)
-        self.__store_cache('ground_temperature_10', self.__ground_temperature_10)
-        self.__store_cache('ground_temperature_20', self.__ground_temperature_20)
-        self.__store_cache('ground_temperature_50', self.__ground_temperature_50)
-        self.__store_cache('ground_temperature_100', self.__ground_temperature_100)
 
     def read_raw_data(self, import_file):
         with open(import_file, newline='') as csv_file:
@@ -251,7 +35,7 @@ class FishDatabase:
                 else:
                     logger.warning("Fish with wrong parameter set was ignored. | Data: {}".format(row))
 
-        logger.info("Fish container was extracted correctly form CSV file. | Filename: {}".format(import_file))
+        logger.info("Fish dataset was extracted correctly form CSV file. | Filename: {}".format(import_file))
 
     def add_fish(self, fish_type, date_time):
 
@@ -272,11 +56,11 @@ class FishDatabase:
             self.__added_counter += 1
 
             logger.debug(
-                "New Fish was added to the container set. | Data: {}".format(value))
+                "New Fish was added to the dataset set. | Data: {}".format(value))
 
             logger.info(
-                "New Fish was added to the container set. | Class: {} | Catch Date: {}".format(fish_type,
-                                                                                          full_string))
+                "New Fish was added to the dataset set. | Class: {} | Catch Date: {}".format(fish_type,
+                                                                                             full_string))
         else:
             logger.warning(
                 "Fish with wrong attributes was identified. | Year: {} | Class: {}".format(date_time_year,
@@ -370,10 +154,10 @@ class FishDatabase:
             ]
 
             logger.debug(
-                "Fish container was extracted correctly. | Class: {} Catch Date: {} Data: {}".format(fish_type,
-                                                                                                datum_string,
-                                                                                                str(
-                                                                                                    return_list)))
+                "Fish dataset was extracted correctly. | Class: {} Catch Date: {} Data: {}".format(fish_type,
+                                                                                                   datum_string,
+                                                                                                   str(
+                                                                                                       return_list)))
         else:
             return_list = []
 
@@ -413,46 +197,6 @@ class FishDatabase:
         logger.info(
             "ARFF File content was correctly built.")
 
-    def process_data_attributes(self):
-        counter = 0
-
-        for fish_type, datum_string, datum_hour_string, hour_24_int, date_int in self.__fish_catch_values:
-
-            one_data_point = []
-
-            for previous_day in range(0, settings.MAX_PREVIOUS_DAYS):
-                current_date = self.__get_previous_date(datum_string, previous_day)
-                current_hour_date = self.__get_previous_hour_date(datum_hour_string, previous_day)
-
-                data_value_tuples = self.__get_data_values(fish_type, current_hour_date,
-                                                           current_date, str(previous_day))
-
-                data_points = [value for key, value in data_value_tuples]
-
-                if not counter:
-                    day_labels = [key for key, value in data_value_tuples]
-                    self.__arff_label_list.extend(day_labels)
-
-                one_data_point.extend(data_points)
-
-            if one_data_point:
-                data_value_tuples = self.__get_class_values(fish_type, hour_24_int, date_int)
-                data_points = [value for key, value in data_value_tuples]
-
-                if not counter:
-                    class_labels = [key for key, value in data_value_tuples]
-                    self.__arff_label_list.extend(class_labels)
-
-                one_data_point.extend(data_points)
-
-                self.__arff_data_list.append(one_data_point)
-
-            counter += 1
-
-    #    def get_dataframe(self):
-    #        for row in self.__arff_data_list:
-    #           pass
-
     def print_arff_content(self):
         for row in self.__output_line_list:
             print(row)
@@ -473,27 +217,7 @@ class FishDatabase:
 
 fish_database = FishDatabase()
 
-fish_database.read_raw_data('rawdata/fish_database.csv')
-
-fish_database.read_water_temperature('weather_data/water_temperature/wassertemperatur_603100044.csv')
-
-fish_database.read_air_temperature(
-    'weather_data/relativ_humidity_air_temperature/produkt_tu_stunde_19490101_20171231_00282.txt')
-
-fish_database.read_relative_humidity(
-    'weather_data/relativ_humidity_air_temperature/produkt_tu_stunde_19490101_20171231_00282.txt')
-
-fish_database.read_ground_temperature(
-    'weather_data/ground_temperature/produkt_eb_stunde_19490101_20171231_00282.txt')
-
-fish_database.read_wind_strength('weather_data/wind_strength/produkt_ff_stunde_19490101_20171231_00282.txt')
-
-fish_database.read_wind_direction('weather_data/wind_strength/produkt_ff_stunde_19490101_20171231_00282.txt')
-
-fish_database.read_sun_hours('weather_data/sun_hours/produkt_sd_stunde_19490101_20171231_00282.txt')
-
-fish_database.read_precipitation_amount(
-    'weather_data/precipitation_amount/produkt_rr_stunde_19490101_20171231_00282.txt')
+fish_database.read_raw_data('fishdata/fish_database.csv')
 
 fish_database.process_data_attributes()
 
