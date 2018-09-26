@@ -16,6 +16,25 @@ from dataset.ground_temperature import GroundTemperature50
 from dataset.ground_temperature import GroundTemperature100
 from dataset.record_date_hour import RecordDateHour
 
+from fishdata.catch_date import CatchDate
+from fishdata.fish_type import FishType
+from fishdata.catch_hour import CatchHour
+from fishdata.catch_month import CatchMonth
+
+# data attributes form the fish database
+catch_date = CatchDate()
+catch_date_series = catch_date.get_series()
+
+fish_type = FishType()
+fish_type_series = fish_type.get_series()
+
+catch_hour = CatchHour()
+catch_hour_series = catch_hour.get_series()
+
+catch_month = CatchMonth()
+catch_month_series = catch_month.get_series()
+
+# data attributes form the environment data
 record_date_hour = RecordDateHour()
 record_date_hour_series = record_date_hour.get_series()
 
@@ -55,7 +74,12 @@ ground_temperature_50_series = ground_temperature_50.get_series()
 ground_temperature_100 = GroundTemperature100()
 ground_temperature_100_series = ground_temperature_100.get_series()
 
-data_set = {air_temperature.data_name: air_temperature_series,
+data_set = {catch_date.data_name: catch_date_series,
+            fish_type.data_name: fish_type_series,
+            catch_hour.data_name: catch_hour_series,
+            catch_month.data_name: catch_month_series,
+
+            air_temperature.data_name: air_temperature_series,
             water_temperature.data_name: water_temperature_series,
             wind_direction.data_name: wind_direction_series,
             precipitation_amount.data_name: precipitation_amount_series,
@@ -90,9 +114,8 @@ def remove_outliers(std_factor, panda_object):
     return panda_object
 
 
-def print_plots(panda_object):
+def print_hist(panda_object):
     data_values = panda_object.get_values()
-
     plt.hist(data_values)
 
 
@@ -103,7 +126,6 @@ air_temperature_year_2017_filterd = remove_outliers(3, air_temperature_year_2017
 
 # data_temp_hoch = data_year_2017.query('air_temperature > 28')
 # data_temp_hoch.plot.line()
-
 
 x_values = list(air_temperature_year_2017_filterd.index.get_values())
 y_values = list(air_temperature_year_2017_filterd)
