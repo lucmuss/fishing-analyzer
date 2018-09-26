@@ -7,11 +7,11 @@ from settings import MAXIMAL_SERIES_END_YEAR
 from dataset.data_cache import DataCache
 
 
-class WaterTemperature:
-    location = 'weather_data/water_temperature/wassertemperatur_603100044.csv'
+class RecordDateHour:
+    location = 'weather_data/relativ_humidity_air_temperature/produkt_tu_stunde_19490101_20171231_00282.txt'
     __data_cache = DataCache()
     __data_dict = dict()
-    data_name = 'water_temperature'
+    data_name = 'record_date_hour'
 
     def __init__(self):
         self.__init_data()
@@ -43,20 +43,17 @@ class WaterTemperature:
         return reduced_series
 
     def __read(self):
-        with open(self.location, newline='') as csv_file:
+        with open(self.location,
+                  newline='') as csv_file:
             csv_reader = csv.reader(csv_file, delimiter=';', quotechar='"')
 
             for row in csv_reader:
-                if len(row) >= 3 and row[2] == "Rohdaten":
-                    date, temp, typ = row
-                    date_time = datetime.datetime.strptime(date, "%Y-%m-%d %H:%M")
+
+                station, date, typ, temperature, humidity, error = row
+                station, date, typ, temperature, humidity, error = station.strip(), date.strip(), typ.strip(), temperature.strip(), humidity.strip(), error.strip()
+
+                if len(row) >= 5 and station == "282":
+                    date_time = datetime.datetime.strptime(date, "%Y%m%d%H")
                     formatted_string = date_time.strftime("%Y-%m-%d %H:00:00")
 
-                    replaced_temp = temp.replace(',', '.')
-
-                    if not replaced_temp:
-                        replaced_temp = "0.0"
-                    float_temp = float(replaced_temp)
-
-                    self.__data_dict[formatted_string] = float_temp
-
+                    self.__data_dict[formatted_string] = formatted_string
