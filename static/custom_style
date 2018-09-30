@@ -1,0 +1,7 @@
+h1.superclass {
+font-style: italic;
+}
+
+h1 {
+font-size: 2em;
+}
