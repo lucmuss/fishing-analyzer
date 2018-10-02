@@ -2,10 +2,10 @@ import csv
 import datetime
 import pandas as pd
 
-from settings import MINIMAL_SERIES_START_YEAR
-from settings import MAXIMAL_SERIES_END_YEAR
+from config import MINIMAL_SERIES_START_YEAR
+from config import MAXIMAL_SERIES_END_YEAR
 
-from settings import ALLOWED_FISH_TYPES
+from config import ALLOWED_FISH_TYPES
 
 from dataset import custom_logger
 

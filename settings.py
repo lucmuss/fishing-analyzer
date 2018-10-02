@@ -1,6 +1,0 @@
-MAX_PREVIOUS_DAYS = 1
-
-ALLOWED_FISH_TYPES = ['Karpfen', 'Forelle', 'Brachse', 'Barbe', 'Aal', 'Hecht', 'Barsch', 'Zander']
-
-MINIMAL_SERIES_START_YEAR = "2013-01-01 00:00:00"
-MAXIMAL_SERIES_END_YEAR = "2017-12-31 00:00:00"

@@ -1,8 +1,8 @@
 import csv
 import datetime
 import pandas as pd
-from settings import MINIMAL_SERIES_START_YEAR
-from settings import MAXIMAL_SERIES_END_YEAR
+from config import MINIMAL_SERIES_START_YEAR
+from config import MAXIMAL_SERIES_END_YEAR
 
 from dataset.data_cache import DataCache
 

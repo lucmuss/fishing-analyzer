@@ -1,8 +1,8 @@
 import csv
 import datetime
 import pandas as pd
-from settings import MINIMAL_SERIES_START_YEAR
-from settings import MAXIMAL_SERIES_END_YEAR
+from config import MINIMAL_SERIES_START_YEAR
+from config import MAXIMAL_SERIES_END_YEAR
 
 from dataset.data_cache import DataCache
 
@@ -43,18 +43,18 @@ class WindStrength:
         return reduced_series
 
     def __read(self):
-        with open(self.location,
-                  newline='') as csv_file:
+
+        with open(self.location, newline='') as csv_file:
             csv_reader = csv.reader(csv_file, delimiter=';', quotechar='"')
 
             for row in csv_reader:
 
-                station, date, typ, temperature, humidity, error = row
-                station, date, typ, temperature, humidity, error = station.strip(), date.strip(), typ.strip(), temperature.strip(), humidity.strip(), error.strip()
+                station, date, typ, strength, direction, a, = row
+                station, date, typ, strength, direction = station.strip(), date.strip(), typ.strip(), strength.strip(), direction.strip()
 
                 if len(row) >= 5 and station == "282":
                     date_time = datetime.datetime.strptime(date, "%Y%m%d%H")
                     formatted_string = date_time.strftime("%Y-%m-%d %H:00:00")
 
-                    float_temp = float(temperature)
-                    self.__data_dict[formatted_string] = float_temp
+                    wind_strength = float(strength)
+                    self.__data_dict[formatted_string] = wind_strength
