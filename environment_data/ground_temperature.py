@@ -4,7 +4,7 @@ import pandas as pd
 from config import MINIMAL_SERIES_START_YEAR
 from config import MAXIMAL_SERIES_END_YEAR
 
-from dataset.data_cache import DataCache
+from environment_data.data_cache import DataCache
 
 
 class GroundTemperature5:

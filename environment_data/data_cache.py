@@ -1,7 +1,7 @@
 import os
 import pickle
 
-from dataset import custom_logger
+from environment_data import custom_logger
 
 custom_logger = custom_logger.CustomLogger()
 logger = custom_logger.get_logger(__name__)

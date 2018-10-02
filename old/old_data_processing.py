@@ -1,7 +1,7 @@
 import csv
 import datetime
 import config
-from dataset import custom_logger
+from environment_data import custom_logger
 
 custom_logger = custom_logger.CustomLogger()
 logger = custom_logger.get_logger(__name__)
@@ -35,7 +35,7 @@ class FishDatabase:
                 else:
                     logger.warning("Fish with wrong parameter set was ignored. | Data: {}".format(row))
 
-        logger.info("Fish dataset was extracted correctly form CSV file. | Filename: {}".format(import_file))
+        logger.info("Fish environment_data was extracted correctly form CSV file. | Filename: {}".format(import_file))
 
     def add_fish(self, fish_type, date_time):
 
@@ -56,10 +56,10 @@ class FishDatabase:
             self.__added_counter += 1
 
             logger.debug(
-                "New Fish was added to the dataset set. | Data: {}".format(value))
+                "New Fish was added to the environment_data set. | Data: {}".format(value))
 
             logger.info(
-                "New Fish was added to the dataset set. | Class: {} | Catch Date: {}".format(fish_type,
+                "New Fish was added to the environment_data set. | Class: {} | Catch Date: {}".format(fish_type,
                                                                                              full_string))
         else:
             logger.warning(
@@ -154,7 +154,7 @@ class FishDatabase:
             ]
 
             logger.debug(
-                "Fish dataset was extracted correctly. | Class: {} Catch Date: {} Data: {}".format(fish_type,
+                "Fish environment_data was extracted correctly. | Class: {} Catch Date: {} Data: {}".format(fish_type,
                                                                                                    datum_string,
                                                                                                    str(
                                                                                                        return_list)))
@@ -217,7 +217,7 @@ class FishDatabase:
 
 fish_database = FishDatabase()
 
-fish_database.read_raw_data('fishdata/fish_database.csv')
+fish_database.read_raw_data('fish_data/fish_database.csv')
 
 fish_database.process_data_attributes()
 

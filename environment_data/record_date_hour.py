@@ -4,14 +4,14 @@ import pandas as pd
 from config import MINIMAL_SERIES_START_YEAR
 from config import MAXIMAL_SERIES_END_YEAR
 
-from dataset.data_cache import DataCache
+from environment_data.data_cache import DataCache
 
 
-class AirTemperature:
+class RecordDateHour:
     location = 'weather_data/relativ_humidity_air_temperature/produkt_tu_stunde_19490101_20171231_00282.txt'
     __data_cache = DataCache()
     __data_dict = dict()
-    data_name = 'air_temperature'
+    data_name = 'record_date_hour'
 
     def __init__(self):
         self.__init_data()
@@ -56,5 +56,4 @@ class AirTemperature:
                     date_time = datetime.datetime.strptime(date, "%Y%m%d%H")
                     formatted_string = date_time.strftime("%Y-%m-%d %H:00:00")
 
-                    float_temp = float(temperature)
-                    self.__data_dict[formatted_string] = float_temp
+                    self.__data_dict[formatted_string] = formatted_string

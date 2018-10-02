@@ -5,10 +5,17 @@ import pandas as pd
 from config import MINIMAL_SERIES_START_YEAR
 from config import MAXIMAL_SERIES_END_YEAR
 
+from config import ALLOWED_FISH_TYPES
 
-class CatchHour:
-    location = 'fishdata/fish_database.csv'
-    data_name = 'fish_catch_hour'
+from environment_data import custom_logger
+
+custom_logger = custom_logger.CustomLogger()
+logger = custom_logger.get_logger(__name__)
+
+
+class FishType:
+    location = 'fish_data/fish_database.csv'
+    data_name = 'fish_type'
 
     __data_dict = dict()
     __fish_catch_values = list()
@@ -49,11 +56,11 @@ class CatchHour:
                 fish_type, date, hour = fish_type.strip(), date.strip(), hour.strip()
 
                 if len(row) >= 3:
-                    full_date_string = date + "-" + hour
 
-                    date_time = datetime.datetime.strptime(full_date_string, "%d.%m.%Y-%H:%M:%S")
+                    if fish_type in ALLOWED_FISH_TYPES:
+                        full_date_string = date + "-" + hour
 
-                    formatted_string = date_time.strftime("%Y-%m-%d %H:00:00")
-                    catch_hour = date_time.strftime("%H")
+                        date_time = datetime.datetime.strptime(full_date_string, "%d.%m.%Y-%H:%M:%S")
+                        formatted_string = date_time.strftime("%Y-%m-%d %H:00:00")
 
-                    self.__data_dict[formatted_string] = catch_hour
+                        self.__data_dict[formatted_string] = fish_type

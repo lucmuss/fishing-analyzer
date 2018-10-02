@@ -1,34 +1,31 @@
 import csv
 import datetime
 import pandas as pd
-
 from config import MINIMAL_SERIES_START_YEAR
 from config import MAXIMAL_SERIES_END_YEAR
 
-from config import ALLOWED_FISH_TYPES
-
-from dataset import custom_logger
-
-custom_logger = custom_logger.CustomLogger()
-logger = custom_logger.get_logger(__name__)
+from environment_data.data_cache import DataCache
 
 
-class FishType:
-    location = 'fishdata/fish_database.csv'
-    data_name = 'fish_type'
-
+class WaterTemperature:
+    location = 'weather_data/water_temperature/wassertemperatur_603100044.csv'
+    __data_cache = DataCache()
     __data_dict = dict()
-    __fish_catch_values = list()
+    data_name = 'water_temperature'
 
     def __init__(self):
         self.__init_data()
 
     def __init_data(self):
 
+        self.__data_dict = self.__data_cache.load_cache(self.data_name, self.__data_dict)
+
         if self.__data_dict:
             return True
 
         self.__read()
+
+        self.__data_cache.store_cache(self.data_name, self.__data_dict)
 
     def get_dict(self):
         return self.__data_dict
@@ -41,7 +38,6 @@ class FishType:
         data_values = list(self.__data_dict.values())
         index_values = list(self.__data_dict.keys())
         series = pd.Series(data_values, index=index_values, name=self.data_name)
-        series = series.sort_index()
 
         reduced_series = series[MINIMAL_SERIES_START_YEAR:MAXIMAL_SERIES_END_YEAR]
         return reduced_series
@@ -51,16 +47,16 @@ class FishType:
             csv_reader = csv.reader(csv_file, delimiter=';', quotechar='"')
 
             for row in csv_reader:
+                if len(row) >= 3 and row[2] == "Rohdaten":
+                    date, temp, typ = row
+                    date_time = datetime.datetime.strptime(date, "%Y-%m-%d %H:%M")
+                    formatted_string = date_time.strftime("%Y-%m-%d %H:00:00")
 
-                fish_type, date, hour = row
-                fish_type, date, hour = fish_type.strip(), date.strip(), hour.strip()
+                    replaced_temp = temp.replace(',', '.')
 
-                if len(row) >= 3:
+                    if not replaced_temp:
+                        replaced_temp = "0.0"
+                    float_temp = float(replaced_temp)
 
-                    if fish_type in ALLOWED_FISH_TYPES:
-                        full_date_string = date + "-" + hour
+                    self.__data_dict[formatted_string] = float_temp
 
-                        date_time = datetime.datetime.strptime(full_date_string, "%d.%m.%Y-%H:%M:%S")
-                        formatted_string = date_time.strftime("%Y-%m-%d %H:00:00")
-
-                        self.__data_dict[formatted_string] = fish_type

@@ -4,14 +4,14 @@ import pandas as pd
 from config import MINIMAL_SERIES_START_YEAR
 from config import MAXIMAL_SERIES_END_YEAR
 
-from dataset.data_cache import DataCache
+from environment_data.data_cache import DataCache
 
 
-class PrecipitationAmount:
-    location = 'weather_data/precipitation_amount/produkt_rr_stunde_19490101_20171231_00282.txt'
+class SunHours:
+    location = 'weather_data/sun_hours/produkt_sd_stunde_19490101_20171231_00282.txt'
     __data_cache = DataCache()
     __data_dict = dict()
-    data_name = 'precipitation_amount'
+    data_name = 'sun_hours'
 
     def __init__(self):
         self.__init_data()
@@ -48,15 +48,18 @@ class PrecipitationAmount:
 
             for row in csv_reader:
 
-                station, date, typ, precipitation_amount, a, b, error = row
-                station, date, typ, precipitation_amount, error = station.strip(), date.strip(), typ.strip(), precipitation_amount.strip(), error.strip()
+                station, date, typ, sun_minutes, error = row
+                station, date, typ, sun_minutes, error = station.strip(), date.strip(), typ.strip(), sun_minutes.strip(), error.strip()
 
                 if len(row) >= 5 and station == "282":
                     date_time = datetime.datetime.strptime(date, "%Y%m%d%H")
                     formatted_string = date_time.strftime("%Y-%m-%d %H:00:00")
-                    precipitation_amount = float(precipitation_amount)
+                    sun_minutes = float(sun_minutes)
+
+                    if sun_minutes:
+                        sun_minutes = sun_minutes / 60.0
 
                     if formatted_string in self.__data_dict:
-                        self.__data_dict[formatted_string] += precipitation_amount
+                        self.__data_dict[formatted_string] += sun_minutes
                     else:
-                        self.__data_dict[formatted_string] = precipitation_amount
+                        self.__data_dict[formatted_string] = sun_minutes

@@ -6,9 +6,9 @@ from config import MINIMAL_SERIES_START_YEAR
 from config import MAXIMAL_SERIES_END_YEAR
 
 
-class CatchMonth:
-    location = 'fishdata/fish_database.csv'
-    data_name = 'fish_catch_month'
+class CatchHour:
+    location = 'fish_data/fish_database.csv'
+    data_name = 'fish_catch_hour'
 
     __data_dict = dict()
     __fish_catch_values = list()
@@ -54,6 +54,6 @@ class CatchMonth:
                     date_time = datetime.datetime.strptime(full_date_string, "%d.%m.%Y-%H:%M:%S")
 
                     formatted_string = date_time.strftime("%Y-%m-%d %H:00:00")
-                    catch_month = date_time.strftime("%m")
+                    catch_hour = date_time.strftime("%H")
 
-                    self.__data_dict[formatted_string] = catch_month
+                    self.__data_dict[formatted_string] = catch_hour
