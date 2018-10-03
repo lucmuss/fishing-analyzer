@@ -49,6 +49,8 @@ def generate_day_options(fish_data):
 text_description = '''The data set was collected form different kinds 
 of fish catches in the river Baunach.'''
 
+text_header = 'Visualization of Environmental Data of the River Baunach'
+
 year_options = generate_year_options(fish_data)
 default_year = '2017'
 
@@ -72,7 +74,7 @@ default_data_graph_graph_title = "{} {}".format(default_attribute, default_year)
 
 layout = html.Div(children=[
 
-    html.H2(children='Visualization of Environmental Data of the River Baunach'),
+    html.H2(children=text_header),
 
     dcc.Markdown(children=text_description),
 

@@ -3,7 +3,6 @@ import dash_html_components as html
 import dash_core_components as dcc
 
 from data_model import fish_data
-from dash_apps.environmental_data import text_description
 from dash_apps.environmental_data import default_year
 from dash_apps.environmental_data import default_attribute
 from dash_apps.environmental_data import year_options
@@ -23,6 +22,11 @@ def exract_data_values(year, attribute, month_statistics):
     return x_values, y_values
 
 
+text_description = '''The data set was collected form different kinds 
+of fish catches in the river Baunach.'''
+
+text_header = 'Visualization of the Month Statistics of the River Baunach'
+
 month_statistics = fish_data.get_month_statistics()
 
 default_month_statistics_graph_name = "{}".format(default_attribute)
@@ -34,7 +38,7 @@ default_month_statistics_x_values, default_month_statistics_y_values = exract_da
 
 layout = html.Div(children=[
 
-    html.H2(children='Visualization of Environmental Data of the River Baunach'),
+    html.H2(children=text_header),
 
     dcc.Markdown(children=text_description),
 
