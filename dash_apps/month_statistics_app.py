@@ -3,11 +3,11 @@ import dash_html_components as html
 import dash_core_components as dcc
 
 from data_model import fish_data
-from dash_apps.environmental_data import default_year
-from dash_apps.environmental_data import default_attribute
-from dash_apps.environmental_data import year_options
-from dash_apps.environmental_data import attribute_options
-from app import app
+from dash_apps.environmental_data_app import default_year
+from dash_apps.environmental_data_app import default_attribute
+from dash_apps.environmental_data_app import year_options
+from dash_apps.environmental_data_app import attribute_options
+from dash_main_app import app
 
 month_dict = fish_data.get_month_dict()
 get_month_name = lambda month_index: month_dict[str(month_index)]
@@ -41,8 +41,6 @@ layout = html.Div(children=[
     html.H2(children=text_header),
 
     dcc.Markdown(children=text_description),
-
-    dcc.Link('Go to Environmental Data', href='/apps/environmental_data'),
 
     html.Div(children=[
 

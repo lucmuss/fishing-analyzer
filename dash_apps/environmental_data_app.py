@@ -3,8 +3,7 @@ import dash_html_components as html
 import dash_core_components as dcc
 
 from data_model import fish_data
-from app import app
-
+from dash_main_app import app
 
 def generate_year_options(fish_data):
     return_list = list()
@@ -77,8 +76,6 @@ layout = html.Div(children=[
     html.H2(children=text_header),
 
     dcc.Markdown(children=text_description),
-
-    dcc.Link('Go to Month Statistics', href='/apps/month_statistics'),
 
     html.Div(children=[
 
