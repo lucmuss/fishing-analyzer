@@ -2,21 +2,18 @@ from dash.dependencies import Input, Output
 import dash_html_components as html
 import dash_core_components as dcc
 
-from data_model import fish_data
-from dash_apps.environmental_data_app import default_year
-from dash_apps.environmental_data_app import default_attribute
-from dash_apps.environmental_data_app import year_options
-from dash_apps.environmental_data_app import attribute_options
-from dash_main_app import app
+import config
+from index import fish_data
+from index import dash_app
 
-month_dict = fish_data.get_month_dict()
-get_month_name = lambda month_index: month_dict[str(month_index)]
+from apps.visualisation.environmental_data import generate_year_options
+from apps.visualisation.environmental_data import generate_attribute_options
 
 
-def exract_data_values(year, attribute, month_statistics):
+def extract_data_values(year, attribute, month_statistics):
     data_dict = month_statistics[(year, attribute)]
 
-    x_values = [get_month_name(month_index) for month_index in data_dict.keys()]
+    x_values = [config.get_month_name(month_index) for month_index in data_dict.keys()]
     y_values = [mean_value for mean_value, sum_values in data_dict.values()]
 
     return x_values, y_values
@@ -27,14 +24,18 @@ of fish catches in the river Baunach.'''
 
 text_header = 'Visualization of the Month Statistics of the River Baunach'
 
-month_statistics = fish_data.get_month_statistics()
+month_statistics = fish_data.month_statistics
 
-default_month_statistics_graph_name = "{}".format(default_attribute)
-default_month_statistics_graph_title = "{} {}".format(default_attribute, default_year)
+default_graph_name = "{}".format(config.DEFAULT_ATTRIBUTE)
+default_graph_title = "{} {}".format(config.DEFAULT_ATTRIBUTE, config.DEFAULT_YEAR)
 
-default_month_statistics_x_values, default_month_statistics_y_values = exract_data_values(default_year,
-                                                                                          default_attribute,
-                                                                                          month_statistics)
+year_options = generate_year_options()
+default_year = config.DEFAULT_YEAR
+
+attribute_options = generate_attribute_options(fish_data)
+default_attribute = config.DEFAULT_ATTRIBUTE
+
+default_x_values, default_y_values = extract_data_values(default_year, default_attribute, month_statistics)
 
 layout = html.Div(children=[
 
@@ -65,12 +66,12 @@ layout = html.Div(children=[
 
         figure={
             'data': [
-                {'x': default_month_statistics_x_values, 'y': default_month_statistics_y_values,
+                {'x': default_x_values, 'y': default_y_values,
                  'type': 'bar',
-                 'name': default_month_statistics_graph_name},
+                 'name': default_graph_name},
             ],
             'layout': {
-                'title': default_month_statistics_graph_title
+                'title': default_graph_title
             }
         }
     )
@@ -78,12 +79,12 @@ layout = html.Div(children=[
 ])
 
 
-@app.callback(
+@dash_app.callback(
     Output('month_statistics', 'figure'),
     [Input('month_statistics_year_selection', 'value'),
      Input('month_statistics_attribute_selection', 'value')])
 def update_month_statistics(year_value, attribute_name):
-    x_values, y_values = exract_data_values(year_value, attribute_name, month_statistics)
+    x_values, y_values = extract_data_values(year_value, attribute_name, month_statistics)
 
     graph_name = "{}".format(attribute_name)
 

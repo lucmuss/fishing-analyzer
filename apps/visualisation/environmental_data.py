@@ -1,14 +1,17 @@
-from dash.dependencies import Input, Output
 import dash_html_components as html
 import dash_core_components as dcc
+from dash.dependencies import Input, Output
 
-from data_model import fish_data
-from dash_main_app import app
+import config
+from index import dash_app
+from index import fish_data
+from data.model import series_to_graph
 
-def generate_year_options(fish_data):
+
+def generate_year_options():
     return_list = list()
 
-    for year in fish_data.get_year_list():
+    for year in config.YEAR_LIST:
         year_name = 'Year: {}'.format(year.title())
         return_list.append({'label': year_name, 'value': str(year)})
 
@@ -18,27 +21,27 @@ def generate_year_options(fish_data):
 def generate_attribute_options(fish_data):
     return_list = list()
 
-    for attribute in fish_data.get_plotable_attributes():
+    for attribute in fish_data.plotable_attributes:
         attribute_name = 'Attribute: {}'.format(attribute.title().replace('_', ' '))
         return_list.append({'label': attribute_name, 'value': str(attribute)})
 
     return return_list
 
 
-def generate_month_options(fish_data):
+def generate_month_options():
     return_list = list()
 
-    for month_index, month_name in fish_data.get_month_dict().items():
+    for month_index, month_name in config.MONTH_DICT.items():
         month_name_label = 'Monat: {}'.format(month_name.title())
         return_list.append({'label': month_name_label, 'value': str(month_index)})
 
     return return_list
 
 
-def generate_day_options(fish_data):
+def generate_day_options():
     return_list = list()
 
-    for day_index, day_value in fish_data.get_day_dict().items():
+    for day_index, day_value in config.MONTH_DAYS_DICT.items():
         month_name_label = 'Tag: {}'.format(day_index)
         return_list.append({'label': month_name_label, 'value': str(day_index)})
 
@@ -50,26 +53,26 @@ of fish catches in the river Baunach.'''
 
 text_header = 'Visualization of Environmental Data of the River Baunach'
 
-year_options = generate_year_options(fish_data)
-default_year = '2017'
+year_options = generate_year_options()
+default_year = config.DEFAULT_YEAR
 
 attribute_options = generate_attribute_options(fish_data)
-default_attribute = 'water_temperature'
+default_attribute = config.DEFAULT_ATTRIBUTE
 
-month_options = generate_month_options(fish_data)
-default_month = ''
+month_options = generate_month_options()
+default_month = config.DEFAULT_MONTH
 
-day_options = generate_day_options(fish_data)
-default_day = ''
+day_options = generate_day_options()
+default_day = config.DEFAULT_DAY
 
 default_data_selection = fish_data.get_frame_by_year(default_year)
 
-default_data_graph_data_series = default_data_selection[default_attribute]
-default_data_graph_x_values = list(default_data_graph_data_series.index.get_values())
-default_data_graph_y_values = list(default_data_graph_data_series.get_values())
+default_data_series = default_data_selection[default_attribute]
 
-default_data_graph_graph_name = "{}".format(default_attribute)
-default_data_graph_graph_title = "{} {}".format(default_attribute, default_year)
+default_x_values, default_y_values = series_to_graph(default_data_series)
+
+default_graph_name = "{}".format(default_attribute)
+default_graph_title = "{} {}".format(default_attribute, default_year)
 
 layout = html.Div(children=[
 
@@ -114,11 +117,11 @@ layout = html.Div(children=[
 
         figure={
             'data': [
-                {'x': default_data_graph_x_values, 'y': default_data_graph_y_values, 'type': 'line',
-                 'name': default_data_graph_graph_name},
+                {'x': default_x_values, 'y': default_y_values, 'type': 'line',
+                 'name': default_graph_name},
             ],
             'layout': {
-                'title': default_data_graph_graph_title
+                'title': default_graph_title
             }
         }
     )
@@ -126,7 +129,7 @@ layout = html.Div(children=[
 ])
 
 
-@app.callback(
+@dash_app.callback(
     Output('data_graph', 'figure'),
     [Input('data_graph_year_selection', 'value'),
      Input('data_graph_month_selection', 'value'),
@@ -144,8 +147,7 @@ def update_data_graph(year_value, month_value, day_value, attribute_name):
 
     data_series = data_selection[attribute_name]
 
-    x_values = list(data_series.index.get_values())
-    y_values = list(data_series.get_values())
+    x_values, y_values = series_to_graph(data_series)
 
     graph_name = "{}".format(attribute_name)
 
