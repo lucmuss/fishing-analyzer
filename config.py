@@ -7,6 +7,10 @@ ALLOWED_FISH_TYPES = ['Karpfen', 'Forelle', 'Brachse', 'Barbe', 'Aal', 'Hecht', 
 MINIMAL_SERIES_START_YEAR = "2013-01-01 00:00:00"
 MAXIMAL_SERIES_END_YEAR = "2017-12-31 00:00:00"
 
+CATCH_DATE_FORMAT = "%Y-%m-%d %H:00:00"
+
+HISTOGRAM_BINS = 10
+
 STANDARD_DEVIATION_FACTOR = 3.0
 
 
@@ -62,3 +66,19 @@ DEFAULT_YEAR = '2017'
 DEFAULT_MONTH = ''
 
 get_month_name = lambda month_index: MONTH_DICT[str(month_index)]
+
+DATABASE_NAME = 'fish_db'
+
+DATABASE_COLLECTION_NAME = 'fish_records'
+
+get_database_document = lambda fish_type, catch_date,: {"fish_type": fish_type, "catch_date": catch_date}
+
+
+def attribute_to_name(attribute_name):
+    attribute_list = attribute_name.split('_')
+
+    attribute_list = [attribute.title() for attribute in attribute_list]
+
+    attribute_title = ' '.join(attribute_list)
+
+    return attribute_title

@@ -1,10 +1,12 @@
-from dash.dependencies import Input, Output
 import dash_html_components as html
 import dash_core_components as dcc
+from dash.dependencies import Input, Output
 
 import config
-from index import fish_data
-from index import dash_app
+from index import app
+from data.model import FishStatisticModel
+
+fish_data = FishStatisticModel()
 
 from apps.visualisation.environmental_data import generate_year_options
 from apps.visualisation.environmental_data import generate_attribute_options
@@ -79,7 +81,7 @@ layout = html.Div(children=[
 ])
 
 
-@dash_app.callback(
+@app.callback(
     Output('month_statistics', 'figure'),
     [Input('month_statistics_year_selection', 'value'),
      Input('month_statistics_attribute_selection', 'value')])

@@ -3,10 +3,11 @@ import dash_core_components as dcc
 from dash.dependencies import Input, Output
 
 import config
-from index import dash_app
-from index import fish_data
+from index import app
 from data.model import series_to_graph
+from data.model import FishStatisticModel
 
+fish_data = FishStatisticModel()
 
 def generate_year_options():
     return_list = list()
@@ -129,7 +130,7 @@ layout = html.Div(children=[
 ])
 
 
-@dash_app.callback(
+@app.callback(
     Output('data_graph', 'figure'),
     [Input('data_graph_year_selection', 'value'),
      Input('data_graph_month_selection', 'value'),
