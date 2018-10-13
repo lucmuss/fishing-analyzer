@@ -9,7 +9,9 @@ MAXIMAL_SERIES_END_YEAR = "2017-12-31 00:00:00"
 
 CATCH_DATE_FORMAT = "%Y-%m-%d %H:00:00"
 
-HISTOGRAM_BINS = 10
+MINIMAL_CATCHED_FISHES = 2
+
+HISTOGRAM_BINS = 20
 
 STANDARD_DEVIATION_FACTOR = 3.0
 
@@ -82,3 +84,9 @@ def attribute_to_name(attribute_name):
     attribute_title = ' '.join(attribute_list)
 
     return attribute_title
+
+
+fish_and_attribute = lambda fish_type, attribute_name: "{}: {}".format(fish_type, attribute_name)
+
+DIAGRAM_HEIGTH = 720
+DIAGRAM_WIDTH = 1280
