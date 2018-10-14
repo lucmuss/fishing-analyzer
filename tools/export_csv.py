@@ -3,6 +3,7 @@ import datetime
 import csv
 import config
 
+
 def export_to_mongodb(data_base):
     location = "fish_database.csv"
 
@@ -26,4 +27,3 @@ def export_to_mongodb(data_base):
                     formatted_string = date_time.strftime(config.CATCH_DATE_FORMAT)
 
                     data_base.add_fish(fish_type, formatted_string)
-
