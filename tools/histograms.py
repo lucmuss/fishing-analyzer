@@ -5,12 +5,8 @@ import numpy
 
 import plotly.figure_factory as figure_factory
 
-from data.model import FishFrameModel
 
-fish_model = FishFrameModel()
-
-
-def store_histograms():
+def store_histograms(fish_model):
     for fish_type in config.ALLOWED_FISH_TYPES:
         fish_frame = fish_model.get_fish_frame(fish_type)
 
@@ -55,7 +51,7 @@ def store_histograms():
                     plotly.offline.plot(figure, filename=file_path, auto_open=False)
 
 
-def store_combined_histograms():
+def store_combined_histograms(fish_model):
     for fish_type in config.ALLOWED_FISH_TYPES:
         fish_frame = fish_model.get_fish_frame(fish_type)
 
@@ -115,7 +111,7 @@ def store_combined_histograms():
             plotly.offline.plot(figure, filename=file_path, auto_open=False)
 
 
-def store_distributions():
+def store_distributions(fish_model):
     for fish_type in config.ALLOWED_FISH_TYPES:
         fish_frame = fish_model.get_fish_frame(fish_type)
 
@@ -159,8 +155,3 @@ def store_distributions():
                     file_path = os.path.join(file_location, "{}.html".format(attribute))
 
                     plotly.offline.plot(figure, filename=file_path, auto_open=False)
-
-
-store_distributions()
-store_histograms()
-store_combined_histograms()

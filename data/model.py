@@ -43,17 +43,23 @@ def series_to_graph(panda_series):
     return x_values, y_values
 
 
-class BaseModel:
+class FishBaseModel:
+
+    def __init__(self, database_model):
+        fish_list = database_model.fish_list
+
+        # data attributes form the fish database
+        self.catch_date = CatchDate(fish_list)
+        self.fish_type = FishType(fish_list)
+        self.catch_hour = CatchHour(fish_list)
+        self.catch_month = CatchMonth(fish_list)
+
+
+class EnvironmentBaseModel:
 
     def __init__(self):
-        # data attributes form the fish database
-        self.catch_date = CatchDate()
-        self.fish_type = FishType()
-        self.catch_hour = CatchHour()
-        self.catch_month = CatchMonth()
-        self.record_date_hour = RecordDateHour()
-
         # data attributes form the environment data
+        self.record_date_hour = RecordDateHour()
         self.water_temperature = WaterTemperature()
         self.air_temperature = AirTemperature()
         self.wind_direction = WindDirection()
@@ -68,42 +74,17 @@ class BaseModel:
         self.ground_temperature_100 = GroundTemperature100()
 
 
-class DataFrameModel(BaseModel):
+class FullBaseModel:
+    def __init__(self, environment_model, fish_model):
+        self.environment_model = environment_model
+        self.fish_model = fish_model
+
+
+class DatabaseModel():
 
     def __init__(self):
-        BaseModel.__init__(self)
-
-        is_plotable = lambda series: (series.dtype == 'float64')
-
-        data_set = dict()
-        all_attributes = list()
-        plotable_attributes = list()
-
-        for attribute, value in self.__dict__.items():
-            series = value.series
-
-            all_attributes.append(value.attribute_name)
-
-            if is_plotable(series):
-                plotable_attributes.append(value.attribute_name)
-                series = remove_outliers(series)
-
-            data_set[value.attribute_name] = series
-
-        self.plotable_attributes = plotable_attributes
-        self.all_attributes = all_attributes
-
-        self.data_frame = pandas.DataFrame(data_set)
-
-
-class FishFrameModel(DataFrameModel):
-
-    def __init__(self):
-        DataFrameModel.__init__(self)
-
-        self.data_frame = self.data_frame.query("fish_type == fish_type")
-
         self.__initialize_mongo_db()
+        self.__fish_list = list()
 
     def __del__(self):
         self.mongo_client.close()
@@ -119,14 +100,6 @@ class FishFrameModel(DataFrameModel):
             self.mongo_db.create_collection(config.DATABASE_COLLECTION_NAME)
 
         self.mongo_collection = self.mongo_db.get_collection(config.DATABASE_COLLECTION_NAME)
-
-    def get_fish_frame(self, fish_type):
-        fish_data = self.data_frame
-
-        if fish_type in config.ALLOWED_FISH_TYPES:
-            fish_data = fish_data.query("fish_type == '{}'".format(fish_type))
-
-        return fish_data
 
     def add_fish(self, fish_type, catch_date):
         catch_date = datetime.datetime.strptime(catch_date, config.CATCH_DATE_FORMAT)
@@ -162,11 +135,77 @@ class FishFrameModel(DataFrameModel):
 
         return return_value
 
+    @property
+    def fish_list(self):
 
-class FishStatisticModel(DataFrameModel):
+        if not self.__fish_list:
+            cursor = self.mongo_collection.find()
 
-    def __init__(self):
-        DataFrameModel.__init__(self)
+            for document in cursor:
+                self.__fish_list.append(document)
+
+        return self.__fish_list
+
+
+class DataFrameModel():
+
+    def __init__(self, full_base_model):
+        self.full_base_model = full_base_model
+
+        is_plotable = lambda series: (series.dtype == 'float64')
+
+        data_set = dict()
+        all_attributes = list()
+        plotable_attributes = list()
+
+        for attribute, value in self.full_base_model.environment_model.__dict__.items():
+            series = value.series
+
+            all_attributes.append(value.attribute_name)
+
+            if is_plotable(series):
+                plotable_attributes.append(value.attribute_name)
+                series = remove_outliers(series)
+
+            data_set[value.attribute_name] = series
+
+        for attribute, value in self.full_base_model.fish_model.__dict__.items():
+            series = value.series
+
+            all_attributes.append(value.attribute_name)
+
+            if is_plotable(series):
+                plotable_attributes.append(value.attribute_name)
+                series = remove_outliers(series)
+
+            data_set[value.attribute_name] = series
+
+        self.plotable_attributes = plotable_attributes
+        self.all_attributes = all_attributes
+
+        self.data_frame = pandas.DataFrame(data_set)
+
+
+class FishFrameModel():
+
+    def __init__(self, data_frame_model):
+        self.data_frame_model = data_frame_model
+
+        self.data_frame = self.data_frame_model.data_frame.query("fish_type == fish_type")
+
+    def get_fish_frame(self, fish_type):
+        fish_data = self.data_frame
+
+        if fish_type in config.ALLOWED_FISH_TYPES:
+            fish_data = fish_data.query("fish_type == '{}'".format(fish_type))
+
+        return fish_data
+
+
+class FishStatisticModel():
+
+    def __init__(self, data_frame_model):
+        self.data_frame_model = data_frame_model
 
         self.month_statistics = self.__process_month_statistics()
         self.data_year_dict = self.__process_year_dict()
@@ -177,7 +216,7 @@ class FishStatisticModel(DataFrameModel):
 
         for year in config.YEAR_LIST:
 
-            for attribute in self.plotable_attributes:
+            for attribute in self.data_frame_model.plotable_attributes:
                 month_dict = dict()
 
                 for month_index, month_name in config.MONTH_DICT.items():
@@ -205,7 +244,7 @@ class FishStatisticModel(DataFrameModel):
         date_start = "{}-01-01 00:00:00".format(year)
         date_end = "{}-12-31 00:00:00".format(year)
 
-        return self.data_frame[date_start:date_end]
+        return self.data_frame_model.data_frame[date_start:date_end]
 
     def get_frame_by_month(self, year, month):
 
@@ -217,7 +256,7 @@ class FishStatisticModel(DataFrameModel):
         date_start = "{}-{:02d}-{:02d} 00:00:00".format(year_int, month_int, 1)
         date_end = "{}-{:02d}-{:02d} 00:00:00".format(year_int, month_int, maximal_month_days)
 
-        return self.data_frame[date_start:date_end]
+        return self.data_frame_model.data_frame[date_start:date_end]
 
     def get_frame_by_day(self, year, month, day):
 
@@ -234,19 +273,15 @@ class FishStatisticModel(DataFrameModel):
         date_start = "{}-{:02d}-{:02d} 00:00:00".format(year_int, month_int, day_int)
         date_end = "{}-{:02d}-{:02d} 23:00:00".format(year_int, month_int, day_int)
 
-        return self.data_frame[date_start:date_end]
+        return self.data_frame_model.data_frame[date_start:date_end]
 
 
-# fdf = DataFrameModel()
-ffm = FishFrameModel()
-# fsm = FishStatisticModel()
+database_model = DatabaseModel()
 
-# df = fish_data.get_data_frame()
-# air_temperature_year_2017 = fish_year_dict['2017']['air_temperature']
-# air_temperature_year_2017_filtered = fish.remove_outliers(air_temperature_year_2017)
+fish_base_model = FishBaseModel(database_model)
+environment_base_model = EnvironmentBaseModel()
+full_base_model = FullBaseModel(environment_base_model, fish_base_model)
 
-# data_temp_hoch = data_year_2017.query('air_temperature > 28')
-# data_temp_hoch.plot.line()
-
-# x_values = list(air_temperature_year_2017_filtered.index.get_values())
-# y_values = list(air_temperature_year_2017_filtered)
+data_frame_model = DataFrameModel(full_base_model)
+fish_frame_model = FishFrameModel(data_frame_model)
+fish_statistic_model = FishStatisticModel(data_frame_model)
