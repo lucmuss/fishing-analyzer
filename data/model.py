@@ -24,6 +24,7 @@ from data.fish.fish_type import FishType
 from data.fish.catch_hour import CatchHour
 from data.fish.catch_month import CatchMonth
 
+from data.cache.cache import DataCache
 
 def remove_outliers(panda_series):
     mean_value = panda_series.mean()
@@ -58,20 +59,21 @@ class FishBaseModel:
 class EnvironmentBaseModel:
 
     def __init__(self):
+        data_cache = DataCache()
         # data attributes form the environment data
-        self.record_date_hour = RecordDateHour()
-        self.water_temperature = WaterTemperature()
-        self.air_temperature = AirTemperature()
-        self.wind_direction = WindDirection()
-        self.precipitation_amount = PrecipitationAmount()
-        self.relative_humidity = RelativeHumidity()
-        self.sun_hours = SunHours()
-        self.wind_strength = WindStrength()
-        self.ground_temperature_5 = GroundTemperature5()
-        self.ground_temperature_10 = GroundTemperature10()
-        self.ground_temperature_20 = GroundTemperature20()
-        self.ground_temperature_50 = GroundTemperature50()
-        self.ground_temperature_100 = GroundTemperature100()
+        self.wind_strength = WindStrength(data_cache)
+        self.record_date_hour = RecordDateHour(data_cache)
+        self.water_temperature = WaterTemperature(data_cache)
+        self.air_temperature = AirTemperature(data_cache)
+        self.wind_direction = WindDirection(data_cache)
+        self.precipitation_amount = PrecipitationAmount(data_cache)
+        self.relative_humidity = RelativeHumidity(data_cache)
+        self.sun_hours = SunHours(data_cache)
+        self.ground_temperature_5 = GroundTemperature5(data_cache)
+        self.ground_temperature_10 = GroundTemperature10(data_cache)
+        self.ground_temperature_20 = GroundTemperature20(data_cache)
+        self.ground_temperature_50 = GroundTemperature50(data_cache)
+        self.ground_temperature_100 = GroundTemperature100(data_cache)
 
 
 class FullBaseModel:

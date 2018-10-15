@@ -15,8 +15,7 @@ def export_to_mongodb(data_base):
 
         for row in csv_reader:
 
-            fish_type, date, hour = row
-            fish_type, date, hour = fish_type.strip(), date.strip(), hour.strip()
+            fish_type, date, hour = config.strip_row(row)
 
             if len(row) >= 3:
 

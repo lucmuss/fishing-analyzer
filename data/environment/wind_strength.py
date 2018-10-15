@@ -4,28 +4,20 @@ import pandas
 import config
 import os
 
-from data.cache.cache import DataCache
-
 
 class WindStrength:
     location = 'raw_data/wind_strength/produkt_ff_stunde_19490101_20171231_00282.txt'
-    __data_cache = DataCache()
+
     __data_dict = dict()
     attribute_name = 'wind_strength'
 
-    def __init__(self):
-        self.__init_data()
+    def __init__(self, data_cache):
+        self.__data_cache = data_cache
+        self.__data_dict = self.__data_cache.load_dict(self.attribute_name)
 
-    def __init_data(self):
-
-        self.__data_dict = self.__data_cache.load_cache(self.attribute_name, self.__data_dict)
-
-        if self.__data_dict:
-            return True
-
-        self.__read()
-
-        self.__data_cache.store_cache(self.attribute_name, self.__data_dict)
+        if not self.__data_dict:
+            self.__read()
+            self.__data_cache.store_dict(self.attribute_name, self.__data_dict)
 
     @property
     def series(self):
@@ -36,19 +28,33 @@ class WindStrength:
         reduced_series = series[config.MINIMAL_SERIES_START_YEAR:config.MAXIMAL_SERIES_END_YEAR]
         return reduced_series
 
-    def __read(self):
-        script_dir = os.path.dirname(__file__)
-        abs_file_path = os.path.join(script_dir, self.location)
+    @property
+    def abs_file_location(self):
+        location_list = self.location.split('/')
+        location_paths = location_list[:-1]
+        location_file = location_list[len(location_list) - 1]
 
-        with open(abs_file_path, newline='') as csv_file:
+        script_dir = os.path.dirname(__file__)
+
+        abs_file_path = os.path.join(script_dir, *location_paths)
+        abs_file_location = os.path.join(abs_file_path, location_file)
+        return abs_file_location
+
+    def __validate_row(self, row, station):
+        return len(row) >= 10 and station == "282"
+
+    def __read(self):
+
+        with open(self.abs_file_location, newline='') as csv_file:
             csv_reader = csv.reader(csv_file, delimiter=';', quotechar='"')
+
+            next(csv_reader)
 
             for row in csv_reader:
 
-                station, date, typ, strength, direction, a, = row
-                station, date, typ, strength, direction = station.strip(), date.strip(), typ.strip(), strength.strip(), direction.strip()
+                station, date, typ, strength, direction, a = config.strip_row(row)
 
-                if len(row) >= 5 and station == "282":
+                if self.__validate_row(row, station):
                     date_time = datetime.datetime.strptime(date, "%Y%m%d%H")
                     formatted_string = date_time.strftime(config.CATCH_DATE_FORMAT)
 

@@ -90,3 +90,7 @@ fish_and_attribute = lambda fish_type, attribute_name: "{}: {}".format(fish_type
 
 DIAGRAM_HEIGTH = 720
 DIAGRAM_WIDTH = 1280
+
+
+def strip_row(row):
+    return (element.strip() for element in row)
