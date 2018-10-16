@@ -1,10 +1,13 @@
+# coding: utf-8
+
 import dash_html_components as html
 import dash_core_components as dcc
 from dash.dependencies import Input, Output
 
 import config
+import utils
 from index import app
-from data.model import FishStatisticModel
+from tools import FishStatisticModel
 
 fish_data = FishStatisticModel()
 
@@ -15,7 +18,7 @@ from apps.visualisation.environmental_data import generate_attribute_options
 def extract_data_values(year, attribute, month_statistics):
     data_dict = month_statistics[(year, attribute)]
 
-    x_values = [config.get_month_name(month_index) for month_index in data_dict.keys()]
+    x_values = [utils.get_month_name(month_index) for month_index in data_dict.keys()]
     y_values = [mean_value for mean_value, sum_values in data_dict.values()]
 
     return x_values, y_values

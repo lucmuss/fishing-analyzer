@@ -1,8 +1,12 @@
+# coding: utf-8
+
 import csv
 import datetime
 import pandas
 import config
 import os
+
+import utils
 
 
 class PrecipitationAmount:
@@ -11,7 +15,7 @@ class PrecipitationAmount:
     __data_dict = dict()
     attribute_name = 'precipitation_amount'
 
-    def __init__(self, data_cache):
+    def __init__(self, data_cache=None):
         self.__data_cache = data_cache
         self.__data_dict = self.__data_cache.load_dict(self.attribute_name)
 
@@ -52,7 +56,7 @@ class PrecipitationAmount:
 
             for row in csv_reader:
 
-                station, date, typ, precipitation_amount, a, b, error = config.strip_row(row)
+                station, date, typ, precipitation_amount, a, b, error = utils.strip_row(row)
 
                 if self.__validate_row(row, station):
                     date_time = datetime.datetime.strptime(date, "%Y%m%d%H")

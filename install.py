@@ -1,3 +1,5 @@
+# coding: utf-8
+
 from tools.export_csv import export_to_mongodb
 
 from tools.histograms import store_distributions

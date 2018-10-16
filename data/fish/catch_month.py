@@ -1,3 +1,5 @@
+# coding: utf-8
+
 import pandas
 import config
 
@@ -7,8 +9,8 @@ class CatchMonth:
 
     __data_dict = dict()
 
-    def __init__(self, fish_list):
-        self.__read(fish_list)
+    def __init__(self, database_model=None):
+        self.__read(database_model.fish_list)
 
     @property
     def series(self):

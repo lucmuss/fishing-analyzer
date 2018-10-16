@@ -1,7 +1,10 @@
+# coding: utf-8
+
 import os
 import datetime
 import csv
 import config
+import utils
 
 
 def export_to_mongodb(data_base):
@@ -15,7 +18,7 @@ def export_to_mongodb(data_base):
 
         for row in csv_reader:
 
-            fish_type, date, hour = config.strip_row(row)
+            fish_type, date, hour = utils.strip_row(row)
 
             if len(row) >= 3:
 

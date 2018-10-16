@@ -1,8 +1,12 @@
+# coding: utf-8
+
 import csv
 import datetime
 import pandas
 import config
 import os
+
+import utils
 
 
 class WindStrength:
@@ -11,7 +15,7 @@ class WindStrength:
     __data_dict = dict()
     attribute_name = 'wind_strength'
 
-    def __init__(self, data_cache):
+    def __init__(self, data_cache=None):
         self.__data_cache = data_cache
         self.__data_dict = self.__data_cache.load_dict(self.attribute_name)
 
@@ -52,7 +56,7 @@ class WindStrength:
 
             for row in csv_reader:
 
-                station, date, typ, strength, direction, a = config.strip_row(row)
+                station, date, typ, strength, direction, a = utils.strip_row(row)
 
                 if self.__validate_row(row, station):
                     date_time = datetime.datetime.strptime(date, "%Y%m%d%H")

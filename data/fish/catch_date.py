@@ -1,3 +1,5 @@
+# coding: utf-8
+
 import pandas
 import config
 
@@ -6,8 +8,11 @@ class CatchDate:
 
     __data_dict = dict()
 
-    def __init__(self, fish_list):
-        self.__read(fish_list)
+    def __init__(self, database_model=None):
+        self.__read(database_model.fish_list)
+
+    def __repr__(self):
+        return '<%s [%s]>' % (self.__class__, self.attribute_name)
 
     @property
     def series(self):
@@ -28,3 +33,4 @@ class CatchDate:
             catch_date = catch_date.strftime("%Y-%m-%d")
 
             self.__data_dict[formatted_string] = catch_date
+

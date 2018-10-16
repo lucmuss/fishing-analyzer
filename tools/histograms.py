@@ -1,9 +1,13 @@
+# coding: utf-8
+
 import plotly
 import config
 import os
 import numpy
 
 import plotly.figure_factory as figure_factory
+
+import utils
 
 
 def store_histograms(fish_model):
@@ -19,8 +23,8 @@ def store_histograms(fish_model):
                 cleaned_attribute_values = numpy.nan_to_num(attribute_values, copy=True)
 
                 if cleaned_attribute_values.min() != cleaned_attribute_values.max():
-                    attribute_name = config.attribute_to_name(attribute)
-                    plot_title = config.fish_and_attribute(fish_type, attribute_name)
+                    attribute_name = utils.attribute_to_name(attribute)
+                    plot_title = utils.fish_and_attribute(fish_type, attribute_name)
 
                     data = [
                         plotly.graph_objs.Histogram(x=cleaned_attribute_values, nbinsx=config.HISTOGRAM_BINS,
@@ -58,7 +62,7 @@ def store_combined_histograms(fish_model):
 
         if fish_frame.size >= config.MINIMAL_CATCHED_FISHES:
 
-            subplots_titles = [config.attribute_to_name(attribute) for attribute in
+            subplots_titles = [utils.attribute_to_name(attribute) for attribute in
                                fish_model.data_frame_model.plotable_attributes]
 
             number_attributes = len(fish_model.data_frame_model.plotable_attributes)
@@ -84,7 +88,7 @@ def store_combined_histograms(fish_model):
                 cleaned_attribute_values = numpy.nan_to_num(attribute_values, copy=True)
 
                 if cleaned_attribute_values.min() != cleaned_attribute_values.max():
-                    attribute_to_name = config.attribute_to_name(attribute)
+                    attribute_to_name = utils.attribute_to_name(attribute)
 
                     counter = index + 1
 
@@ -128,8 +132,8 @@ def store_distributions(fish_model):
 
                 if cleaned_attribute_values.min() != cleaned_attribute_values.max():
 
-                    attribute_name = config.attribute_to_name(attribute)
-                    plot_title = config.fish_and_attribute(fish_type, attribute_name)
+                    attribute_name = utils.attribute_to_name(attribute)
+                    plot_title = utils.fish_and_attribute(fish_type, attribute_name)
 
                     attribute_list = [attribute_name]
                     attribute_value_list = [list(cleaned_attribute_values)]

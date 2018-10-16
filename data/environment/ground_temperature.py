@@ -1,8 +1,12 @@
+# coding: utf-8
+
 import csv
 import datetime
 import pandas
 import config
 import os
+
+import utils
 
 
 class GroundTemperature5:
@@ -11,7 +15,7 @@ class GroundTemperature5:
     __data_dict = dict()
     attribute_name = 'ground_temperature_5'
 
-    def __init__(self, data_cache):
+    def __init__(self, data_cache=None):
         self.__data_cache = data_cache
         self.__data_dict = self.__data_cache.load_dict(self.attribute_name)
 
@@ -54,7 +58,7 @@ class GroundTemperature5:
 
             for row in csv_reader:
 
-                station, date, typ, temp2, temp5, temp10, temp20, temp50, temp100, e = config.strip_row(row)
+                station, date, typ, temp2, temp5, temp10, temp20, temp50, temp100, e = utils.strip_row(row)
 
                 if self.__validate_row(row, station):
                     date_time = datetime.datetime.strptime(date, "%Y%m%d%H")
@@ -71,7 +75,7 @@ class GroundTemperature10:
     __data_dict = dict()
     attribute_name = 'ground_temperature_10'
 
-    def __init__(self, data_cache):
+    def __init__(self, data_cache=None):
         self.__data_cache = data_cache
         self.__data_dict = self.__data_cache.load_dict(self.attribute_name)
 
@@ -112,7 +116,7 @@ class GroundTemperature10:
 
             for row in csv_reader:
 
-                station, date, typ, temp2, temp5, temp10, temp20, temp50, temp100, e = config.strip_row(row)
+                station, date, typ, temp2, temp5, temp10, temp20, temp50, temp100, e = utils.strip_row(row)
 
                 if self.__validate_row(row, station):
                     date_time = datetime.datetime.strptime(date, "%Y%m%d%H")
@@ -129,7 +133,7 @@ class GroundTemperature20:
     __data_dict = dict()
     attribute_name = 'ground_temperature_20'
 
-    def __init__(self, data_cache):
+    def __init__(self, data_cache=None):
         self.__data_cache = data_cache
         self.__data_dict = self.__data_cache.load_dict(self.attribute_name)
 
@@ -170,7 +174,7 @@ class GroundTemperature20:
 
             for row in csv_reader:
 
-                station, date, typ, temp2, temp5, temp10, temp20, temp50, temp100, e = config.strip_row(row)
+                station, date, typ, temp2, temp5, temp10, temp20, temp50, temp100, e = utils.strip_row(row)
 
                 if self.__validate_row(row, station):
                     date_time = datetime.datetime.strptime(date, "%Y%m%d%H")
@@ -187,7 +191,7 @@ class GroundTemperature50:
     __data_dict = dict()
     attribute_name = 'ground_temperature_50'
 
-    def __init__(self, data_cache):
+    def __init__(self, data_cache=None):
         self.__data_cache = data_cache
         self.__data_dict = self.__data_cache.load_dict(self.attribute_name)
 
@@ -228,7 +232,7 @@ class GroundTemperature50:
 
             for row in csv_reader:
 
-                station, date, typ, temp2, temp5, temp10, temp20, temp50, temp100, a = config.strip_row(row)
+                station, date, typ, temp2, temp5, temp10, temp20, temp50, temp100, a = utils.strip_row(row)
 
                 if self.__validate_row(row, station):
                     date_time = datetime.datetime.strptime(date, "%Y%m%d%H")
@@ -245,7 +249,7 @@ class GroundTemperature100:
     __data_dict = dict()
     attribute_name = 'ground_temperature_100'
 
-    def __init__(self, data_cache):
+    def __init__(self, data_cache=None):
         self.__data_cache = data_cache
         self.__data_dict = self.__data_cache.load_dict(self.attribute_name)
 
@@ -286,7 +290,7 @@ class GroundTemperature100:
 
             for row in csv_reader:
 
-                station, date, typ, temp2, temp5, temp10, temp20, temp50, temp100, e = config.strip_row(row)
+                station, date, typ, temp2, temp5, temp10, temp20, temp50, temp100, e = utils.strip_row(row)
 
                 if self.__validate_row(row, station):
                     date_time = datetime.datetime.strptime(date, "%Y%m%d%H")

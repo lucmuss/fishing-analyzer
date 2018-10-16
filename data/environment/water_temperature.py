@@ -1,8 +1,12 @@
+# coding: utf-8
+
 import csv
 import datetime
 import pandas
 import config
 import os
+
+import utils
 
 
 class WaterTemperature:
@@ -10,7 +14,7 @@ class WaterTemperature:
     __data_dict = dict()
     attribute_name = 'water_temperature'
 
-    def __init__(self, data_cache):
+    def __init__(self, data_cache=None):
         self.__data_cache = data_cache
         self.__data_dict = self.__data_cache.load_dict(self.attribute_name)
 
@@ -50,7 +54,7 @@ class WaterTemperature:
 
                 if len(row) >= 3 and row[2] == "Rohdaten":
 
-                    date, temp, typ = config.strip_row(row)
+                    date, temp, typ = utils.strip_row(row)
 
                     date_time = datetime.datetime.strptime(date, "%Y-%m-%d %H:%M")
                     formatted_string = date_time.strftime(config.CATCH_DATE_FORMAT)

@@ -1,83 +1,67 @@
+# coding: utf-8
+
 import pandas
-import numpy
 import datetime
 import calendar
 import config
 import pymongo
 
-from data.environment.water_temperature import WaterTemperature
-from data.environment.air_temperature import AirTemperature
-from data.environment.wind_direction import WindDirection
-from data.environment.precipitation_amount import PrecipitationAmount
-from data.environment.relative_humidity import RelativeHumidity
-from data.environment.sun_hours import SunHours
-from data.environment.wind_strength import WindStrength
-from data.environment.ground_temperature import GroundTemperature5
-from data.environment.ground_temperature import GroundTemperature10
-from data.environment.ground_temperature import GroundTemperature20
-from data.environment.ground_temperature import GroundTemperature50
-from data.environment.ground_temperature import GroundTemperature100
-from data.environment.record_date_hour import RecordDateHour
+import utils
 
-from data.fish.catch_date import CatchDate
-from data.fish.fish_type import FishType
-from data.fish.catch_hour import CatchHour
-from data.fish.catch_month import CatchMonth
+from data.fish import CatchMonth
+from data.fish import CatchHour
+from data.fish import CatchDate
+from data.fish import FishType
 
-from data.cache.cache import DataCache
+from data.cache import DataCache
 
-def remove_outliers(panda_series):
-    mean_value = panda_series.mean()
-    std_value = panda_series.std()
-    compare_factor = config.STANDARD_DEVIATION_FACTOR * std_value
-
-    bad_index = panda_series[numpy.abs(panda_series - mean_value) >= compare_factor]
-    panda_series = panda_series.drop(index=bad_index.index)
-
-    return panda_series
-
-
-def series_to_graph(panda_series):
-    x_values = list(panda_series.index.get_values())
-    y_values = list(panda_series.get_values())
-
-    return x_values, y_values
+from data.environment import WaterTemperature
+from data.environment import AirTemperature
+from data.environment import WindDirection
+from data.environment import PrecipitationAmount
+from data.environment import RelativeHumidity
+from data.environment import SunHours
+from data.environment import WindStrength
+from data.environment import GroundTemperature5
+from data.environment import GroundTemperature10
+from data.environment import GroundTemperature20
+from data.environment import GroundTemperature50
+from data.environment import GroundTemperature100
+from data.environment import RecordDateHour
 
 
 class FishBaseModel:
 
-    def __init__(self, database_model):
-        fish_list = database_model.fish_list
-
+    def __init__(self, database_model=None):
         # data attributes form the fish database
-        self.catch_date = CatchDate(fish_list)
-        self.fish_type = FishType(fish_list)
-        self.catch_hour = CatchHour(fish_list)
-        self.catch_month = CatchMonth(fish_list)
+        self.catch_date = CatchDate(database_model=database_model)
+        self.fish_type = FishType(database_model=database_model)
+        self.catch_hour = CatchHour(database_model=database_model)
+        self.catch_month = CatchMonth(database_model=database_model)
 
 
 class EnvironmentBaseModel:
 
     def __init__(self):
-        data_cache = DataCache()
+        cache = DataCache()
         # data attributes form the environment data
-        self.wind_strength = WindStrength(data_cache)
-        self.record_date_hour = RecordDateHour(data_cache)
-        self.water_temperature = WaterTemperature(data_cache)
-        self.air_temperature = AirTemperature(data_cache)
-        self.wind_direction = WindDirection(data_cache)
-        self.precipitation_amount = PrecipitationAmount(data_cache)
-        self.relative_humidity = RelativeHumidity(data_cache)
-        self.sun_hours = SunHours(data_cache)
-        self.ground_temperature_5 = GroundTemperature5(data_cache)
-        self.ground_temperature_10 = GroundTemperature10(data_cache)
-        self.ground_temperature_20 = GroundTemperature20(data_cache)
-        self.ground_temperature_50 = GroundTemperature50(data_cache)
-        self.ground_temperature_100 = GroundTemperature100(data_cache)
+        self.wind_strength = WindStrength(data_cache=cache)
+        self.record_date_hour = RecordDateHour(data_cache=cache)
+        self.water_temperature = WaterTemperature(data_cache=cache)
+        self.air_temperature = AirTemperature(data_cache=cache)
+        self.wind_direction = WindDirection(data_cache=cache)
+        self.precipitation_amount = PrecipitationAmount(data_cache=cache)
+        self.relative_humidity = RelativeHumidity(data_cache=cache)
+        self.sun_hours = SunHours(data_cache=cache)
+        self.ground_temperature_5 = GroundTemperature5(data_cache=cache)
+        self.ground_temperature_10 = GroundTemperature10(data_cache=cache)
+        self.ground_temperature_20 = GroundTemperature20(data_cache=cache)
+        self.ground_temperature_50 = GroundTemperature50(data_cache=cache)
+        self.ground_temperature_100 = GroundTemperature100(data_cache=cache)
 
 
 class FullBaseModel:
-    def __init__(self, environment_model, fish_model):
+    def __init__(self, environment_model=None, fish_model=None):
         self.environment_model = environment_model
         self.fish_model = fish_model
 
@@ -110,7 +94,7 @@ class DatabaseModel():
 
         if fish_type in config.ALLOWED_FISH_TYPES:
 
-            document = config.get_database_document(fish_type, catch_date)
+            document = utils.get_database_document(fish_type, catch_date)
 
             cursor = self.mongo_collection.find(document).limit(1)
 
@@ -127,7 +111,7 @@ class DatabaseModel():
 
         if fish_type in config.ALLOWED_FISH_TYPES:
 
-            document = config.get_database_document(fish_type, catch_date)
+            document = utils.get_database_document(fish_type, catch_date)
 
             cursor = self.mongo_collection.find(document).limit(1)
 
@@ -167,7 +151,7 @@ class DataFrameModel():
 
             if is_plotable(series):
                 plotable_attributes.append(value.attribute_name)
-                series = remove_outliers(series)
+                series = utils.remove_outliers(series)
 
             data_set[value.attribute_name] = series
 
@@ -178,7 +162,7 @@ class DataFrameModel():
 
             if is_plotable(series):
                 plotable_attributes.append(value.attribute_name)
-                series = remove_outliers(series)
+                series = utils.remove_outliers(series)
 
             data_set[value.attribute_name] = series
 
@@ -280,9 +264,9 @@ class FishStatisticModel():
 
 database_model = DatabaseModel()
 
-fish_base_model = FishBaseModel(database_model)
+fish_base_model = FishBaseModel(database_model=database_model)
 environment_base_model = EnvironmentBaseModel()
-full_base_model = FullBaseModel(environment_base_model, fish_base_model)
+full_base_model = FullBaseModel(environment_model=environment_base_model, fish_model=fish_base_model)
 
 data_frame_model = DataFrameModel(full_base_model)
 fish_frame_model = FishFrameModel(data_frame_model)
