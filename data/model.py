@@ -176,6 +176,7 @@ class FishFrameModel():
 
     def __init__(self, data_frame_model):
         self.data_frame_model = data_frame_model
+        self.plotable_attributes = self.data_frame_model.plotable_attributes
 
         self.data_frame = self.data_frame_model.data_frame.query("fish_type == fish_type")
 
@@ -192,6 +193,7 @@ class FishStatisticModel():
 
     def __init__(self, data_frame_model):
         self.data_frame_model = data_frame_model
+        self.plotable_attributes = self.data_frame_model.plotable_attributes
 
         self.month_statistics = self.__process_month_statistics()
         self.data_year_dict = self.__process_year_dict()
@@ -202,7 +204,7 @@ class FishStatisticModel():
 
         for year in config.YEAR_LIST:
 
-            for attribute in self.data_frame_model.plotable_attributes:
+            for attribute in self.plotable_attributes:
                 month_dict = dict()
 
                 for month_index, month_name in config.MONTH_DICT.items():

@@ -16,7 +16,7 @@ def store_histograms(fish_model):
 
         if fish_frame.size >= config.MINIMAL_CATCHED_FISHES:
 
-            for attribute in fish_model.data_frame_model.plotable_attributes:
+            for attribute in fish_model.plotable_attributes:
                 attribute_series = fish_frame[attribute]
 
                 attribute_values = attribute_series.get_values()
@@ -63,9 +63,9 @@ def store_combined_histograms(fish_model):
         if fish_frame.size >= config.MINIMAL_CATCHED_FISHES:
 
             subplots_titles = [utils.attribute_to_name(attribute) for attribute in
-                               fish_model.data_frame_model.plotable_attributes]
+                               fish_model.plotable_attributes]
 
-            number_attributes = len(fish_model.data_frame_model.plotable_attributes)
+            number_attributes = len(fish_model.plotable_attributes)
 
             figure = plotly.tools.make_subplots(
                 rows=number_attributes,
@@ -81,7 +81,7 @@ def store_combined_histograms(fish_model):
             figure['layout'].update(bargap=0.2)
             figure['layout'].update(title=fish_type)
 
-            for index, attribute in enumerate(fish_model.data_frame_model.plotable_attributes):
+            for index, attribute in enumerate(fish_model.plotable_attributes):
                 attribute_series = fish_frame[attribute]
 
                 attribute_values = attribute_series.get_values()
@@ -123,7 +123,7 @@ def store_distributions(fish_model):
 
         if fish_frame.size >= config.MINIMAL_CATCHED_FISHES:
 
-            for attribute in fish_model.data_frame_model.plotable_attributes:
+            for attribute in fish_model.plotable_attributes:
                 attribute_series = fish_frame[attribute]
 
                 attribute_values = attribute_series.get_values()

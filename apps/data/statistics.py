@@ -2,17 +2,35 @@
 
 import dash_html_components as html
 import dash_core_components as dcc
-from dash.dependencies import Input, Output
+from dash.dependencies import Input
+from dash.dependencies import Output
 
 import config
 import utils
-from index import app
-from tools import FishStatisticModel
+from mainapp import app
+from data.model import fish_statistic_model
 
-fish_data = FishStatisticModel()
+fish_data = fish_statistic_model
 
-from apps.visualisation.environmental_data import generate_year_options
-from apps.visualisation.environmental_data import generate_attribute_options
+
+def generate_year_options():
+    return_list = list()
+
+    for year in config.YEAR_LIST:
+        year_name = 'Year: {}'.format(year.title())
+        return_list.append({'label': year_name, 'value': str(year)})
+
+    return return_list
+
+
+def generate_attribute_options(fish_data):
+    return_list = list()
+
+    for attribute in fish_data.plotable_attributes:
+        attribute_name = 'Attribute: {}'.format(attribute.title().replace('_', ' '))
+        return_list.append({'label': attribute_name, 'value': str(attribute)})
+
+    return return_list
 
 
 def extract_data_values(year, attribute, month_statistics):

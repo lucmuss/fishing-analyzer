@@ -1,41 +1,41 @@
 # coding: utf-8
 
-import flask
-import dash
+from mainapp import app
 
+import dash_core_components as dcc
+import dash_html_components as html
 from dash.dependencies import Input, Output
+from apps.data import environment
+from apps.data import statistics
 
-from apps.navigation import header
+main_navigation_bar = html.Div([
+    html.Br(),
+    dcc.Link('Go to Month Statistics', href='/apps/data/statistics'),
+    html.Br(),
+    dcc.Link('Go to Environmental Data', href='/apps/data/environment'),
+    html.Br(),
+])
 
-from apps.visualisation import environmental_data
-from apps.visualisation import month_statistics
+layout = html.Div([
 
+    main_navigation_bar,
 
-server = flask.Flask(__name__)
+    dcc.Location(id='url', refresh=False),
+    html.Div(id='page_content')
+])
 
-app = dash.Dash(__name__, server=server, url_base_pathname='/visualisation/')
-app.config['suppress_callback_exceptions'] = True
-
-app.layout = header.layout
+app.layout = layout
 
 
 @app.callback(Output('page_content', 'children'),
               [Input('url', 'pathname')])
 def display_page(pathname):
-    if pathname == '/visualisation/apps/environmental_data':
-        return environmental_data.layout
-    elif pathname == '/visualisation/apps/month_statistics':
-        return month_statistics.layout
+    if pathname == '/apps/data/environment':
+        return environment.layout
+    elif pathname == '/apps/data/statistics':
+        return statistics.layout
     else:
-        return ""
-    # elif pathname == '/visualisation/apps/month_statistics':
-    # return month_statistics.layout
-
-
-# TODO
-@server.route('/fish/list', methods=['GET'])
-def list_fishes():
-    return [1]
+        return "404"
 
 
 if __name__ == '__main__':

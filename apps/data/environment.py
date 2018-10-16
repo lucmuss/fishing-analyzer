@@ -5,11 +5,11 @@ import dash_core_components as dcc
 from dash.dependencies import Input, Output
 
 import config
-from index import app
+from mainapp import app
 from utils import series_to_graph
-from tools import FishStatisticModel
+from data.model import fish_statistic_model
 
-fish_data = FishStatisticModel()
+fish_data = fish_statistic_model
 
 def generate_year_options():
     return_list = list()
@@ -34,7 +34,7 @@ def generate_attribute_options(fish_data):
 def generate_month_options():
     return_list = list()
 
-    for month_index, month_name in config.MONTH_DICT.iteritems():
+    for month_index, month_name in config.MONTH_DICT.items():
         month_name_label = 'Monat: {}'.format(month_name.title())
         return_list.append({'label': month_name_label, 'value': str(month_index)})
 
@@ -44,7 +44,7 @@ def generate_month_options():
 def generate_day_options():
     return_list = list()
 
-    for day_index, day_value in config.MONTH_DAYS_DICT.iteritems():
+    for day_index, day_value in config.MONTH_DAYS_DICT.items():
         month_name_label = 'Tag: {}'.format(day_index)
         return_list.append({'label': month_name_label, 'value': str(day_index)})
 
