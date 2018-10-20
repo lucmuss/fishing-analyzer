@@ -19,11 +19,12 @@ from data.environment import WaterTemperature
 from data.environment import AirTemperature
 from data.environment import WindDirection
 from data.environment import PrecipitationAmount
+from data.environment import PrecipitationAmountDay
 from data.environment import RelativeHumidity
 from data.environment import SunHours
 from data.environment import SunMinutes
 from data.environment import WindStrength
-from data.environment import GroundTemperature2
+#from data.environment import GroundTemperature2
 from data.environment import GroundTemperature5
 from data.environment import GroundTemperature10
 from data.environment import GroundTemperature20
@@ -53,10 +54,11 @@ class EnvironmentBaseModel:
         self.air_temperature = AirTemperature(data_cache=cache)
         self.wind_direction = WindDirection(data_cache=cache)
         self.precipitation_amount = PrecipitationAmount(data_cache=cache)
+        self.precipitation_amount_day = PrecipitationAmountDay(data_cache=cache)
         self.relative_humidity = RelativeHumidity(data_cache=cache)
         self.sun_hours = SunHours(data_cache=cache)
         self.sun_minutes = SunMinutes(data_cache=cache)
-        self.ground_temperature_2 = GroundTemperature2(data_cache=cache)
+        #self.ground_temperature_2 = GroundTemperature2(data_cache=cache)
         self.ground_temperature_5 = GroundTemperature5(data_cache=cache)
         self.ground_temperature_10 = GroundTemperature10(data_cache=cache)
         self.ground_temperature_20 = GroundTemperature20(data_cache=cache)

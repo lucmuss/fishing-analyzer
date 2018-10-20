@@ -8,9 +8,9 @@ import utils
 from data.environment.base_attribute import BaseAttribute
 
 
-class SunHours(BaseAttribute):
-    location = 'raw_data/sun_hours/produkt_sd_stunde_19490101_20171231_00282.txt'
-    attribute_name = 'sun_hours'
+class PrecipitationAmountDay(BaseAttribute):
+    location = 'raw_data/precipitation_amount/produkt_rr_stunde_19490101_20171231_00282.txt'
+    attribute_name = 'precipitation_amount_day'
 
     def __init__(self, data_cache=None):
 
@@ -39,19 +39,19 @@ class SunHours(BaseAttribute):
 
             for row in csv_reader:
 
-                station, date, typ, sun_minutes, error = utils.strip_row(row)
+                station, date, typ, precipitation_amount, a, b, error = utils.strip_row(row)
 
                 if self.__validate_row(row, station):
 
                     date_time = datetime.datetime.strptime(date, "%Y%m%d%H")
 
                     day_format = date_time.strftime(config.CATCH_DAY_FORMAT)
-                    sun_minutes = float(sun_minutes)
+                    precipitation_amount = float(precipitation_amount)
 
                     if day_format in day_dict:
-                        day_dict[day_format] += sun_minutes
+                        day_dict[day_format] += precipitation_amount
                     else:
-                        day_dict[day_format] = sun_minutes
+                        day_dict[day_format] = precipitation_amount
 
         with open(self.abs_file_location, newline='') as csv_file:
             csv_reader = csv.reader(csv_file, delimiter=';', quotechar='"')
@@ -60,14 +60,13 @@ class SunHours(BaseAttribute):
 
             for row in csv_reader:
 
-                station, date, typ, sun_minutes, error = utils.strip_row(row)
+                station, date, typ, precipitation_amount, a, b, error = utils.strip_row(row)
 
                 if self.__validate_row(row, station):
                     date_time = datetime.datetime.strptime(date, "%Y%m%d%H")
-
                     date_format = date_time.strftime(config.CATCH_DATE_FORMAT)
                     day_format = date_time.strftime(config.CATCH_DAY_FORMAT)
 
-                    hour_value = float(day_dict[day_format]) / 60.0
+                    hour_value = float(day_dict[day_format])
 
                     self.data_dict[date_format] = hour_value

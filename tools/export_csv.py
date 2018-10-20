@@ -31,6 +31,5 @@ def export_to_mongodb(data_base):
                     data_base.add_fish(type=fish_type, date=formatted_string, id=None)
 
 
-from data.model import database_model
-
-export_to_mongodb(database_model)
+#from data.model import database_model
+#export_to_mongodb(database_model)

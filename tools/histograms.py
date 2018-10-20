@@ -22,7 +22,7 @@ def store_histograms(fish_model):
                 attribute_values = attribute_series.get_values()
                 cleaned_attribute_values = numpy.nan_to_num(attribute_values, copy=True)
 
-                if cleaned_attribute_values.min() != cleaned_attribute_values.max():
+                if cleaned_attribute_values.min() < cleaned_attribute_values.max():
                     attribute_name = utils.attribute_to_name(attribute)
                     plot_title = utils.fish_and_attribute(fish_type, attribute_name)
 
@@ -45,7 +45,7 @@ def store_histograms(fish_model):
 
                     figure = plotly.graph_objs.Figure(data=data, layout=layout)
 
-                    script_dir = os.path.dirname(__file__)
+                    script_dir = os.getcwd()
                     file_location = os.path.join(script_dir, "diagrams", "separate", fish_type)
 
                     if not os.path.exists(file_location):
@@ -87,7 +87,7 @@ def store_combined_histograms(fish_model):
                 attribute_values = attribute_series.get_values()
                 cleaned_attribute_values = numpy.nan_to_num(attribute_values, copy=True)
 
-                if cleaned_attribute_values.min() != cleaned_attribute_values.max():
+                if cleaned_attribute_values.min() < cleaned_attribute_values.max():
                     attribute_to_name = utils.attribute_to_name(attribute)
 
                     counter = index + 1
@@ -106,7 +106,7 @@ def store_combined_histograms(fish_model):
                         title='Anzahl'
                     )
 
-            script_dir = os.path.dirname(__file__)
+            script_dir = os.getcwd()
             file_location = os.path.join(script_dir, "diagrams", "summary")
 
             if not os.path.exists(file_location):
@@ -130,7 +130,7 @@ def store_distributions(fish_model):
 
                 cleaned_attribute_values = numpy.nan_to_num(attribute_values, copy=True)
 
-                if cleaned_attribute_values.min() != cleaned_attribute_values.max():
+                if cleaned_attribute_values.min() < cleaned_attribute_values.max():
 
                     attribute_name = utils.attribute_to_name(attribute)
                     plot_title = utils.fish_and_attribute(fish_type, attribute_name)
@@ -153,7 +153,7 @@ def store_distributions(fish_model):
                                             width=config.DIAGRAM_WIDTH
                                             )
 
-                    script_dir = os.path.dirname(__file__)
+                    script_dir = os.getcwd()
                     file_location = os.path.join(script_dir, "diagrams", "distribution", fish_type)
 
                     if not os.path.exists(file_location):
@@ -162,3 +162,10 @@ def store_distributions(fish_model):
                     file_path = os.path.join(file_location, "{}.html".format(attribute))
 
                     plotly.offline.plot(figure, filename=file_path, auto_open=False)
+
+
+from data.model import fish_frame_model
+
+store_distributions(fish_frame_model)
+store_histograms(fish_frame_model)
+store_combined_histograms(fish_frame_model)

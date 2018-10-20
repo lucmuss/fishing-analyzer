@@ -2,13 +2,14 @@
 
 
 from .air_temperature import AirTemperature
-from .ground_temperature import GroundTemperature2
+#from .ground_temperature import GroundTemperature2
 from .ground_temperature import GroundTemperature5
 from .ground_temperature import GroundTemperature10
 from .ground_temperature import GroundTemperature20
 from .ground_temperature import GroundTemperature50
 from .ground_temperature import GroundTemperature100
 from .precipitation_amount import PrecipitationAmount
+from .precipitation_amount_day import PrecipitationAmountDay
 from .record_date_hour import RecordDateHour
 from .relative_humidity import RelativeHumidity
 from .sun_hours import SunHours

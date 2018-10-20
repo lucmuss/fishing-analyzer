@@ -26,7 +26,7 @@ class WindStrength(BaseAttribute):
             self.data_cache.store_dict(self.attribute_name, self.data_dict)
 
     def __validate_row(self, row, station):
-        return len(row) >= 10 and station == "282"
+        return len(row) >= 5 and station == "282"
 
     def __read(self):
 
