@@ -22,10 +22,15 @@ def export_to_mongodb(data_base):
 
             if len(row) >= 3:
 
-                if fish_type in config.ALLOWED_FISH_TYPES:
+                if fish_type in config.FISH_TYPES:
                     full_date_string = ' '.join([date, hour])
 
                     date_time = datetime.datetime.strptime(full_date_string, "%d.%m.%Y %H:%M:%S")
                     formatted_string = date_time.strftime(config.CATCH_DATE_FORMAT)
 
-                    data_base.add_fish(fish_type, formatted_string)
+                    data_base.add_fish(type=fish_type, date=formatted_string, id=None)
+
+
+from data.model import database_model
+
+export_to_mongodb(database_model)

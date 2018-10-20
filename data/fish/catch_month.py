@@ -19,7 +19,7 @@ class CatchMonth:
         series = pandas.Series(data_values, index=index_values, name=self.attribute_name)
         series = series.sort_index()
 
-        reduced_series = series[config.MINIMAL_SERIES_START_YEAR:config.MAXIMAL_SERIES_END_YEAR]
+        reduced_series = series[config.MINIMAL_BEGIN_DATE:config.MAXIMAL_END_DATE]
         return reduced_series
 
     def __read(self, fish_list):

@@ -14,7 +14,7 @@ fish_data = fish_statistic_model
 def generate_year_options():
     return_list = list()
 
-    for year in config.YEAR_LIST:
+    for year in config.YEAR_RANGE:
         year_name = 'Year: {}'.format(year.title())
         return_list.append({'label': year_name, 'value': str(year)})
 
@@ -34,7 +34,7 @@ def generate_attribute_options(fish_data):
 def generate_month_options():
     return_list = list()
 
-    for month_index, month_name in config.MONTH_DICT.items():
+    for month_index, month_name in config.MONTH_NAME_DICT.items():
         month_name_label = 'Monat: {}'.format(month_name.title())
         return_list.append({'label': month_name_label, 'value': str(month_index)})
 

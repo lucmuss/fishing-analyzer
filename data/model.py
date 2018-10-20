@@ -21,7 +21,9 @@ from data.environment import WindDirection
 from data.environment import PrecipitationAmount
 from data.environment import RelativeHumidity
 from data.environment import SunHours
+from data.environment import SunMinutes
 from data.environment import WindStrength
+from data.environment import GroundTemperature2
 from data.environment import GroundTemperature5
 from data.environment import GroundTemperature10
 from data.environment import GroundTemperature20
@@ -53,6 +55,8 @@ class EnvironmentBaseModel:
         self.precipitation_amount = PrecipitationAmount(data_cache=cache)
         self.relative_humidity = RelativeHumidity(data_cache=cache)
         self.sun_hours = SunHours(data_cache=cache)
+        self.sun_minutes = SunMinutes(data_cache=cache)
+        self.ground_temperature_2 = GroundTemperature2(data_cache=cache)
         self.ground_temperature_5 = GroundTemperature5(data_cache=cache)
         self.ground_temperature_10 = GroundTemperature10(data_cache=cache)
         self.ground_temperature_20 = GroundTemperature20(data_cache=cache)
@@ -87,14 +91,20 @@ class DatabaseModel():
 
         self.mongo_collection = self.mongo_db.get_collection(config.DATABASE_COLLECTION_NAME)
 
-    def add_fish(self, fish_type, catch_date):
+    def add_fish(self, type, date, id):
+
+        default_id = id if id else config.DEFAULT_DATASET_ID
+
+        return self._add_fish(type, date, default_id)
+
+    def _add_fish(self, fish_type, catch_date, dataset_id):
         catch_date = datetime.datetime.strptime(catch_date, config.CATCH_DATE_FORMAT)
 
         return_value = False
 
-        if fish_type in config.ALLOWED_FISH_TYPES:
+        if fish_type in config.FISH_TYPES:
 
-            document = utils.get_database_document(fish_type, catch_date)
+            document = utils.get_database_document(fish_type, catch_date, dataset_id)
 
             cursor = self.mongo_collection.find(document).limit(1)
 
@@ -104,14 +114,19 @@ class DatabaseModel():
 
         return return_value
 
-    def remove_fish(self, fish_type, catch_date):
+    def remove_fish(self, type, date, id):
+        default_id = id if id else config.DEFAULT_DATASET_ID
+
+        return self._remove_fish(type, date, default_id)
+
+    def _remove_fish(self, fish_type, catch_date, dataset_id):
         catch_date = datetime.datetime.strptime(catch_date, config.CATCH_DATE_FORMAT)
 
         return_value = False
 
-        if fish_type in config.ALLOWED_FISH_TYPES:
+        if fish_type in config.FISH_TYPES:
 
-            document = utils.get_database_document(fish_type, catch_date)
+            document = utils.get_database_document(fish_type, catch_date, dataset_id)
 
             cursor = self.mongo_collection.find(document).limit(1)
 
@@ -183,7 +198,7 @@ class FishFrameModel():
     def get_fish_frame(self, fish_type):
         fish_data = self.data_frame
 
-        if fish_type in config.ALLOWED_FISH_TYPES:
+        if fish_type in config.FISH_TYPES:
             fish_data = fish_data.query("fish_type == '{}'".format(fish_type))
 
         return fish_data
@@ -202,12 +217,12 @@ class FishStatisticModel():
 
         return_dict = dict()
 
-        for year in config.YEAR_LIST:
+        for year in config.YEAR_RANGE:
 
             for attribute in self.plotable_attributes:
                 month_dict = dict()
 
-                for month_index, month_name in config.MONTH_DICT.items():
+                for month_index, month_name in config.MONTH_NAME_DICT.items():
                     month_data = self.get_frame_by_month(year, month_index)
                     data_series = month_data[attribute]
 
@@ -223,7 +238,7 @@ class FishStatisticModel():
     def __process_year_dict(self):
         return_dict = dict()
 
-        for year in config.YEAR_LIST:
+        for year in config.YEAR_RANGE:
             return_dict[year] = self.get_frame_by_year(year)
 
         return return_dict

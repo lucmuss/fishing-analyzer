@@ -8,9 +8,9 @@ import utils
 from data.environment.base_attribute import BaseAttribute
 
 
-class AirTemperature(BaseAttribute):
-    location = 'raw_data/relativ_humidity_air_temperature/produkt_tu_stunde_19490101_20171231_00282.txt'
-    attribute_name = 'air_temperature'
+class SunMinutes(BaseAttribute):
+    location = 'raw_data/sun_hours/produkt_sd_stunde_19490101_20171231_00282.txt'
+    attribute_name = 'sun_minutes'
 
     def __init__(self, data_cache=None):
 
@@ -37,18 +37,17 @@ class AirTemperature(BaseAttribute):
 
             for row in csv_reader:
 
-                station, date, typ, temperature, humidity, error = utils.strip_row(row)
+                station, date, typ, sun_minutes, error = utils.strip_row(row)
 
                 if self.__validate_row(row, station):
                     date_time = datetime.datetime.strptime(date, "%Y%m%d%H")
                     formatted_string = date_time.strftime(config.CATCH_DATE_FORMAT)
+                    sun_minutes = float(sun_minutes)
 
-                    float_temp = float(temperature)
-                    self.data_dict[formatted_string] = float_temp
+                    if sun_minutes:
+                        sun_minutes = sun_minutes / 60.0
 
-# from data.cache import DataCache
-
-# c = DataCache()
-# d = AirTemperature(data_cache=c)
-# s = d.series
-# f = 90
+                    if formatted_string in self.data_dict:
+                        self.data_dict[formatted_string] += sun_minutes
+                    else:
+                        self.data_dict[formatted_string] = sun_minutes

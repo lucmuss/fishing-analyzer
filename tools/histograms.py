@@ -11,7 +11,7 @@ import utils
 
 
 def store_histograms(fish_model):
-    for fish_type in config.ALLOWED_FISH_TYPES:
+    for fish_type in config.FISH_TYPES:
         fish_frame = fish_model.get_fish_frame(fish_type)
 
         if fish_frame.size >= config.MINIMAL_CATCHED_FISHES:
@@ -57,7 +57,7 @@ def store_histograms(fish_model):
 
 
 def store_combined_histograms(fish_model):
-    for fish_type in config.ALLOWED_FISH_TYPES:
+    for fish_type in config.FISH_TYPES:
         fish_frame = fish_model.get_fish_frame(fish_type)
 
         if fish_frame.size >= config.MINIMAL_CATCHED_FISHES:
@@ -118,7 +118,7 @@ def store_combined_histograms(fish_model):
 
 
 def store_distributions(fish_model):
-    for fish_type in config.ALLOWED_FISH_TYPES:
+    for fish_type in config.FISH_TYPES:
         fish_frame = fish_model.get_fish_frame(fish_type)
 
         if fish_frame.size >= config.MINIMAL_CATCHED_FISHES:

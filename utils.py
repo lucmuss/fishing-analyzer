@@ -7,7 +7,7 @@ import numpy
 import config
 
 
-def get_month_dict():
+def get_month_name_dict():
     return_dict = dict()
 
     for month_index in range(1, 12 + 1):
@@ -18,12 +18,12 @@ def get_month_dict():
     return return_dict
 
 
-def get_year_list():
-    date_time_start = datetime.datetime.strptime(config.MINIMAL_SERIES_START_YEAR, "%Y-%m-%d %H:00:00")
+def get_year_range():
+    date_time_start = datetime.datetime.strptime(config.MINIMAL_BEGIN_DATE, "%Y-%m-%d %H:00:00")
     year_start = date_time_start.strftime("%Y")
     year_start_int = int(year_start)
 
-    date_time_end = datetime.datetime.strptime(config.MAXIMAL_SERIES_END_YEAR, "%Y-%m-%d %H:00:00")
+    date_time_end = datetime.datetime.strptime(config.MAXIMAL_END_DATE, "%Y-%m-%d %H:00:00")
     year_end = date_time_end.strftime("%Y")
     year_end_int = int(year_end)
 
@@ -33,7 +33,7 @@ def get_year_list():
     return year_return_list
 
 
-def get_day_dict():
+def get_month_days_dict():
     return_dict = dict()
 
     for month_index in range(1, 31 + 1):
@@ -42,8 +42,18 @@ def get_day_dict():
     return return_dict
 
 
-get_month_name = lambda month_index: config.MONTH_DICT[str(month_index)]
-get_database_document = lambda fish_type, catch_date,: {"fish_type": fish_type, "catch_date": catch_date}
+get_month_name = lambda month_index: config.MONTH_NAME_DICT[str(month_index)]
+
+
+def get_database_document(fish_type, catch_date, dataset_id):
+    return_dict = dict(config.DATABASE_DOCUMENT)
+    keys = list(return_dict.keys())
+
+    return_dict[keys[0]] = fish_type
+    return_dict[keys[1]] = catch_date
+    return_dict[keys[2]] = dataset_id
+
+    return return_dict
 
 
 def attribute_to_name(attribute_name):

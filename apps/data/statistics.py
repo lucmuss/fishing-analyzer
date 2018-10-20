@@ -16,7 +16,7 @@ fish_data = fish_statistic_model
 def generate_year_options():
     return_list = list()
 
-    for year in config.YEAR_LIST:
+    for year in config.YEAR_RANGE:
         year_name = 'Year: {}'.format(year.title())
         return_list.append({'label': year_name, 'value': str(year)})
 
