@@ -28,8 +28,4 @@ def export_to_mongodb(data_base):
                     date_time = datetime.datetime.strptime(full_date_string, "%d.%m.%Y %H:%M:%S")
                     formatted_string = date_time.strftime(config.CATCH_DATE_FORMAT)
 
-                    data_base.add_fish(type=fish_type, date=formatted_string, id=None)
-
-
-#from data.model import database_model
-#export_to_mongodb(database_model)
+                    data_base.add_fish(fish_type=fish_type, catch_date=formatted_string, fisher_id=None)

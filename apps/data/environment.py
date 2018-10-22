@@ -11,6 +11,7 @@ from data.model import fish_statistic_model
 
 fish_data = fish_statistic_model
 
+
 def generate_year_options():
     return_list = list()
 

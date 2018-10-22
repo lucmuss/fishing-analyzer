@@ -25,9 +25,6 @@ class WaterTemperature(BaseAttribute):
             self.__read()
             self.data_cache.store_dict(self.attribute_name, self.data_dict)
 
-    def __validate_row(self, row):
-        return len(row) >= 3 and row[2] == "Rohdaten"
-
     def __read(self):
 
         with open(self.abs_file_location, newline='') as csv_file:
@@ -37,7 +34,7 @@ class WaterTemperature(BaseAttribute):
 
             for row in csv_reader:
 
-                if self.__validate_row(row):
+                if utils.validate_water_row(row):
 
                     date, temp, typ = utils.strip_row(row)
 

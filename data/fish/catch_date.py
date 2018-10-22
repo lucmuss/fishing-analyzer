@@ -3,6 +3,7 @@
 import pandas
 import config
 
+
 class CatchDate:
     attribute_name = 'fish_catch_date'
 
@@ -24,7 +25,6 @@ class CatchDate:
         reduced_series = series[config.MINIMAL_BEGIN_DATE:config.MAXIMAL_END_DATE]
         return reduced_series
 
-
     def __read(self, fish_list):
         for document in fish_list:
             catch_date = document['catch_date']
@@ -33,4 +33,3 @@ class CatchDate:
             catch_date = catch_date.strftime("%Y-%m-%d")
 
             self.__data_dict[formatted_string] = catch_date
-

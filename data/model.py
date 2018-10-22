@@ -24,7 +24,7 @@ from data.environment import RelativeHumidity
 from data.environment import SunHours
 from data.environment import SunMinutes
 from data.environment import WindStrength
-#from data.environment import GroundTemperature2
+# from data.environment import GroundTemperature2
 from data.environment import GroundTemperature5
 from data.environment import GroundTemperature10
 from data.environment import GroundTemperature20
@@ -58,7 +58,7 @@ class EnvironmentBaseModel:
         self.relative_humidity = RelativeHumidity(data_cache=cache)
         self.sun_hours = SunHours(data_cache=cache)
         self.sun_minutes = SunMinutes(data_cache=cache)
-        #self.ground_temperature_2 = GroundTemperature2(data_cache=cache)
+        # self.ground_temperature_2 = GroundTemperature2(data_cache=cache)
         self.ground_temperature_5 = GroundTemperature5(data_cache=cache)
         self.ground_temperature_10 = GroundTemperature10(data_cache=cache)
         self.ground_temperature_20 = GroundTemperature20(data_cache=cache)
@@ -72,7 +72,7 @@ class FullBaseModel:
         self.fish_model = fish_model
 
 
-class DatabaseModel():
+class DatabaseModel:
 
     def __init__(self):
         self.__initialize_mongo_db()
@@ -88,25 +88,25 @@ class DatabaseModel():
 
         collection_names = self.mongo_db.collection_names()
 
-        if not config.DATABASE_COLLECTION_NAME in collection_names:
+        if config.DATABASE_COLLECTION_NAME not in collection_names:
             self.mongo_db.create_collection(config.DATABASE_COLLECTION_NAME)
 
         self.mongo_collection = self.mongo_db.get_collection(config.DATABASE_COLLECTION_NAME)
 
-    def add_fish(self, type, date, id):
+    def add_fish(self, fish_type, catch_date, fisher_id):
 
-        default_id = id if id else config.DEFAULT_DATASET_ID
+        fisher_id = fisher_id if fisher_id else config.DEFAULT_DATASET_ID
 
-        return self._add_fish(type, date, default_id)
+        return self._add_fish(fish_type, catch_date, fisher_id)
 
-    def _add_fish(self, fish_type, catch_date, dataset_id):
+    def _add_fish(self, fish_type, catch_date, fisher_id):
         catch_date = datetime.datetime.strptime(catch_date, config.CATCH_DATE_FORMAT)
 
         return_value = False
 
         if fish_type in config.FISH_TYPES:
 
-            document = utils.get_database_document(fish_type, catch_date, dataset_id)
+            document = utils.get_database_document(fish_type, catch_date, fisher_id)
 
             cursor = self.mongo_collection.find(document).limit(1)
 
@@ -116,19 +116,19 @@ class DatabaseModel():
 
         return return_value
 
-    def remove_fish(self, type, date, id):
-        default_id = id if id else config.DEFAULT_DATASET_ID
+    def remove_fish(self, fish_type, catch_date, fisher_id):
+        fisher_id = fisher_id if fisher_id else config.DEFAULT_DATASET_ID
 
-        return self._remove_fish(type, date, default_id)
+        return self._remove_fish(fish_type, catch_date, fisher_id)
 
-    def _remove_fish(self, fish_type, catch_date, dataset_id):
+    def _remove_fish(self, fish_type, catch_date, fisher_id):
         catch_date = datetime.datetime.strptime(catch_date, config.CATCH_DATE_FORMAT)
 
         return_value = False
 
         if fish_type in config.FISH_TYPES:
 
-            document = utils.get_database_document(fish_type, catch_date, dataset_id)
+            document = utils.get_database_document(fish_type, catch_date, fisher_id)
 
             cursor = self.mongo_collection.find(document).limit(1)
 
@@ -150,12 +150,12 @@ class DatabaseModel():
         return self.__fish_list
 
 
-class DataFrameModel():
+class DataFrameModel:
 
     def __init__(self, full_base_model):
         self.full_base_model = full_base_model
 
-        is_plotable = lambda series: (series.dtype == 'float64')
+        is_plotable_func = lambda series: (series.dtype == 'float64')
 
         data_set = dict()
         all_attributes = list()
@@ -166,7 +166,7 @@ class DataFrameModel():
 
             all_attributes.append(value.attribute_name)
 
-            if is_plotable(series):
+            if is_plotable_func(series):
                 plotable_attributes.append(value.attribute_name)
                 series = utils.remove_outliers(series)
 
@@ -177,7 +177,7 @@ class DataFrameModel():
 
             all_attributes.append(value.attribute_name)
 
-            if is_plotable(series):
+            if is_plotable_func(series):
                 plotable_attributes.append(value.attribute_name)
                 series = utils.remove_outliers(series)
 
@@ -189,7 +189,7 @@ class DataFrameModel():
         self.data_frame = pandas.DataFrame(data_set)
 
 
-class FishFrameModel():
+class FishFrameModel:
 
     def __init__(self, data_frame_model):
         self.data_frame_model = data_frame_model
@@ -206,7 +206,7 @@ class FishFrameModel():
         return fish_data
 
 
-class FishStatisticModel():
+class FishStatisticModel:
 
     def __init__(self, data_frame_model):
         self.data_frame_model = data_frame_model

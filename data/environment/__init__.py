@@ -2,7 +2,6 @@
 
 
 from .air_temperature import AirTemperature
-#from .ground_temperature import GroundTemperature2
 from .ground_temperature import GroundTemperature5
 from .ground_temperature import GroundTemperature10
 from .ground_temperature import GroundTemperature20

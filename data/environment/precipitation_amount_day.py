@@ -25,9 +25,6 @@ class PrecipitationAmountDay(BaseAttribute):
             self.__read()
             self.data_cache.store_dict(self.attribute_name, self.data_dict)
 
-    def __validate_row(self, row, station):
-        return len(row) >= 5 and station == "282"
-
     def __read(self):
 
         day_dict = dict()
@@ -41,7 +38,7 @@ class PrecipitationAmountDay(BaseAttribute):
 
                 station, date, typ, precipitation_amount, a, b, error = utils.strip_row(row)
 
-                if self.__validate_row(row, station):
+                if utils.validate_row(row, station):
 
                     date_time = datetime.datetime.strptime(date, "%Y%m%d%H")
 
@@ -62,7 +59,7 @@ class PrecipitationAmountDay(BaseAttribute):
 
                 station, date, typ, precipitation_amount, a, b, error = utils.strip_row(row)
 
-                if self.__validate_row(row, station):
+                if utils.validate_row(row, station):
                     date_time = datetime.datetime.strptime(date, "%Y%m%d%H")
                     date_format = date_time.strftime(config.CATCH_DATE_FORMAT)
                     day_format = date_time.strftime(config.CATCH_DAY_FORMAT)

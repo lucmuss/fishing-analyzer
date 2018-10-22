@@ -25,9 +25,6 @@ class GroundTemperature2(BaseAttribute):
             self.__read()
             self.data_cache.store_dict(self.attribute_name, self.data_dict)
 
-    def __validate_row(self, row, station):
-        return len(row) >= 5 and station == "282"
-
     def __read(self):
 
         with open(self.abs_file_location, newline='') as csv_file:
@@ -39,7 +36,7 @@ class GroundTemperature2(BaseAttribute):
 
                 station, date, typ, temp2, temp5, temp10, temp20, temp50, temp100, e = utils.strip_row(row)
 
-                if self.__validate_row(row, station):
+                if utils.validate_row(row, station):
                     date_time = datetime.datetime.strptime(date, "%Y%m%d%H")
                     formatted_string = date_time.strftime(config.CATCH_DATE_FORMAT)
 
@@ -65,9 +62,6 @@ class GroundTemperature5(BaseAttribute):
             self.__read()
             self.data_cache.store_dict(self.attribute_name, self.data_dict)
 
-    def __validate_row(self, row, station):
-        return len(row) >= 5 and station == "282"
-
     def __read(self):
 
         with open(self.abs_file_location, newline='') as csv_file:
@@ -79,7 +73,7 @@ class GroundTemperature5(BaseAttribute):
 
                 station, date, typ, temp2, temp5, temp10, temp20, temp50, temp100, e = utils.strip_row(row)
 
-                if self.__validate_row(row, station):
+                if utils.validate_row(row, station):
                     date_time = datetime.datetime.strptime(date, "%Y%m%d%H")
                     formatted_string = date_time.strftime(config.CATCH_DATE_FORMAT)
 
@@ -105,9 +99,6 @@ class GroundTemperature10(BaseAttribute):
             self.__read()
             self.data_cache.store_dict(self.attribute_name, self.data_dict)
 
-    def __validate_row(self, row, station):
-        return len(row) >= 5 and station == "282"
-
     def __read(self):
 
         with open(self.abs_file_location, newline='') as csv_file:
@@ -119,7 +110,7 @@ class GroundTemperature10(BaseAttribute):
 
                 station, date, typ, temp2, temp5, temp10, temp20, temp50, temp100, e = utils.strip_row(row)
 
-                if self.__validate_row(row, station):
+                if utils.validate_row(row, station):
                     date_time = datetime.datetime.strptime(date, "%Y%m%d%H")
                     formatted_string = date_time.strftime(config.CATCH_DATE_FORMAT)
 
@@ -145,9 +136,6 @@ class GroundTemperature20(BaseAttribute):
             self.__read()
             self.data_cache.store_dict(self.attribute_name, self.data_dict)
 
-    def __validate_row(self, row, station):
-        return len(row) >= 5 and station == "282"
-
     def __read(self):
 
         with open(self.abs_file_location, newline='') as csv_file:
@@ -159,7 +147,7 @@ class GroundTemperature20(BaseAttribute):
 
                 station, date, typ, temp2, temp5, temp10, temp20, temp50, temp100, e = utils.strip_row(row)
 
-                if self.__validate_row(row, station):
+                if utils.validate_row(row, station):
                     date_time = datetime.datetime.strptime(date, "%Y%m%d%H")
                     formatted_string = date_time.strftime(config.CATCH_DATE_FORMAT)
 
@@ -185,9 +173,6 @@ class GroundTemperature50(BaseAttribute):
             self.__read()
             self.data_cache.store_dict(self.attribute_name, self.data_dict)
 
-    def __validate_row(self, row, station):
-        return len(row) >= 5 and station == "282"
-
     def __read(self):
 
         with open(self.abs_file_location, newline='') as csv_file:
@@ -199,7 +184,7 @@ class GroundTemperature50(BaseAttribute):
 
                 station, date, typ, temp2, temp5, temp10, temp20, temp50, temp100, e = utils.strip_row(row)
 
-                if self.__validate_row(row, station):
+                if utils.validate_row(row, station):
                     date_time = datetime.datetime.strptime(date, "%Y%m%d%H")
                     formatted_string = date_time.strftime(config.CATCH_DATE_FORMAT)
 
@@ -225,9 +210,6 @@ class GroundTemperature100(BaseAttribute):
             self.__read()
             self.data_cache.store_dict(self.attribute_name, self.data_dict)
 
-    def __validate_row(self, row, station):
-        return len(row) >= 5 and station == "282"
-
     def __read(self):
 
         with open(self.abs_file_location, newline='') as csv_file:
@@ -239,7 +221,7 @@ class GroundTemperature100(BaseAttribute):
 
                 station, date, typ, temp2, temp5, temp10, temp20, temp50, temp100, e = utils.strip_row(row)
 
-                if self.__validate_row(row, station):
+                if utils.validate_row(row, station):
                     date_time = datetime.datetime.strptime(date, "%Y%m%d%H")
                     formatted_string = date_time.strftime(config.CATCH_DATE_FORMAT)
 

@@ -163,9 +163,8 @@ def store_distributions(fish_model):
 
                     plotly.offline.plot(figure, filename=file_path, auto_open=False)
 
+# from data.model import fish_frame_model
 
-from data.model import fish_frame_model
-
-store_distributions(fish_frame_model)
-store_histograms(fish_frame_model)
-store_combined_histograms(fish_frame_model)
+# store_distributions(fish_frame_model)
+# store_histograms(fish_frame_model)
+# store_combined_histograms(fish_frame_model)

@@ -89,3 +89,11 @@ def series_to_graph(panda_series):
     y_values = list(panda_series.get_values())
 
     return x_values, y_values
+
+
+def validate_row(row, station):
+    return len(row) >= 5 and station == "282"
+
+
+def validate_water_row(row):
+    return len(row) >= 3 and row[2] == "Rohdaten"
