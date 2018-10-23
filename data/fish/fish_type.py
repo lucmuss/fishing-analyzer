@@ -1,6 +1,5 @@
 # coding: utf-8
 
-import pandas
 import config
 from data.environment.base_attribute import BaseAttribute
 

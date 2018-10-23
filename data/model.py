@@ -157,8 +157,6 @@ class DataFrameModel:
     def __init__(self, full_base_model):
         self.full_base_model = full_base_model
 
-        is_plotable_func = lambda series: (series.dtype == 'float64')
-
         data_set = dict()
         all_attributes = list()
         plotable_attributes = list()
@@ -168,7 +166,7 @@ class DataFrameModel:
 
             all_attributes.append(value.attribute_name)
 
-            if is_plotable_func(series):
+            if utils.is_plotable(series):
                 plotable_attributes.append(value.attribute_name)
                 series = utils.remove_outliers(series)
 
@@ -179,7 +177,7 @@ class DataFrameModel:
 
             all_attributes.append(value.attribute_name)
 
-            if is_plotable_func(series):
+            if utils.is_plotable(series):
                 plotable_attributes.append(value.attribute_name)
                 series = utils.remove_outliers(series)
 

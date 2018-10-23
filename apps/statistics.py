@@ -42,8 +42,8 @@ def extract_data_values(year, attribute, month_statistics):
     return x_values, y_values
 
 
-text_description = '''The data set was collected form different kinds 
-of fish catches in the river Baunach.'''
+text_description = '''The data set was collected form different kinds
+ of fish catches in the river Baunach.'''
 
 text_header = 'Visualization of the Month Statistics of the River Baunach'
 

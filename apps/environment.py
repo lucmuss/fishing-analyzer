@@ -52,8 +52,8 @@ def generate_day_options():
     return return_list
 
 
-text_description = '''The data set was collected form different kinds 
-of fish catches in the river Baunach.'''
+text_description = '''The data set was collected form different kinds
+ of fish catches in the river Baunach.'''
 
 text_header = 'Visualization of Environmental Data of the River Baunach'
 

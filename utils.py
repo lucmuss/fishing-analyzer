@@ -42,7 +42,8 @@ def get_month_days_dict():
     return return_dict
 
 
-get_month_name = lambda month_index: config.MONTH_NAME_DICT[str(month_index)]
+def get_month_name(month_index):
+    return config.MONTH_NAME_DICT[str(month_index)]
 
 
 def get_database_document(fish_type, catch_date, dataset_id):
@@ -66,7 +67,12 @@ def attribute_to_name(attribute_name):
     return attribute_title
 
 
-fish_and_attribute = lambda fish_type, attribute_name: "{}: {}".format(fish_type, attribute_name)
+def is_plotable(series):
+    return (series.dtype == 'float64')
+
+
+def fish_and_attribute(fish_type, attribute_name):
+    return "{}: {}".format(fish_type, attribute_name)
 
 
 def strip_row(row):

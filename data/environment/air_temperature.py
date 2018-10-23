@@ -19,11 +19,11 @@ class AirTemperature(BaseAttribute):
                                file_location=self.file_location)
 
         self.data_cache = data_cache
-        self.data_dict = self.data_cache.load_dict(attribute_name = self.attribute_name)
+        self.data_dict = self.data_cache.load_dict(attribute_name=self.attribute_name)
 
         if not self.data_dict:
             self.__read()
-            self.data_cache.store_dict(attribute_name = self.attribute_name, store_dict = self.data_dict)
+            self.data_cache.store_dict(attribute_name=self.attribute_name, store_dict=self.data_dict)
 
     def __read(self):
 
