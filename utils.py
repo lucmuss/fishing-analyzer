@@ -5,6 +5,12 @@ import numpy
 import config
 
 
+def clean_series(attribute_series):
+    nan_series = attribute_series.replace([numpy.inf, -numpy.inf], numpy.nan)
+    clean_series = nan_series.fillna(0.0)
+    return clean_series
+
+
 def get_database_document(fish_type, catch_date, dataset_id):
     return_dict = dict(config.DATABASE_DOCUMENT)
     keys = list(return_dict.keys())
@@ -61,6 +67,11 @@ def series_to_graph(panda_series):
     return x_values, y_values
 
 
+def safe_series_to_graph(panda_series):
+    clean = clean_series(panda_series)
+    return series_to_graph(clean)
+
+
 def validate_row(row, station):
     return len(row) >= 5 and station == "282"
 
@@ -84,3 +95,7 @@ def get_layout_dict(title='Default', x_title='Werte', y_title='Anzahl', height=c
         'width': width
     }
     return return_dict
+
+
+def is_valid_fish_frame(data_frame):
+    return data_frame.size >= config.MINIMAL_CATCHED_FISHES

@@ -9,17 +9,24 @@ from dash.dependencies import Input, Output
 from apps import environment
 from apps import statistics
 from apps import histograms
+from apps import distributions
 
 main_navigation_bar = html.Div([
-    html.Br(),
-    dcc.Link('Statistics', href='/apps/statistics'),
-    html.Br(),
-    dcc.Link('Environmental', href='/apps/environment'),
-    html.Br(),
-    dcc.Link('Histograms', href='/apps/histograms'),
-    html.Br(),
-    html.Br(),
-    html.Br(),
+
+    html.Nav(
+        html.Div(
+            html.Ul(
+                children=[
+                    html.Li(dcc.Link('Statistics', href='/apps/statistics')),
+                    html.Li(dcc.Link('Environmental', href='/apps/environment')),
+                    html.Li(dcc.Link('Histograms', href='/apps/histograms')),
+                    html.Li(dcc.Link('Distributions', href='/apps/distributions')),
+                ],
+                id='main_navigation'
+            )
+        )
+    ),
+
     html.Br(),
 ])
 
@@ -43,6 +50,8 @@ def display_page(pathname):
         return statistics.layout
     elif pathname == '/apps/histograms':
         return histograms.layout
+    elif pathname == '/apps/distributions':
+        return distributions.layout
     else:
         return "Main Page"
 

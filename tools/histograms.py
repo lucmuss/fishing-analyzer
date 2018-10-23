@@ -8,7 +8,7 @@ import numpy
 import plotly.figure_factory as figure_factory
 
 import utils
-from utils import get_layout_dict
+from utils import get_layout_dict, is_valid_fish_frame
 
 
 def get_clean_values(attribute_series):
@@ -19,10 +19,6 @@ def get_clean_values(attribute_series):
 
 def has_valid_data_values(cleaned_attribute_values):
     return cleaned_attribute_values.min() < cleaned_attribute_values.max()
-
-
-def is_valid_frame(data_frame):
-    return data_frame.size >= config.MINIMAL_CATCHED_FISHES
 
 
 def make_html_location(path_list=None, filename=''):
@@ -40,7 +36,7 @@ def store_histograms_separate(fish_model):
     for fish_type in config.FISH_TYPES:
         fish_frame = fish_model.get_fish_frame(fish_type)
 
-        if is_valid_frame(fish_frame):
+        if is_valid_fish_frame(fish_frame):
 
             for attribute in fish_model.plotable_attributes:
 
@@ -71,7 +67,7 @@ def store_histograms_summary(fish_model):
     for fish_type in config.FISH_TYPES:
         fish_frame = fish_model.get_fish_frame(fish_type)
 
-        if is_valid_frame(fish_frame):
+        if is_valid_fish_frame(fish_frame):
 
             subplots_titles = [utils.attribute_to_name(attribute) for attribute in
                                fish_model.plotable_attributes]
@@ -126,7 +122,7 @@ def store_distributions_summary(fish_model):
     for fish_type in config.FISH_TYPES:
         fish_frame = fish_model.get_fish_frame(fish_type)
 
-        if is_valid_frame(fish_frame):
+        if is_valid_fish_frame(fish_frame):
 
             attribute_list = list()
             attribute_value_list = list()
@@ -158,7 +154,7 @@ def store_distributions_separate(fish_model):
     for fish_type in config.FISH_TYPES:
         fish_frame = fish_model.get_fish_frame(fish_type)
 
-        if is_valid_frame(fish_frame):
+        if is_valid_fish_frame(fish_frame):
 
             for attribute in fish_model.plotable_attributes:
 
