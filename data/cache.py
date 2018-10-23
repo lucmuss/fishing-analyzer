@@ -14,15 +14,18 @@ class DataCache:
         self.shelve_db = shelve.open(abs_file_path)
 
     def load_dict(self, attribute_name):
-        return_object = dict()
+        return_dict = dict()
 
         if attribute_name in self.shelve_db:
-            return_object = self.shelve_db[attribute_name]
+            return_dict = self.shelve_db[attribute_name]
 
-        return return_object
+        return return_dict
 
-    def store_dict(self, attribute_name, object_dict):
-        self.shelve_db[attribute_name] = object_dict
+    def store_dict(self, attribute_name, store_dict):
+        self.shelve_db[attribute_name] = store_dict
 
-    def __exit__(self):
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
         self.shelve_db.close()

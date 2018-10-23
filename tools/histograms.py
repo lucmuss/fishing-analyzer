@@ -10,7 +10,7 @@ import plotly.figure_factory as figure_factory
 import utils
 
 
-def store_histograms(fish_model):
+def store_histograms_separate(fish_model):
     for fish_type in config.FISH_TYPES:
         fish_frame = fish_model.get_fish_frame(fish_type)
 
@@ -56,7 +56,7 @@ def store_histograms(fish_model):
                     plotly.offline.plot(figure, filename=file_path, auto_open=False)
 
 
-def store_combined_histograms(fish_model):
+def store_histograms_summary(fish_model):
     for fish_type in config.FISH_TYPES:
         fish_frame = fish_model.get_fish_frame(fish_type)
 
@@ -117,7 +117,7 @@ def store_combined_histograms(fish_model):
             plotly.offline.plot(figure, filename=file_path, auto_open=False)
 
 
-def store_distributions(fish_model):
+def store_distributions_separate(fish_model):
     for fish_type in config.FISH_TYPES:
         fish_frame = fish_model.get_fish_frame(fish_type)
 

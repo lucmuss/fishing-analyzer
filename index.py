@@ -5,14 +5,13 @@ from mainapp import app
 import dash_core_components as dcc
 import dash_html_components as html
 from dash.dependencies import Input, Output
-from apps.data import environment
-from apps.data import statistics
+from apps import environment, statistics
 
 main_navigation_bar = html.Div([
     html.Br(),
-    dcc.Link('Go to Month Statistics', href='/apps/data/statistics'),
+    dcc.Link('Go to Month Statistics', href='/apps/statistics'),
     html.Br(),
-    dcc.Link('Go to Environmental Data', href='/apps/data/environment'),
+    dcc.Link('Go to Environmental Data', href='/apps/environment'),
     html.Br(),
 ])
 
@@ -30,9 +29,9 @@ app.layout = layout
 @app.callback(Output('page_content', 'children'),
               [Input('url', 'pathname')])
 def display_page(pathname):
-    if pathname == '/apps/data/environment':
+    if pathname == '/apps/environment':
         return environment.layout
-    elif pathname == '/apps/data/statistics':
+    elif pathname == '/apps/statistics':
         return statistics.layout
     else:
         return "404"

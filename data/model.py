@@ -58,7 +58,6 @@ class EnvironmentBaseModel:
         self.relative_humidity = RelativeHumidity(data_cache=cache)
         self.sun_hours = SunHours(data_cache=cache)
         self.sun_minutes = SunMinutes(data_cache=cache)
-        # self.ground_temperature_2 = GroundTemperature2(data_cache=cache)
         self.ground_temperature_5 = GroundTemperature5(data_cache=cache)
         self.ground_temperature_10 = GroundTemperature10(data_cache=cache)
         self.ground_temperature_20 = GroundTemperature20(data_cache=cache)
@@ -78,7 +77,10 @@ class DatabaseModel:
         self.__initialize_mongo_db()
         self.__fish_list = list()
 
-    def __del__(self):
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
         self.mongo_client.close()
 
     def __initialize_mongo_db(self):

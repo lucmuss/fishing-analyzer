@@ -9,21 +9,21 @@ from data.environment.base_attribute import BaseAttribute
 
 
 class WindStrength(BaseAttribute):
-    location = 'raw_data/wind_strength/produkt_ff_stunde_19490101_20171231_00282.txt'
+    file_location = 'raw_data/wind_strength/produkt_ff_stunde_19490101_20171231_00282.txt'
     attribute_name = 'wind_strength'
 
     def __init__(self, data_cache=None):
 
         BaseAttribute.__init__(self,
                                attribute_name=self.attribute_name,
-                               location=self.location)
+                               file_location=self.file_location)
 
         self.data_cache = data_cache
-        self.data_dict = self.data_cache.load_dict(self.attribute_name)
+        self.data_dict = self.data_cache.load_dict(attribute_name=self.attribute_name)
 
         if not self.data_dict:
             self.__read()
-            self.data_cache.store_dict(self.attribute_name, self.data_dict)
+            self.data_cache.store_dict(attribute_name=self.attribute_name, store_dict=self.data_dict)
 
     def __read(self):
 

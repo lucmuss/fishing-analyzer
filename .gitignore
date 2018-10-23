@@ -2,3 +2,7 @@
 *.pyc
 /git/
 *.log
+*.html
+/old/
+*.cache.dat
+*.cache.dir
