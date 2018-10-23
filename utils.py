@@ -1,49 +1,8 @@
 # coding: utf-8
 
-import datetime
-
 import numpy
 
 import config
-
-
-def get_month_name_dict():
-    return_dict = dict()
-
-    for month_index in range(1, 12 + 1):
-        month_string = str(month_index)
-        month_name = datetime.date(2017, month_index, 1).strftime('%B')
-        return_dict[month_string] = month_name
-
-    return return_dict
-
-
-def get_year_range():
-    date_time_start = datetime.datetime.strptime(config.MINIMAL_BEGIN_DATE, "%Y-%m-%d %H:00:00")
-    year_start = date_time_start.strftime("%Y")
-    year_start_int = int(year_start)
-
-    date_time_end = datetime.datetime.strptime(config.MAXIMAL_END_DATE, "%Y-%m-%d %H:00:00")
-    year_end = date_time_end.strftime("%Y")
-    year_end_int = int(year_end)
-
-    year_range = range(year_start_int, year_end_int + 1)
-    year_return_list = [str(year) for year in year_range]
-
-    return year_return_list
-
-
-def get_month_days_dict():
-    return_dict = dict()
-
-    for month_index in range(1, 31 + 1):
-        return_dict[month_index] = month_index
-
-    return return_dict
-
-
-def get_month_name(month_index):
-    return config.MONTH_NAME_DICT[str(month_index)]
 
 
 def get_database_document(fish_type, catch_date, dataset_id):
@@ -58,21 +17,26 @@ def get_database_document(fish_type, catch_date, dataset_id):
 
 
 def attribute_to_name(attribute_name):
-    attribute_list = attribute_name.split('_')
+    return attribute_name.title().replace('_', ' ')
 
-    attribute_list = [attribute.title() for attribute in attribute_list]
 
-    attribute_title = ' '.join(attribute_list)
+def fishtype_to_name(fishtype):
+    return fishtype
 
-    return attribute_title
+
+def get_graph_name(attribute_name, fish_type):
+    fishtype = fishtype_to_name(fish_type)
+    attribute = attribute_to_name(attribute_name)
+
+    return "{} - {}".format(fishtype, attribute)
 
 
 def is_plotable(series):
-    return (series.dtype == 'float64')
+    return series.dtype == 'float64'
 
 
 def fish_and_attribute(fish_type, attribute_name):
-    return "{}: {}".format(fish_type, attribute_name)
+    return "{} -> {}".format(fish_type, attribute_name)
 
 
 def strip_row(row):
@@ -103,3 +67,20 @@ def validate_row(row, station):
 
 def validate_water_row(row):
     return len(row) >= 3 and row[2] == "Rohdaten"
+
+
+def get_layout_dict(title='Default', x_title='Werte', y_title='Anzahl', height=config.DIAGRAM_HEIGTH,
+                    width=config.DIAGRAM_WIDTH):
+    return_dict = {
+        'title': title,
+        'xaxis': dict(
+            title=x_title
+        ),
+        'yaxis': dict(
+            title=y_title
+        ),
+        'bargap': 0.1,
+        'height': height,
+        'width': width
+    }
+    return return_dict

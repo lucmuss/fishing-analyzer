@@ -8,29 +8,28 @@ import pymongo
 
 import utils
 
-from data.fish import CatchMonth
-from data.fish import CatchHour
-from data.fish import CatchDate
-from data.fish import FishType
+from data.fish.catch_month import CatchMonth
+from data.fish.catch_hour import CatchHour
+from data.fish.catch_date import CatchDate
+from data.fish.fish_type import FishType
 
 from data.cache import DataCache
 
-from data.environment import WaterTemperature
-from data.environment import AirTemperature
-from data.environment import WindDirection
-from data.environment import PrecipitationAmount
-from data.environment import PrecipitationAmountDay
-from data.environment import RelativeHumidity
-from data.environment import SunHours
-from data.environment import SunMinutes
-from data.environment import WindStrength
-# from data.environment import GroundTemperature2
-from data.environment import GroundTemperature5
-from data.environment import GroundTemperature10
-from data.environment import GroundTemperature20
-from data.environment import GroundTemperature50
-from data.environment import GroundTemperature100
-from data.environment import RecordDateHour
+from data.environment.water_temperature import WaterTemperature
+from data.environment.air_temperature import AirTemperature
+from data.environment.wind_direction import WindDirection
+from data.environment.precipitation_amount import PrecipitationAmount
+from data.environment.precipitation_amount_day import PrecipitationAmountDay
+from data.environment.relative_humidity import RelativeHumidity
+from data.environment.sun_minutes_day import SunMinutesDay
+from data.environment.sun_minutes import SunMinutes
+from data.environment.wind_strength import WindStrength
+from data.environment.ground_temperature import GroundTemperature5
+from data.environment.ground_temperature import GroundTemperature10
+from data.environment.ground_temperature import GroundTemperature20
+from data.environment.ground_temperature import GroundTemperature50
+from data.environment.ground_temperature import GroundTemperature100
+from data.environment.record_date_hour import RecordDateHour
 
 
 class FishBaseModel:
@@ -56,7 +55,7 @@ class EnvironmentBaseModel:
         self.precipitation_amount = PrecipitationAmount(data_cache=cache)
         self.precipitation_amount_day = PrecipitationAmountDay(data_cache=cache)
         self.relative_humidity = RelativeHumidity(data_cache=cache)
-        self.sun_hours = SunHours(data_cache=cache)
+        self.sun_hours = SunMinutesDay(data_cache=cache)
         self.sun_minutes = SunMinutes(data_cache=cache)
         self.ground_temperature_5 = GroundTemperature5(data_cache=cache)
         self.ground_temperature_10 = GroundTemperature10(data_cache=cache)
@@ -158,16 +157,18 @@ class DataFrameModel:
         self.full_base_model = full_base_model
 
         data_set = dict()
-        all_attributes = list()
-        plotable_attributes = list()
+
+        plotable_attributes = set()
+        environment_attributes = set()
+        fish_attributes = set()
 
         for attribute, value in self.full_base_model.environment_model.__dict__.items():
             series = value.series
 
-            all_attributes.append(value.attribute_name)
+            environment_attributes.add(attribute)
 
             if utils.is_plotable(series):
-                plotable_attributes.append(value.attribute_name)
+                plotable_attributes.add(value.attribute_name)
                 series = utils.remove_outliers(series)
 
             data_set[value.attribute_name] = series
@@ -175,16 +176,17 @@ class DataFrameModel:
         for attribute, value in self.full_base_model.fish_model.__dict__.items():
             series = value.series
 
-            all_attributes.append(value.attribute_name)
+            fish_attributes.add(value.attribute_name)
 
             if utils.is_plotable(series):
-                plotable_attributes.append(value.attribute_name)
+                plotable_attributes.add(value.attribute_name)
                 series = utils.remove_outliers(series)
 
             data_set[value.attribute_name] = series
 
         self.plotable_attributes = plotable_attributes
-        self.all_attributes = all_attributes
+        self.environment_attributes = environment_attributes
+        self.fish_attributes = fish_attributes
 
         self.data_frame = pandas.DataFrame(data_set)
 
@@ -194,6 +196,8 @@ class FishFrameModel:
     def __init__(self, data_frame_model):
         self.data_frame_model = data_frame_model
         self.plotable_attributes = self.data_frame_model.plotable_attributes
+        self.environment_attributes = self.data_frame_model.environment_attributes
+        self.fish_attributes = self.data_frame_model.fish_attributes
 
         self.data_frame = self.data_frame_model.data_frame.query("fish_type == fish_type")
 
@@ -206,11 +210,13 @@ class FishFrameModel:
         return fish_data
 
 
-class FishStatisticModel:
+class StatisticModel:
 
     def __init__(self, data_frame_model):
         self.data_frame_model = data_frame_model
         self.plotable_attributes = self.data_frame_model.plotable_attributes
+        self.environment_attributes = self.data_frame_model.environment_attributes
+        self.fish_attributes = self.data_frame_model.fish_attributes
 
         self.month_statistics = self.__process_month_statistics()
         self.data_year_dict = self.__process_year_dict()
@@ -228,20 +234,23 @@ class FishStatisticModel:
                     month_data = self.get_frame_by_month(year, month_index)
                     data_series = month_data[attribute]
 
-                    attribute_mean = data_series.mean()
-                    attribute_sum = data_series.sum()
+                    mean = data_series.mean()
+                    sum = data_series.sum()
+                    max = data_series.max()
+                    min = data_series.min()
 
-                    month_dict[month_index] = (attribute_mean, attribute_sum)
+                    month_dict[month_index] = {'mean': mean,
+                                               'sum': sum,
+                                               'min': min,
+                                               'max': max}
 
                 return_dict[(year, attribute)] = month_dict
 
         return return_dict
 
     def __process_year_dict(self):
-        return_dict = dict()
-
-        for year in config.YEAR_RANGE:
-            return_dict[year] = self.get_frame_by_year(year)
+        return_dict = {year: self.get_frame_by_year(year)
+                       for year in config.YEAR_RANGE}
 
         return return_dict
 
@@ -289,4 +298,4 @@ full_base_model = FullBaseModel(environment_model=environment_base_model, fish_m
 
 data_frame_model = DataFrameModel(full_base_model)
 fish_frame_model = FishFrameModel(data_frame_model)
-fish_statistic_model = FishStatisticModel(data_frame_model)
+statistic_model = StatisticModel(data_frame_model)

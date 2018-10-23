@@ -29,3 +29,8 @@ class DataCache:
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.shelve_db.close()
+
+
+if __name__ == '__main__':
+    with DataCache as dc:
+        air = dc.load_dict('air_temperature')

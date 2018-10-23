@@ -5,13 +5,21 @@ from mainapp import app
 import dash_core_components as dcc
 import dash_html_components as html
 from dash.dependencies import Input, Output
-from apps import environment, statistics
+
+from apps import environment
+from apps import statistics
+from apps import histograms
 
 main_navigation_bar = html.Div([
     html.Br(),
-    dcc.Link('Go to Month Statistics', href='/apps/statistics'),
+    dcc.Link('Statistics', href='/apps/statistics'),
     html.Br(),
-    dcc.Link('Go to Environmental Data', href='/apps/environment'),
+    dcc.Link('Environmental', href='/apps/environment'),
+    html.Br(),
+    dcc.Link('Histograms', href='/apps/histograms'),
+    html.Br(),
+    html.Br(),
+    html.Br(),
     html.Br(),
 ])
 
@@ -33,8 +41,10 @@ def display_page(pathname):
         return environment.layout
     elif pathname == '/apps/statistics':
         return statistics.layout
+    elif pathname == '/apps/histograms':
+        return histograms.layout
     else:
-        return "404"
+        return "Main Page"
 
 
 if __name__ == '__main__':

@@ -4,21 +4,30 @@ import dash_html_components as html
 import dash_core_components as dcc
 from dash.dependencies import Input
 from dash.dependencies import Output
+import plotly
 
-import config
 import utils
+import config
 from mainapp import app
-from data.model import fish_statistic_model
+from data.model import statistic_model
 
-fish_data = fish_statistic_model
+fish_data = statistic_model
 
 
 def generate_year_options():
     return_list = list()
 
     for year in config.YEAR_RANGE:
-        year_name = 'Year: {}'.format(year.title())
-        return_list.append({'label': year_name, 'value': str(year)})
+        return_list.append({'label': year, 'value': year})
+
+    return return_list
+
+
+def generate_method_options():
+    return_list = list()
+
+    for method in config.STATISTIC_METHODS:
+        return_list.append({'label': method.title(), 'value': method})
 
     return return_list
 
@@ -27,44 +36,63 @@ def generate_attribute_options(fish_data):
     return_list = list()
 
     for attribute in fish_data.plotable_attributes:
-        attribute_name = 'Attribute: {}'.format(attribute.title().replace('_', ' '))
-        return_list.append({'label': attribute_name, 'value': str(attribute)})
+        name = utils.attribute_to_name(attribute)
+        return_list.append({'label': name, 'value': attribute})
 
     return return_list
 
 
-def extract_data_values(year, attribute, month_statistics):
+def extract_data_values(year, attribute, method, month_statistics):
     data_dict = month_statistics[(year, attribute)]
 
-    x_values = [utils.get_month_name(month_index) for month_index in data_dict.keys()]
-    y_values = [mean_value for mean_value, sum_values in data_dict.values()]
+    x_values = [config.get_month_name(month_index) for month_index in data_dict.keys()]
+    y_values = [value[method] for key, value in data_dict.items()]
 
     return x_values, y_values
 
 
-text_description = '''The data set was collected form different kinds
- of fish catches in the river Baunach.'''
-
-text_header = 'Visualization of the Month Statistics of the River Baunach'
-
 month_statistics = fish_data.month_statistics
-
-default_graph_name = "{}".format(config.DEFAULT_ATTRIBUTE)
-default_graph_title = "{} {}".format(config.DEFAULT_ATTRIBUTE, config.DEFAULT_YEAR)
 
 year_options = generate_year_options()
 default_year = config.DEFAULT_YEAR
 
+method_options = generate_method_options()
+default_method = config.DEFAULT_STATISTIC_METHOD
+
 attribute_options = generate_attribute_options(fish_data)
 default_attribute = config.DEFAULT_ATTRIBUTE
 
-default_x_values, default_y_values = extract_data_values(default_year, default_attribute, month_statistics)
+default_name = utils.attribute_to_name(default_attribute)
+default_title = utils.get_graph_name(attribute_name=default_attribute,
+                                     fish_type=default_year)
+
+default_x_values, default_y_values = extract_data_values(default_year, default_attribute,
+                                                         default_method,
+                                                         month_statistics)
+
+
+def generate_bar(x_values=default_x_values, y_values=default_y_values,
+                 name=default_name,
+                 title=default_title):
+    bar = plotly.graph_objs.Bar(
+        x=x_values,
+        y=y_values,
+        name=name
+    )
+
+    data = [bar]
+    layout = plotly.graph_objs.Layout()
+
+    layout_dict = utils.get_layout_dict(title=title)
+
+    layout.update(layout_dict)
+
+    figure = plotly.graph_objs.Figure(data=data, layout=layout)
+
+    return figure
+
 
 layout = html.Div(children=[
-
-    html.H2(children=text_header),
-
-    dcc.Markdown(children=text_description),
 
     html.Div(children=[
 
@@ -82,21 +110,19 @@ layout = html.Div(children=[
             value=default_attribute
         ),
 
+        html.Label('Method Selection'),
+        dcc.Dropdown(
+            id='month_statistics_method_selection',
+            options=method_options,
+            value=default_method
+        ),
+
     ]),
 
     dcc.Graph(
         id='month_statistics',
 
-        figure={
-            'data': [
-                {'x': default_x_values, 'y': default_y_values,
-                 'type': 'bar',
-                 'name': default_graph_name},
-            ],
-            'layout': {
-                'title': default_graph_title
-            }
-        }
+        figure=generate_bar()
     )
 
 ])
@@ -105,24 +131,15 @@ layout = html.Div(children=[
 @app.callback(
     Output('month_statistics', 'figure'),
     [Input('month_statistics_year_selection', 'value'),
-     Input('month_statistics_attribute_selection', 'value')])
-def update_month_statistics(year_value, attribute_name):
-    x_values, y_values = extract_data_values(year_value, attribute_name, month_statistics)
+     Input('month_statistics_attribute_selection', 'value'),
+     Input('month_statistics_method_selection', 'value')])
+def update_month_statistics(year_value, attribute_name, method):
+    x_values, y_values = extract_data_values(year_value, attribute_name, method, month_statistics)
 
-    graph_name = "{}".format(attribute_name)
+    name = utils.attribute_to_name(attribute_name)
+    title = utils.get_graph_name(attribute_name=attribute_name, fish_type=year_value)
 
-    attribute_title = attribute_name.title().replace('_', ' ')
-    year_title = year_value.title()
+    figure = generate_bar(x_values=x_values, y_values=y_values,
+                          name=name, title=title)
 
-    graph_title = "{} {}".format(attribute_title, year_title)
-
-    return_figure = {
-        'data': [
-            {'x': x_values, 'y': y_values, 'type': 'bar', 'name': graph_name},
-        ],
-        'layout': {
-            'title': graph_title
-        }
-    }
-
-    return return_figure
+    return figure

@@ -8,9 +8,9 @@ import utils
 from data.environment.base_attribute import BaseAttribute
 
 
-class SunHours(BaseAttribute):
+class SunMinutesDay(BaseAttribute):
     file_location = 'raw_data/sun_hours/produkt_sd_stunde_19490101_20171231_00282.txt'
-    attribute_name = 'sun_hours'
+    attribute_name = 'sun_minutes_day'
 
     def __init__(self, data_cache=None):
 
@@ -65,6 +65,6 @@ class SunHours(BaseAttribute):
                     date_format = date_time.strftime(config.CATCH_DATE_FORMAT)
                     day_format = date_time.strftime(config.CATCH_DAY_FORMAT)
 
-                    hour_value = float(day_dict[day_format]) / 60.0
+                    hour_value = float(day_dict[day_format])
 
                     self.data_dict[date_format] = hour_value
