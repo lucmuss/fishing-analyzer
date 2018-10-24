@@ -91,8 +91,6 @@ def get_layout_dict(title='Default', x_title='Werte', y_title='Anzahl', height=c
             title=y_title
         ),
         'bargap': 0.1,
-        'height': height,
-        'width': width
     }
     return return_dict
 

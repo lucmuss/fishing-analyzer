@@ -11,23 +11,37 @@ from apps import statistics
 from apps import histograms
 from apps import distributions
 
-main_navigation_bar = html.Div([
+main_navigation_bar = html.Div(className='container mt-2', children=[
 
-    html.Nav(
-        html.Div(
-            html.Ul(
-                children=[
-                    html.Li(dcc.Link('Statistics', href='/apps/statistics')),
-                    html.Li(dcc.Link('Environmental', href='/apps/environment')),
-                    html.Li(dcc.Link('Histograms', href='/apps/histograms')),
-                    html.Li(dcc.Link('Distributions', href='/apps/distributions')),
-                ],
-                id='main_navigation'
-            )
-        )
-    ),
+    html.Div(className="row ml-2", children=[
+        html.Img(className="rounded", src='/assets/main_logo.jpg', width='100', height='100')],
+             ),
 
-    html.Br(),
+    html.Div(className="row mt-2", children=[
+        html.Ul(
+            id='main_navigation',
+            className='nav',
+            children=[
+                html.Li(className='nav-item',
+                        children=dcc.Link('Month Statistics',
+                                          className='nav-link',
+                                          href='/apps/statistics')),
+                html.Li(className='nav-item',
+                        children=dcc.Link('Environmental Data',
+                                          className='nav-link',
+                                          href='/apps/environment')),
+                html.Li(className='nav-item',
+                        children=dcc.Link('Histograms',
+                                          className='nav-link',
+                                          href='/apps/histograms')),
+                html.Li(className='nav-item',
+                        children=dcc.Link('Distributions',
+                                          className='nav-link',
+                                          href='/apps/distributions')),
+            ],
+        )]
+             ),
+
 ])
 
 layout = html.Div([
@@ -35,7 +49,7 @@ layout = html.Div([
     main_navigation_bar,
 
     dcc.Location(id='url', refresh=False),
-    html.Div(id='page_content')
+    html.Div(className='container mt-4', id='page_content')
 ])
 
 app.layout = layout

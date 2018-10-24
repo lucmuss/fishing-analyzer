@@ -56,7 +56,8 @@ default_title = utils.get_graph_name(attribute_name=default_attribute,
 def generate_distribution(x_values=default_x_values,
                           name=default_name,
                           title=default_title):
-    attribute_list = [name]
+    attribute_list = ['']
+    # attribute_list = [name]
     attribute_value_list = [list(x_values)]
 
     figure = figure_factory.create_distplot(hist_data=attribute_value_list,
@@ -71,28 +72,32 @@ def generate_distribution(x_values=default_x_values,
 
 layout = html.Div(children=[
 
-    html.Div(children=[
-
-        html.Label('Fish Selection'),
-        dcc.Dropdown(
-            id='fish_distributions_fish_selection',
-            options=fish_options,
-            value=default_fishtype
-        ),
-
-        html.Label('Attribute Selection'),
-        dcc.Dropdown(
-            id='fish_distributions_attribute_selection',
-            options=attribute_options,
-            value=default_attribute
-        ),
-
-    ]),
-
     dcc.Graph(
         id='fish_distributions',
         figure=generate_distribution()
-    )
+    ),
+
+    html.Form(children=[
+
+        html.Div(className='form-group float-left col-sm-6', children=[
+            html.Label('Fish Selection'),
+            dcc.Dropdown(
+                id='fish_distributions_fish_selection',
+                options=fish_options,
+                value=default_fishtype
+            ),
+        ]),
+
+        html.Div(className='form-group float-left col-sm-6', children=[
+            html.Label('Attribute Selection'),
+            dcc.Dropdown(
+                id='fish_distributions_attribute_selection',
+                options=attribute_options,
+                value=default_attribute
+            ),
+        ]),
+
+    ]),
 
 ])
 

@@ -96,43 +96,51 @@ def generate_line(x_values=default_x_values, y_values=default_y_values,
 
 layout = html.Div(children=[
 
-    html.Div(children=[
-
-        html.Label('Year Selection'),
-        dcc.Dropdown(
-            id='environment_data_year_selection',
-            options=year_options,
-            value=default_year
-        ),
-
-        html.Label('Month Selection'),
-        dcc.Dropdown(
-            id='environment_data_month_selection',
-            options=month_options,
-            value=default_month
-        ),
-
-        html.Label('Day Selection'),
-        dcc.Dropdown(
-            id='environment_data_day_selection',
-            options=day_options,
-            value=default_day
-        ),
-
-        html.Label('Attribute Selection'),
-        dcc.Dropdown(
-            id='environment_data_attribute_selection',
-            options=attribute_options,
-            value=default_attribute
-        ),
-
-    ]),
-
     dcc.Graph(
         id='environment_data',
 
         figure=generate_line()
-    )
+    ),
+
+    html.Form(children=[
+
+        html.Div(className='form-group float-left col-sm-6', children=[
+            html.Label('Year Selection'),
+            dcc.Dropdown(
+                id='environment_data_year_selection',
+                options=year_options,
+                value=default_year
+            ),
+        ]),
+
+        html.Div(className='form-group float-left col-sm-6', children=[
+            html.Label('Month Selection'),
+            dcc.Dropdown(
+                id='environment_data_month_selection',
+                options=month_options,
+                value=default_month
+            ),
+        ]),
+
+        html.Div(className='form-group float-left col-sm-6', children=[
+            html.Label('Day Selection'),
+            dcc.Dropdown(
+                id='environment_data_day_selection',
+                options=day_options,
+                value=default_day
+            ),
+        ]),
+
+        html.Div(className='form-group float-left col-sm-6', children=[
+            html.Label('Attribute Selection'),
+            dcc.Dropdown(
+                id='environment_data_attribute_selection',
+                options=attribute_options,
+                value=default_attribute
+            ),
+        ]),
+
+    ]),
 
 ])
 

@@ -76,28 +76,32 @@ def generate_histogram(x_values=default_x_values,
 
 layout = html.Div(children=[
 
-    html.Div(children=[
-
-        html.Label('Fish Selection'),
-        dcc.Dropdown(
-            id='fish_histograms_fish_selection',
-            options=fish_options,
-            value=default_fishtype
-        ),
-
-        html.Label('Attribute Selection'),
-        dcc.Dropdown(
-            id='fish_histograms_attribute_selection',
-            options=attribute_options,
-            value=default_attribute
-        ),
-
-    ]),
-
     dcc.Graph(
         id='fish_histograms',
         figure=generate_histogram()
-    )
+    ),
+
+    html.Form(children=[
+
+        html.Div(className='form-group float-left col-sm-6', children=[
+            html.Label('Fish Selection'),
+            dcc.Dropdown(
+                id='fish_histograms_fish_selection',
+                options=fish_options,
+                value=default_fishtype
+            ),
+        ]),
+
+        html.Div(className='form-group float-left col-sm-6', children=[
+            html.Label('Attribute Selection'),
+            dcc.Dropdown(
+                id='fish_histograms_attribute_selection',
+                options=attribute_options,
+                value=default_attribute
+            ),
+        ]),
+
+    ]),
 
 ])
 

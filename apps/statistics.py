@@ -94,36 +94,42 @@ def generate_bar(x_values=default_x_values, y_values=default_y_values,
 
 layout = html.Div(children=[
 
-    html.Div(children=[
-
-        html.Label('Year Selection'),
-        dcc.Dropdown(
-            id='month_statistics_year_selection',
-            options=year_options,
-            value=default_year
-        ),
-
-        html.Label('Attribute Selection'),
-        dcc.Dropdown(
-            id='month_statistics_attribute_selection',
-            options=attribute_options,
-            value=default_attribute
-        ),
-
-        html.Label('Method Selection'),
-        dcc.Dropdown(
-            id='month_statistics_method_selection',
-            options=method_options,
-            value=default_method
-        ),
-
-    ]),
-
     dcc.Graph(
         id='month_statistics',
 
         figure=generate_bar()
-    )
+    ),
+
+    html.Div(children=[
+
+        html.Div(className='form-group float-left col-sm-6', children=[
+            html.Label('Year Selection'),
+            dcc.Dropdown(
+                id='month_statistics_year_selection',
+                options=year_options,
+                value=default_year
+            ),
+        ]),
+
+        html.Div(className='form-group float-left col-sm-6', children=[
+            html.Label('Attribute Selection'),
+            dcc.Dropdown(
+                id='month_statistics_attribute_selection',
+                options=attribute_options,
+                value=default_attribute
+            ),
+        ]),
+
+        html.Div(className='form-group float-left col-sm-6', children=[
+            html.Label('Method Selection'),
+            dcc.Dropdown(
+                id='month_statistics_method_selection',
+                options=method_options,
+                value=default_method
+            ),
+        ]),
+
+    ]),
 
 ])
 
