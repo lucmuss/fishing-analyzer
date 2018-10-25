@@ -41,7 +41,6 @@ class FishBaseModel:
         self.catch_hour = CatchHour(database_model=database_model)
         self.catch_month = CatchMonth(database_model=database_model)
 
-
 class EnvironmentBaseModel:
 
     def __init__(self):
