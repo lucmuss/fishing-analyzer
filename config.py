@@ -76,7 +76,7 @@ DEFAULT_YEAR = '2017'
 
 DEFAULT_MONTH = ''
 
-DEFAULT_FISH = FISH_TYPES[0]
+DEFAULT_FISH_TYPE = FISH_TYPES[0]
 
 DATABASE_NAME = 'fish_db'
 
@@ -85,6 +85,14 @@ DATABASE_COLLECTION_NAME = 'fish_records'
 DIAGRAM_HEIGTH = 720
 DIAGRAM_WIDTH = 1280
 
-DEFAULT_DATASET_ID = 'mussmaecher'
+FISHER_IDS = ['PrivatMussmaecher', 'AngelVereinBaunach', 'AngelVereinEbern']
+DEFAULT_FISHER_ID = 'PrivatMussmaecher'
 
-DATABASE_DOCUMENT = {"fish_type": '', "catch_date": '', "dataset_id": ''}
+DEFAULT_CATCH_DATE = '2018-06-05'
+
+DEFAULT_CATCH_HOUR = '17:30'
+
+RIVER_IDS = ['Baunach', 'Ilz', 'Main']
+DEFAULT_RIVER_ID = 'Baunach'
+
+DATABASE_DOCUMENT = {'fish_type': '', 'catch_date': '', 'fisher_id': '', 'river_id': ''}

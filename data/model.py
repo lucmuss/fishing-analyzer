@@ -41,6 +41,7 @@ class FishBaseModel:
         self.catch_hour = CatchHour(database_model=database_model)
         self.catch_month = CatchMonth(database_model=database_model)
 
+
 class EnvironmentBaseModel:
 
     def __init__(self):
@@ -93,20 +94,21 @@ class DatabaseModel:
 
         self.mongo_collection = self.mongo_db.get_collection(config.DATABASE_COLLECTION_NAME)
 
-    def add_fish(self, fish_type, catch_date, fisher_id):
+    def add_fish(self, fish_type, catch_date, fisher_id, river_id):
 
-        fisher_id = fisher_id if fisher_id else config.DEFAULT_DATASET_ID
+        fisher_id = fisher_id if fisher_id else config.DEFAULT_FISHER_ID
+        river_id = river_id if river_id else config.DEFAULT_RIVER_ID
 
-        return self._add_fish(fish_type, catch_date, fisher_id)
+        return self._add_fish(fish_type, catch_date, fisher_id, river_id)
 
-    def _add_fish(self, fish_type, catch_date, fisher_id):
+    def _add_fish(self, fish_type, catch_date, fisher_id, river_id):
         catch_date = datetime.datetime.strptime(catch_date, config.CATCH_DATE_FORMAT)
 
         return_value = False
 
         if fish_type in config.FISH_TYPES:
 
-            document = utils.get_database_document(fish_type, catch_date, fisher_id)
+            document = utils.get_database_document(fish_type, catch_date, fisher_id, river_id)
 
             cursor = self.mongo_collection.find(document).limit(1)
 
@@ -116,19 +118,20 @@ class DatabaseModel:
 
         return return_value
 
-    def remove_fish(self, fish_type, catch_date, fisher_id):
-        fisher_id = fisher_id if fisher_id else config.DEFAULT_DATASET_ID
+    def remove_fish(self, fish_type, catch_date, fisher_id, river_id):
+        fisher_id = fisher_id if fisher_id else config.DEFAULT_FISHER_ID
+        river_id = river_id if river_id else config.DEFAULT_RIVER_ID
 
-        return self._remove_fish(fish_type, catch_date, fisher_id)
+        return self._remove_fish(fish_type, catch_date, fisher_id, river_id)
 
-    def _remove_fish(self, fish_type, catch_date, fisher_id):
+    def _remove_fish(self, fish_type, catch_date, fisher_id, river_id):
         catch_date = datetime.datetime.strptime(catch_date, config.CATCH_DATE_FORMAT)
 
         return_value = False
 
         if fish_type in config.FISH_TYPES:
 
-            document = utils.get_database_document(fish_type, catch_date, fisher_id)
+            document = utils.get_database_document(fish_type, catch_date, fisher_id, river_id)
 
             cursor = self.mongo_collection.find(document).limit(1)
 

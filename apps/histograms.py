@@ -36,7 +36,7 @@ def generate_fish_options(fish_model):
 
 
 fish_options = generate_fish_options(fish_model=fish_data)
-default_fishtype = config.DEFAULT_FISH
+default_fishtype = config.DEFAULT_FISH_TYPE
 
 attribute_options = generate_attribute_options(fish_data)
 default_attribute = config.DEFAULT_ATTRIBUTE

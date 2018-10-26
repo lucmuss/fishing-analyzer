@@ -10,6 +10,8 @@ from apps import environment
 from apps import statistics
 from apps import histograms
 from apps import distributions
+from apps import addfish
+from apps import mainpage
 
 main_navigation_bar = html.Div(className='container mt-2', children=[
 
@@ -38,6 +40,14 @@ main_navigation_bar = html.Div(className='container mt-2', children=[
                         children=dcc.Link('Distributions',
                                           className='nav-link',
                                           href='/apps/distributions')),
+                html.Li(className='nav-item',
+                        children=dcc.Link('Add Fish',
+                                          className='nav-link',
+                                          href='/apps/addfish')),
+                html.Li(className='nav-item',
+                        children=dcc.Link('Description',
+                                          className='nav-link',
+                                          href='/')),
             ],
         )]
              ),
@@ -66,8 +76,10 @@ def display_page(pathname):
         return histograms.layout
     elif pathname == '/apps/distributions':
         return distributions.layout
+    elif pathname == '/apps/addfish':
+        return addfish.layout
     else:
-        return "Main Page"
+        return mainpage.layout
 
 
 if __name__ == '__main__':

@@ -1,7 +1,6 @@
 # coding: utf-8
 
 import numpy
-
 import config
 
 
@@ -11,13 +10,13 @@ def clean_series(attribute_series):
     return clean_series
 
 
-def get_database_document(fish_type, catch_date, dataset_id):
+def get_database_document(fish_type, catch_date, fisher_id, river_id):
     return_dict = dict(config.DATABASE_DOCUMENT)
-    keys = list(return_dict.keys())
 
-    return_dict[keys[0]] = fish_type
-    return_dict[keys[1]] = catch_date
-    return_dict[keys[2]] = dataset_id
+    return_dict['fish_type'] = fish_type
+    return_dict['catch_date'] = catch_date
+    return_dict['fisher_id'] = fisher_id
+    return_dict['river_id'] = river_id
 
     return return_dict
 
