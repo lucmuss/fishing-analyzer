@@ -8,38 +8,12 @@ import plotly
 
 import utils
 import config
+from apps.utils import generate_year_options, generate_attribute_options, generate_method_options
 from mainapp import app
-from data.model import statistic_model
+from data.model import ModelFactory
 
-fish_data = statistic_model
-
-
-def generate_year_options():
-    return_list = list()
-
-    for year in config.YEAR_RANGE:
-        return_list.append({'label': year, 'value': year})
-
-    return return_list
-
-
-def generate_method_options():
-    return_list = list()
-
-    for method in config.STATISTIC_METHODS:
-        return_list.append({'label': method.title(), 'value': method})
-
-    return return_list
-
-
-def generate_attribute_options(fish_data):
-    return_list = list()
-
-    for attribute in fish_data.plotable_attributes:
-        name = utils.attribute_to_name(attribute)
-        return_list.append({'label': name, 'value': attribute})
-
-    return return_list
+model_factory = ModelFactory()
+statistic_model = model_factory.statistic_model
 
 
 def extract_data_values(year, attribute, method, month_statistics):
@@ -51,7 +25,7 @@ def extract_data_values(year, attribute, method, month_statistics):
     return x_values, y_values
 
 
-month_statistics = fish_data.month_statistics
+month_statistics = statistic_model.month_statistics
 
 year_options = generate_year_options()
 default_year = config.DEFAULT_YEAR
@@ -59,7 +33,7 @@ default_year = config.DEFAULT_YEAR
 method_options = generate_method_options()
 default_method = config.DEFAULT_STATISTIC_METHOD
 
-attribute_options = generate_attribute_options(fish_data)
+attribute_options = generate_attribute_options(statistic_model)
 default_attribute = config.DEFAULT_ATTRIBUTE
 
 default_name = utils.attribute_to_name(default_attribute)
@@ -72,12 +46,17 @@ default_x_values, default_y_values = extract_data_values(default_year, default_a
 
 
 def generate_bar(x_values=default_x_values, y_values=default_y_values,
-                 name=default_name,
+                 name=default_name, attribute_name=default_attribute,
                  title=default_title):
+    color = config.ATTRIBUTE_COLOR_DICT[attribute_name]
+
     bar = plotly.graph_objs.Bar(
         x=x_values,
         y=y_values,
-        name=name
+        name=name,
+        marker=dict(
+            color=color
+        ),
     )
 
     data = [bar]
@@ -145,7 +124,10 @@ def update_month_statistics(year_value, attribute_name, method):
     name = utils.attribute_to_name(attribute_name)
     title = utils.get_graph_name(attribute_name=attribute_name, fish_type=year_value)
 
-    figure = generate_bar(x_values=x_values, y_values=y_values,
-                          name=name, title=title)
+    figure = generate_bar(x_values=x_values,
+                          y_values=y_values,
+                          name=name,
+                          attribute_name=attribute_name,
+                          title=title)
 
     return figure

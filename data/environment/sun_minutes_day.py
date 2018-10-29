@@ -38,17 +38,18 @@ class SunMinutesDay(BaseAttribute):
 
                 station, date, typ, sun_minutes, error = utils.strip_row(row)
 
-                if utils.validate_row(row, station):
+                if utils.has_correct_year_range(date):
+                    if utils.validate_row(row, station):
 
-                    date_time = datetime.datetime.strptime(date, "%Y%m%d%H")
+                        date_time = datetime.datetime.strptime(date, "%Y%m%d%H")
 
-                    day_format = date_time.strftime(config.CATCH_DAY_FORMAT)
-                    sun_minutes = float(sun_minutes)
+                        day_format = date_time.strftime(config.CATCH_DAY_FORMAT)
+                        sun_minutes = float(sun_minutes)
 
-                    if day_format in day_dict:
-                        day_dict[day_format] += sun_minutes
-                    else:
-                        day_dict[day_format] = sun_minutes
+                        if day_format in day_dict:
+                            day_dict[day_format] += sun_minutes
+                        else:
+                            day_dict[day_format] = sun_minutes
 
         with open(self.abs_file_location, newline='') as csv_file:
             csv_reader = csv.reader(csv_file, delimiter=';', quotechar='"')
@@ -59,12 +60,13 @@ class SunMinutesDay(BaseAttribute):
 
                 station, date, typ, sun_minutes, error = utils.strip_row(row)
 
-                if utils.validate_row(row, station):
-                    date_time = datetime.datetime.strptime(date, "%Y%m%d%H")
+                if utils.has_correct_year_range(date):
+                    if utils.validate_row(row, station):
+                        date_time = datetime.datetime.strptime(date, "%Y%m%d%H")
 
-                    date_format = date_time.strftime(config.CATCH_DATE_FORMAT)
-                    day_format = date_time.strftime(config.CATCH_DAY_FORMAT)
+                        date_format = date_time.strftime(config.CATCH_DATE_FORMAT)
+                        day_format = date_time.strftime(config.CATCH_DAY_FORMAT)
 
-                    hour_value = float(day_dict[day_format])
+                        hour_value = float(day_dict[day_format])
 
-                    self.data_dict[date_format] = hour_value
+                        self.data_dict[date_format] = hour_value

@@ -36,8 +36,9 @@ class RecordDateHour(BaseAttribute):
 
                 station, date, typ, temperature, humidity, error = utils.strip_row(row)
 
-                if utils.validate_row(row, station):
-                    date_time = datetime.datetime.strptime(date, "%Y%m%d%H")
-                    formatted_string = date_time.strftime(config.CATCH_DATE_FORMAT)
+                if utils.has_correct_year_range(date):
+                    if utils.validate_row(row, station):
+                        date_time = datetime.datetime.strptime(date, "%Y%m%d%H")
+                        formatted_string = date_time.strftime(config.CATCH_DATE_FORMAT)
 
-                    self.data_dict[formatted_string] = formatted_string
+                        self.data_dict[formatted_string] = formatted_string

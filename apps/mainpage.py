@@ -13,9 +13,9 @@ default_description = '''My project ....'''
 
 layout = html.Div(children=[
 
-    html.Div(id='add_fish_output_message',
-             children=[
-                 html.P(children=default_description)
-             ]),
+    html.Div(
+        children=[
+            html.P(children=default_description)
+        ]),
 
 ])

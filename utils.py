@@ -25,12 +25,12 @@ def attribute_to_name(attribute_name):
     return attribute_name.title().replace('_', ' ')
 
 
-def fishtype_to_name(fishtype):
+def fish_type_to_name(fishtype):
     return fishtype
 
 
 def get_graph_name(attribute_name, fish_type):
-    fishtype = fishtype_to_name(fish_type)
+    fishtype = fish_type_to_name(fish_type)
     attribute = attribute_to_name(attribute_name)
 
     return "{} - {}".format(fishtype, attribute)
@@ -96,3 +96,8 @@ def get_layout_dict(title='Default', x_title='Werte', y_title='Anzahl', height=c
 
 def is_valid_fish_frame(data_frame):
     return data_frame.size >= config.MINIMAL_CATCHED_FISHES
+
+
+def has_correct_year_range(date):
+    year_data = int(date[:4])
+    return year_data >= config.MINIMAL_YEAR_RANGE_INT

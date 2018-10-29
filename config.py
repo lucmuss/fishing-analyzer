@@ -1,6 +1,7 @@
 # coding: utf-8
 
 import datetime
+import colorlover
 
 
 def get_month_name(month_index):
@@ -42,14 +43,41 @@ def get_month_name_dict():
     return return_dict
 
 
+def get_color_dict(attribute_list):
+    number = len(attribute_list)
+
+    # color_scale = colorlover.scales['11']['div']['Spectral']
+
+    color_scale = colorlover.scales['9']['seq']['Blues']
+    color_scale = color_scale[4:]
+    color_interp = colorlover.interp(color_scale, number)
+    color_list = colorlover.to_rgb(color_interp)
+
+    return_dict = dict(zip(attribute_list, color_list))
+    return return_dict
+
+
+ATTRIBUTE_COLOR_DICT = dict()
+
 MAXIMAL_PREVIOUS_DAYS = 1
 
-FISH_TYPES = ['Karpfen', 'Forelle', 'Brachse', 'Barbe', 'Aal', 'Hecht', 'Barsch', 'Zander']
+FISH_TYPES = ['Karpfen', 'Forelle', 'Brachse',
+              'Barbe', 'Aal', 'Hecht',
+              'Barsch', 'Zander', 'Wels',
+              'Schleie', 'Döbel', 'Äsche',
+              'Bachforelle', 'Bachsaibling', 'Gründling',
+              'Karausche', 'Nase', 'Rapfen',
+              'Rotauge', 'Rotfeder', 'Rutte',
+              ]
+
+DEFAULT_FISH_TYPE = FISH_TYPES[0]
 
 MINIMAL_BEGIN_DATE = "2013-01-01 00:00:00"
+
 MAXIMAL_END_DATE = "2017-12-31 00:00:00"
 
 CATCH_DATE_FORMAT = "%Y-%m-%d %H:00:00"
+
 CATCH_DAY_FORMAT = "%Y-%m-%d"
 
 MINIMAL_CATCHED_FISHES = 4
@@ -64,6 +92,8 @@ DEFAULT_STATISTIC_METHOD = STATISTIC_METHODS[0]
 
 YEAR_RANGE = get_year_range(MINIMAL_BEGIN_DATE, MAXIMAL_END_DATE)
 
+MINIMAL_YEAR_RANGE_INT = int(YEAR_RANGE[0])
+
 MONTH_NAME_DICT = get_month_name_dict()
 
 MONTH_DAYS_DICT = get_month_days_dict()
@@ -76,23 +106,28 @@ DEFAULT_YEAR = '2017'
 
 DEFAULT_MONTH = ''
 
-DEFAULT_FISH_TYPE = FISH_TYPES[0]
+DATABASE_NAME = 'fish_database'
 
-DATABASE_NAME = 'fish_db'
+DATABASE_FISH_COLLECTION_NAME = 'fish_records'
 
-DATABASE_COLLECTION_NAME = 'fish_records'
+DATABASE_ENVIRONMENT_COLLECTION_NAME = 'environment_records'
 
 DIAGRAM_HEIGTH = 720
+
 DIAGRAM_WIDTH = 1280
 
-FISHER_IDS = ['PrivatMussmaecher', 'AngelVereinBaunach', 'AngelVereinEbern']
-DEFAULT_FISHER_ID = 'PrivatMussmaecher'
+FISHER_IDS = ['PrivatMussmaecher', 'PrivatKeinAngabe', 'AngelVereinBaunach',
+              'AngelVereinEbern', 'AngelVereinPfaffendorf',
+              'AngelVereinErmershausen', 'AngelVereinBreitengüßbach']
+
+DEFAULT_FISHER_ID = FISHER_IDS[0]
 
 DEFAULT_CATCH_DATE = '2018-06-05'
 
 DEFAULT_CATCH_HOUR = '17:30'
 
-RIVER_IDS = ['Baunach', 'Ilz', 'Main']
-DEFAULT_RIVER_ID = 'Baunach'
+RIVER_IDS = ['Baunach', 'Itz', 'Main', 'Weisach', 'Preppach']
+
+DEFAULT_RIVER_ID = RIVER_IDS[0]
 
 DATABASE_DOCUMENT = {'fish_type': '', 'catch_date': '', 'fisher_id': '', 'river_id': ''}

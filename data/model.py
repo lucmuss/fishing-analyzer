@@ -14,6 +14,7 @@ from data.fish.catch_date import CatchDate
 from data.fish.fish_type import FishType
 
 from data.cache import DataCache
+from data.cache import DatabaseDataCache
 
 from data.environment.water_temperature import WaterTemperature
 from data.environment.air_temperature import AirTemperature
@@ -44,24 +45,23 @@ class FishBaseModel:
 
 class EnvironmentBaseModel:
 
-    def __init__(self):
-        cache = DataCache()
+    def __init__(self, data_cache):
         # data attributes form the environment data
-        self.wind_strength = WindStrength(data_cache=cache)
-        self.record_date_hour = RecordDateHour(data_cache=cache)
-        self.water_temperature = WaterTemperature(data_cache=cache)
-        self.air_temperature = AirTemperature(data_cache=cache)
-        self.wind_direction = WindDirection(data_cache=cache)
-        self.precipitation_amount = PrecipitationAmount(data_cache=cache)
-        self.precipitation_amount_day = PrecipitationAmountDay(data_cache=cache)
-        self.relative_humidity = RelativeHumidity(data_cache=cache)
-        self.sun_hours = SunMinutesDay(data_cache=cache)
-        self.sun_minutes = SunMinutes(data_cache=cache)
-        self.ground_temperature_5 = GroundTemperature5(data_cache=cache)
-        self.ground_temperature_10 = GroundTemperature10(data_cache=cache)
-        self.ground_temperature_20 = GroundTemperature20(data_cache=cache)
-        self.ground_temperature_50 = GroundTemperature50(data_cache=cache)
-        self.ground_temperature_100 = GroundTemperature100(data_cache=cache)
+        self.wind_strength = WindStrength(data_cache=data_cache)
+        self.record_date_hour = RecordDateHour(data_cache=data_cache)
+        self.water_temperature = WaterTemperature(data_cache=data_cache)
+        self.air_temperature = AirTemperature(data_cache=data_cache)
+        self.wind_direction = WindDirection(data_cache=data_cache)
+        self.precipitation_amount = PrecipitationAmount(data_cache=data_cache)
+        self.precipitation_amount_day = PrecipitationAmountDay(data_cache=data_cache)
+        self.relative_humidity = RelativeHumidity(data_cache=data_cache)
+        self.sun_hours = SunMinutesDay(data_cache=data_cache)
+        self.sun_minutes = SunMinutes(data_cache=data_cache)
+        self.ground_temperature_5 = GroundTemperature5(data_cache=data_cache)
+        self.ground_temperature_10 = GroundTemperature10(data_cache=data_cache)
+        self.ground_temperature_20 = GroundTemperature20(data_cache=data_cache)
+        self.ground_temperature_50 = GroundTemperature50(data_cache=data_cache)
+        self.ground_temperature_100 = GroundTemperature100(data_cache=data_cache)
 
 
 class FullBaseModel:
@@ -89,10 +89,10 @@ class DatabaseModel:
 
         collection_names = self.mongo_db.collection_names()
 
-        if config.DATABASE_COLLECTION_NAME not in collection_names:
-            self.mongo_db.create_collection(config.DATABASE_COLLECTION_NAME)
+        if config.DATABASE_FISH_COLLECTION_NAME not in collection_names:
+            self.mongo_db.create_collection(config.DATABASE_FISH_COLLECTION_NAME)
 
-        self.mongo_collection = self.mongo_db.get_collection(config.DATABASE_COLLECTION_NAME)
+        self.mongo_collection = self.mongo_db.get_collection(config.DATABASE_FISH_COLLECTION_NAME)
 
     def add_fish(self, fish_type, catch_date, fisher_id, river_id):
 
@@ -189,6 +189,8 @@ class DataFrameModel:
         self.plotable_attributes = plotable_attributes
         self.environment_attributes = environment_attributes
         self.fish_attributes = fish_attributes
+
+        config.ATTRIBUTE_COLOR_DICT = config.get_color_dict(plotable_attributes)
 
         self.data_frame = pandas.DataFrame(data_set)
 
@@ -292,12 +294,88 @@ class StatisticModel:
         return self.data_frame_model.data_frame[date_start:date_end]
 
 
-database_model = DatabaseModel()
+class Singleton(type):
+    _instances = {}
 
-fish_base_model = FishBaseModel(database_model=database_model)
-environment_base_model = EnvironmentBaseModel()
-full_base_model = FullBaseModel(environment_model=environment_base_model, fish_model=fish_base_model)
+    def __call__(cls, *args, **kwargs):
+        if cls not in cls._instances:
+            cls._instances[cls] = super(Singleton, cls).__call__(*args, **kwargs)
+        return cls._instances[cls]
 
-data_frame_model = DataFrameModel(full_base_model)
-fish_frame_model = FishFrameModel(data_frame_model)
-statistic_model = StatisticModel(data_frame_model)
+
+class ModelFactory(metaclass=Singleton):
+
+    def __init__(self):
+        self._database_model = None
+        self._database_data_cache = None
+        self._fish_base_model = None
+        self._environment_base_model = None
+        self._full_base_model = None
+        self._data_frame_model = None
+        self._fish_frame_model = None
+        self._statistic_model = None
+
+    @property
+    def database_model(self):
+        if not self._database_model:
+            self._database_model = DatabaseModel()
+
+        return self._database_model
+
+    @property
+    def database_data_cache(self):
+        if not self._database_data_cache:
+            self._database_data_cache = DatabaseDataCache(database_model=self.database_model)
+
+        return self._database_data_cache
+
+    @property
+    def fish_base_model(self):
+        if not self._fish_base_model:
+            self._fish_base_model = FishBaseModel(database_model=self.database_model)
+
+        return self._fish_base_model
+
+    @property
+    def environment_base_model(self):
+        if not self._environment_base_model:
+            self._environment_base_model = EnvironmentBaseModel(data_cache=self.database_data_cache)
+
+        return self._environment_base_model
+
+    @property
+    def full_base_model(self):
+        if not self._full_base_model:
+            self._full_base_model = FullBaseModel(environment_model=self.environment_base_model,
+                                                  fish_model=self.fish_base_model)
+
+        return self._full_base_model
+
+    @property
+    def data_frame_model(self):
+        if not self._data_frame_model:
+            self._data_frame_model = DataFrameModel(self.full_base_model)
+
+        return self._data_frame_model
+
+    @property
+    def fish_frame_model(self):
+        if not self._fish_frame_model:
+            self._fish_frame_model = FishFrameModel(self.data_frame_model)
+
+        return self._fish_frame_model
+
+    @property
+    def statistic_model(self):
+        if not self._statistic_model:
+            self._statistic_model = StatisticModel(self.data_frame_model)
+
+        return self._statistic_model
+
+
+if __name__ == '__main__':
+    model_factory = ModelFactory()
+    statistic_model = model_factory.statistic_model
+
+    model_factory_second = ModelFactory()
+    statistic_model = model_factory_second.statistic_model

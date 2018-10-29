@@ -182,7 +182,10 @@ def store_distributions_separate(fish_model):
 
 
 if __name__ == '__main__':
-    from data.model import fish_frame_model
+    from data.model import ModelFactory
+
+    model_factory = ModelFactory()
+    fish_frame_model = model_factory.fish_frame_model
 
     store_distributions_summary(fish_model=fish_frame_model)
     store_distributions_separate(fish_model=fish_frame_model)

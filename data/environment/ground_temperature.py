@@ -36,13 +36,14 @@ class GroundTemperature2(BaseAttribute):
 
                 station, date, typ, temp2, temp5, temp10, temp20, temp50, temp100, e = utils.strip_row(row)
 
-                if utils.validate_row(row, station):
-                    date_time = datetime.datetime.strptime(date, "%Y%m%d%H")
-                    formatted_string = date_time.strftime(config.CATCH_DATE_FORMAT)
+                if utils.has_correct_year_range(date):
+                    if utils.validate_row(row, station):
+                        date_time = datetime.datetime.strptime(date, "%Y%m%d%H")
+                        formatted_string = date_time.strftime(config.CATCH_DATE_FORMAT)
 
-                    ground_temperature = float(temp2)
+                        ground_temperature = float(temp2)
 
-                    self.data_dict[formatted_string] = ground_temperature
+                        self.data_dict[formatted_string] = ground_temperature
 
 
 class GroundTemperature5(BaseAttribute):
@@ -73,13 +74,14 @@ class GroundTemperature5(BaseAttribute):
 
                 station, date, typ, temp2, temp5, temp10, temp20, temp50, temp100, e = utils.strip_row(row)
 
-                if utils.validate_row(row, station):
-                    date_time = datetime.datetime.strptime(date, "%Y%m%d%H")
-                    formatted_string = date_time.strftime(config.CATCH_DATE_FORMAT)
+                if utils.has_correct_year_range(date):
+                    if utils.validate_row(row, station):
+                        date_time = datetime.datetime.strptime(date, "%Y%m%d%H")
+                        formatted_string = date_time.strftime(config.CATCH_DATE_FORMAT)
 
-                    ground_temperature = float(temp5)
+                        ground_temperature = float(temp5)
 
-                    self.data_dict[formatted_string] = ground_temperature
+                        self.data_dict[formatted_string] = ground_temperature
 
 
 class GroundTemperature10(BaseAttribute):
@@ -110,13 +112,14 @@ class GroundTemperature10(BaseAttribute):
 
                 station, date, typ, temp2, temp5, temp10, temp20, temp50, temp100, e = utils.strip_row(row)
 
-                if utils.validate_row(row, station):
-                    date_time = datetime.datetime.strptime(date, "%Y%m%d%H")
-                    formatted_string = date_time.strftime(config.CATCH_DATE_FORMAT)
+                if utils.has_correct_year_range(date):
+                    if utils.validate_row(row, station):
+                        date_time = datetime.datetime.strptime(date, "%Y%m%d%H")
+                        formatted_string = date_time.strftime(config.CATCH_DATE_FORMAT)
 
-                    ground_temperature = float(temp10)
+                        ground_temperature = float(temp10)
 
-                    self.data_dict[formatted_string] = ground_temperature
+                        self.data_dict[formatted_string] = ground_temperature
 
 
 class GroundTemperature20(BaseAttribute):
@@ -147,13 +150,14 @@ class GroundTemperature20(BaseAttribute):
 
                 station, date, typ, temp2, temp5, temp10, temp20, temp50, temp100, e = utils.strip_row(row)
 
-                if utils.validate_row(row, station):
-                    date_time = datetime.datetime.strptime(date, "%Y%m%d%H")
-                    formatted_string = date_time.strftime(config.CATCH_DATE_FORMAT)
+                if utils.has_correct_year_range(date):
+                    if utils.validate_row(row, station):
+                        date_time = datetime.datetime.strptime(date, "%Y%m%d%H")
+                        formatted_string = date_time.strftime(config.CATCH_DATE_FORMAT)
 
-                    ground_temperature = float(temp20)
+                        ground_temperature = float(temp20)
 
-                    self.data_dict[formatted_string] = ground_temperature
+                        self.data_dict[formatted_string] = ground_temperature
 
 
 class GroundTemperature50(BaseAttribute):
@@ -184,13 +188,14 @@ class GroundTemperature50(BaseAttribute):
 
                 station, date, typ, temp2, temp5, temp10, temp20, temp50, temp100, e = utils.strip_row(row)
 
-                if utils.validate_row(row, station):
-                    date_time = datetime.datetime.strptime(date, "%Y%m%d%H")
-                    formatted_string = date_time.strftime(config.CATCH_DATE_FORMAT)
+                if utils.has_correct_year_range(date):
+                    if utils.validate_row(row, station):
+                        date_time = datetime.datetime.strptime(date, "%Y%m%d%H")
+                        formatted_string = date_time.strftime(config.CATCH_DATE_FORMAT)
 
-                    ground_temperature = float(temp50)
+                        ground_temperature = float(temp50)
 
-                    self.data_dict[formatted_string] = ground_temperature
+                        self.data_dict[formatted_string] = ground_temperature
 
 
 class GroundTemperature100(BaseAttribute):
@@ -221,10 +226,11 @@ class GroundTemperature100(BaseAttribute):
 
                 station, date, typ, temp2, temp5, temp10, temp20, temp50, temp100, e = utils.strip_row(row)
 
-                if utils.validate_row(row, station):
-                    date_time = datetime.datetime.strptime(date, "%Y%m%d%H")
-                    formatted_string = date_time.strftime(config.CATCH_DATE_FORMAT)
+                if utils.has_correct_year_range(date):
+                    if utils.validate_row(row, station):
+                        date_time = datetime.datetime.strptime(date, "%Y%m%d%H")
+                        formatted_string = date_time.strftime(config.CATCH_DATE_FORMAT)
 
-                    ground_temperature = float(temp100)
+                        ground_temperature = float(temp100)
 
-                    self.data_dict[formatted_string] = ground_temperature
+                        self.data_dict[formatted_string] = ground_temperature

@@ -7,53 +7,18 @@ import plotly
 
 import utils
 import config
+from apps.utils import generate_year_options, generate_attribute_options, generate_month_options, \
+    generate_day_options
 from mainapp import app
-from data.model import statistic_model
+from data.model import ModelFactory
 
-fish_data = statistic_model
-
-
-def generate_year_options():
-    return_list = list()
-
-    for year in config.YEAR_RANGE:
-        return_list.append({'label': year, 'value': year})
-
-    return return_list
-
-
-def generate_attribute_options(fish_data):
-    return_list = list()
-
-    for attribute in fish_data.plotable_attributes:
-        name = utils.attribute_to_name(attribute)
-        return_list.append({'label': name, 'value': attribute})
-
-    return return_list
-
-
-def generate_month_options():
-    return_list = list()
-
-    for month_index, month_name in config.MONTH_NAME_DICT.items():
-        return_list.append({'label': month_name.title(), 'value': month_index})
-
-    return return_list
-
-
-def generate_day_options():
-    return_list = list()
-
-    for day_index, day_value in config.MONTH_DAYS_DICT.items():
-        return_list.append({'label': str(day_index), 'value': str(day_index)})
-
-    return return_list
-
+model_factory = ModelFactory()
+fish_statistic_model = model_factory.statistic_model
 
 year_options = generate_year_options()
 default_year = config.DEFAULT_YEAR
 
-attribute_options = generate_attribute_options(fish_data)
+attribute_options = generate_attribute_options(fish_statistic_model)
 default_attribute = config.DEFAULT_ATTRIBUTE
 
 month_options = generate_month_options()
@@ -62,7 +27,7 @@ default_month = config.DEFAULT_MONTH
 day_options = generate_day_options()
 default_day = config.DEFAULT_DAY
 
-default_data_selection = fish_data.get_frame_by_year(default_year)
+default_data_selection = fish_statistic_model.get_frame_by_year(default_year)
 
 default_data_series = default_data_selection[default_attribute]
 
@@ -74,12 +39,15 @@ default_title = utils.get_graph_name(attribute_name=default_attribute,
 
 
 def generate_line(x_values=default_x_values, y_values=default_y_values,
-                  name=default_name,
+                  name=default_name, attribute_name=default_attribute,
                   title=default_title):
+    color = config.ATTRIBUTE_COLOR_DICT[attribute_name]
+
     scatter = plotly.graph_objs.Scatter(
         x=x_values,
         y=y_values,
-        name=name
+        name=name,
+        line=dict(color=color),
     )
 
     data = [scatter]
@@ -152,7 +120,7 @@ layout = html.Div(children=[
      Input('environment_data_day_selection', 'value'),
      Input('environment_data_attribute_selection', 'value')])
 def update_data_graph(year_value, month_value, day_value, attribute_name):
-    data_selection = fish_data
+    data_selection = fish_statistic_model
 
     if year_value and month_value and day_value:
         data_selection = data_selection.get_frame_by_day(year_value, month_value, day_value)
@@ -168,8 +136,10 @@ def update_data_graph(year_value, month_value, day_value, attribute_name):
     name = utils.attribute_to_name(attribute_name)
     title = utils.get_graph_name(attribute_name=attribute_name, fish_type=year_value)
 
-    figure = generate_line(x_values=x_values, y_values=y_values,
+    figure = generate_line(x_values=x_values,
+                           y_values=y_values,
                            name=name,
+                           attribute_name=attribute_name,
                            title=title)
 
     return figure

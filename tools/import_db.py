@@ -35,6 +35,9 @@ def import_to_db(database_model):
 
 
 if __name__ == '__main__':
-    from data.model import database_model
+    from data.model import ModelFactory
+
+    model_factory = ModelFactory()
+    database_model = model_factory.database_model
 
     import_to_db(database_model=database_model)

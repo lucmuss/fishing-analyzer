@@ -8,9 +8,10 @@ from dash.dependencies import Input, Output, State
 
 import config
 from mainapp import app
-from data.model import DatabaseModel
+from data.model import ModelFactory
 
-db_model = DatabaseModel()
+model_factory = ModelFactory()
+data_base_model = model_factory.database_model
 
 
 def generate_fish_type_options():
@@ -137,14 +138,14 @@ def update_data_graph(n_clicks, fish_type, river_id, fisher_id, catch_date, catc
         date_time = datetime.datetime.strptime(full_date_string, "%Y-%m-%d %H:%M")
         formatted_date = date_time.strftime(config.CATCH_DATE_FORMAT)
 
-        correct_store = db_model.add_fish(fish_type=fish_type,
-                                          fisher_id=fisher_id,
-                                          river_id=river_id,
-                                          catch_date=formatted_date)
+        correct_store = data_base_model.add_fish(fish_type=fish_type,
+                                                 fisher_id=fisher_id,
+                                                 river_id=river_id,
+                                                 catch_date=formatted_date)
 
         if correct_store:
-            return_message = "Fish was correctly added to Database"
+            return_message = "Fish was correctly added to database"
         else:
-            return_message = "Fish was not correctly added to Database"
+            return_message = "Fish was not correctly added to database"
 
     return return_message
