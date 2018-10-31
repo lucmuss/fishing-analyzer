@@ -160,17 +160,17 @@ class DataFrameModel:
 
         data_set = dict()
 
-        plotable_attributes = set()
-        environment_attributes = set()
-        fish_attributes = set()
+        plotable_attributes = list()
+        environment_attributes = list()
+        fish_attributes = list()
 
         for attribute, value in self.full_base_model.environment_model.__dict__.items():
             series = value.series
 
-            environment_attributes.add(attribute)
+            environment_attributes.append(attribute)
 
             if utils.is_plotable(series):
-                plotable_attributes.add(value.attribute_name)
+                plotable_attributes.append(value.attribute_name)
                 series = utils.remove_outliers(series)
 
             data_set[value.attribute_name] = series
@@ -178,10 +178,10 @@ class DataFrameModel:
         for attribute, value in self.full_base_model.fish_model.__dict__.items():
             series = value.series
 
-            fish_attributes.add(value.attribute_name)
+            fish_attributes.append(value.attribute_name)
 
             if utils.is_plotable(series):
-                plotable_attributes.add(value.attribute_name)
+                plotable_attributes.append(value.attribute_name)
                 series = utils.remove_outliers(series)
 
             data_set[value.attribute_name] = series

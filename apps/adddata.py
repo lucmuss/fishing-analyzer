@@ -60,7 +60,7 @@ layout = html.Div(children=[
 
     html.Form(children=[
 
-        html.Div(className='form-group float-left col-sm-6', children=[
+        html.Div(className='form-group float-left col-xs-12 col-sm-6 col-md-4 col-lg-4', children=[
             html.Label('Fish Type'),
             dcc.Dropdown(
                 id='add_fish_fish_type',
@@ -69,7 +69,7 @@ layout = html.Div(children=[
             ),
         ]),
 
-        html.Div(className='form-group float-left col-sm-6', children=[
+        html.Div(className='form-group float-left col-xs-12 col-sm-6 col-md-4 col-lg-4', children=[
             html.Label('Fisher'),
             dcc.Dropdown(
                 id='add_fish_fisher_id',
@@ -78,7 +78,7 @@ layout = html.Div(children=[
             ),
         ]),
 
-        html.Div(className='form-group float-left col-sm-6', children=[
+        html.Div(className='form-group float-left col-xs-12 col-sm-6 col-md-4 col-lg-4', children=[
             html.Label('River'),
             dcc.Dropdown(
                 id='add_fish_river_id',
@@ -87,7 +87,7 @@ layout = html.Div(children=[
             ),
         ]),
 
-        html.Div(className='form-group float-left col-sm-6', children=[
+        html.Div(className='form-group float-left col-xs-12 col-sm-6 col-md-4 col-lg-4', children=[
             html.Label('Catch Date'),
             dcc.Input(
                 id='add_fish_catch_date',
@@ -97,7 +97,7 @@ layout = html.Div(children=[
             ),
         ]),
 
-        html.Div(className='form-group float-left col-sm-6', children=[
+        html.Div(className='form-group float-left col-xs-12 col-sm-6 col-md-4 col-lg-4', children=[
             html.Label('Catch Hour'),
             dcc.Input(
                 id='add_fish_catch_hour',
@@ -107,7 +107,7 @@ layout = html.Div(children=[
             ),
         ]),
 
-        html.Div(className='form-group float-left col-sm-2', children=[
+        html.Div(className='form-group float-left col-xs-3 col-sm-6 col-md-4 col-lg-4', children=[
             html.Label('Store'),
             html.Button(className='form-control btn btn-success',
                         id='add_fish_submit_button',

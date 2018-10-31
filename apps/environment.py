@@ -72,7 +72,7 @@ layout = html.Div(children=[
 
     html.Form(children=[
 
-        html.Div(className='form-group float-left col-sm-6', children=[
+        html.Div(className='form-group float-left col-xs-12 col-sm-6 col-md-4 col-lg-3', children=[
             html.Label('Year Selection'),
             dcc.Dropdown(
                 id='environment_data_year_selection',
@@ -81,7 +81,7 @@ layout = html.Div(children=[
             ),
         ]),
 
-        html.Div(className='form-group float-left col-sm-6', children=[
+        html.Div(className='form-group float-left col-xs-12 col-sm-6 col-md-4 col-lg-3', children=[
             html.Label('Month Selection'),
             dcc.Dropdown(
                 id='environment_data_month_selection',
@@ -90,7 +90,7 @@ layout = html.Div(children=[
             ),
         ]),
 
-        html.Div(className='form-group float-left col-sm-6', children=[
+        html.Div(className='form-group float-left col-xs-12 col-sm-6 col-md-4 col-lg-3', children=[
             html.Label('Day Selection'),
             dcc.Dropdown(
                 id='environment_data_day_selection',
@@ -99,7 +99,7 @@ layout = html.Div(children=[
             ),
         ]),
 
-        html.Div(className='form-group float-left col-sm-6', children=[
+        html.Div(className='form-group float-left col-xs-12 col-sm-6 col-md-4 col-lg-3', children=[
             html.Label('Attribute Selection'),
             dcc.Dropdown(
                 id='environment_data_attribute_selection',

@@ -5,6 +5,7 @@ from mainapp import app
 import dash_core_components as dcc
 import dash_html_components as html
 from dash.dependencies import Input, Output
+import config
 
 from apps import environment
 from apps import statistics
@@ -22,15 +23,9 @@ main_footer = main_navigation_bar = html.Div(className='container', children=[
 
 main_navigation_bar = html.Div(className='container mt-2', children=[
 
-    html.Div(className="row ml-2", children=[
-        # html.Img(className="rounded", src='/assets/main_logo.jpg', width='100', height='100')
-    ],
-             ),
-
-    html.Div(className="row mt-2", children=[
+    html.Div(className="row mt-4", children=[
         html.Ul(
-            id='main_navigation',
-            className='nav',
+            className='nav bg-light',
             children=[
                 html.Li(className='nav-item',
                         children=dcc.Link('Month Statistics',
@@ -93,4 +88,7 @@ def display_page(pathname):
 
 
 if __name__ == '__main__':
-    app.run_server(debug=True)
+    if config.RUN_AS_PRODUCTION:
+        app.run_server(host='0.0.0.0', port=80)
+    else:
+        app.run_server(debug=True, port=8050)

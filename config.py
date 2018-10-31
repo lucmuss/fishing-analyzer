@@ -49,13 +49,15 @@ def get_color_dict(attribute_list):
     # color_scale = colorlover.scales['11']['div']['Spectral']
 
     color_scale = colorlover.scales['9']['seq']['Blues']
-    color_scale = color_scale[4:]
+    color_scale = color_scale[6:]
     color_interp = colorlover.interp(color_scale, number)
     color_list = colorlover.to_rgb(color_interp)
 
     return_dict = dict(zip(attribute_list, color_list))
     return return_dict
 
+
+RUN_AS_PRODUCTION = True
 
 ATTRIBUTE_COLOR_DICT = dict()
 

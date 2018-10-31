@@ -5,6 +5,7 @@ import dash_core_components as dcc
 from dash.dependencies import Input, Output
 
 import plotly.figure_factory as figure_factory
+import plotly.graph_objs as graph_objs
 import utils
 import config
 from apps.utils import generate_attribute_options, generate_fish_type_options

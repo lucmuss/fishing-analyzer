@@ -81,7 +81,7 @@ layout = html.Div(children=[
 
     html.Div(children=[
 
-        html.Div(className='form-group float-left col-sm-6', children=[
+        html.Div(className='form-group float-left col-xs-12 col-sm-6 col-md-4 col-lg-3', children=[
             html.Label('Year Selection'),
             dcc.Dropdown(
                 id='month_statistics_year_selection',
@@ -90,7 +90,7 @@ layout = html.Div(children=[
             ),
         ]),
 
-        html.Div(className='form-group float-left col-sm-6', children=[
+        html.Div(className='form-group float-left col-xs-12 col-sm-6 col-md-4 col-lg-3', children=[
             html.Label('Attribute Selection'),
             dcc.Dropdown(
                 id='month_statistics_attribute_selection',
@@ -99,7 +99,7 @@ layout = html.Div(children=[
             ),
         ]),
 
-        html.Div(className='form-group float-left col-sm-6', children=[
+        html.Div(className='form-group float-left col-xs-12 col-sm-6 col-md-4 col-lg-3', children=[
             html.Label('Method Selection'),
             dcc.Dropdown(
                 id='month_statistics_method_selection',
