@@ -57,6 +57,7 @@ def get_color_dict(attribute_list):
     return return_dict
 
 
+
 RUN_AS_PRODUCTION = True
 
 ATTRIBUTE_COLOR_DICT = dict()
