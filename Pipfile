@@ -10,6 +10,10 @@ chardet = "==3.0.4"
 idna = "==2.6"
 "urllib3" = "==1.22"
 flask = "*"
+dash = "*"
+colorlover = "*"
+dash-core-components = "*"
+dash-html-components = "*"
 
 [dev-packages]
 
