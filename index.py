@@ -11,7 +11,7 @@ from apps import environment
 from apps import statistics
 from apps import histograms
 from apps import distributions
-from apps import adddata
+from apps import add
 from apps import mainpage
 
 main_footer = main_navigation_bar = html.Div(className='container', children=[
@@ -82,7 +82,7 @@ def display_page(pathname):
     elif pathname == '/apps/distributions':
         return distributions.layout
     elif pathname == '/apps/addfish':
-        return adddata.layout
+        return add.layout
     else:
         return mainpage.layout
 
