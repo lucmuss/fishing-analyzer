@@ -14,6 +14,7 @@ dash = "*"
 colorlover = "*"
 dash-core-components = "*"
 dash-html-components = "*"
+pymongo = "*"
 
 [dev-packages]
 
