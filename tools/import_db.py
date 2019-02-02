@@ -7,9 +7,7 @@ import config
 import utils
 
 
-def import_to_db(database_model):
-    location = "fish_database.csv"
-
+def import_to_db(database_model=None, location=config.FISH_DATA_CSV_LOCATION):
     script_dir = os.path.dirname(__file__)
     abs_file_path = os.path.join(script_dir, location)
 

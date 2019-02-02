@@ -2,6 +2,7 @@
 
 import datetime
 import colorlover
+import os
 
 
 def get_month_name(month_index):
@@ -57,8 +58,7 @@ def get_color_dict(attribute_list):
     return return_dict
 
 
-
-RUN_AS_PRODUCTION = False
+RUN_AS_PRODUCTION = True
 
 ATTRIBUTE_COLOR_DICT = dict()
 
@@ -132,5 +132,11 @@ DEFAULT_CATCH_HOUR = '17:30'
 RIVER_IDS = ['Baunach', 'Itz', 'Main', 'Weisach', 'Preppach']
 
 DEFAULT_RIVER_ID = RIVER_IDS[0]
+
+OS_SEPARATOR = os.path.sep
+
+WORKING_DICTIONARY = os.getcwd()
+
+FISH_DATA_CSV_LOCATION = OS_SEPARATOR.join([WORKING_DICTIONARY, 'data', 'fish_database.csv'])
 
 DATABASE_DOCUMENT = {'fish_type': '', 'catch_date': '', 'fisher_id': '', 'river_id': ''}
