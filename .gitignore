@@ -8,6 +8,9 @@
 # Python Cache
 __pycache__/*
 
+# Data Cache Files
+data/cache/*
+
 # Bytecode-compiled
 *.pyc
 
