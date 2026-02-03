@@ -1,46 +1,47 @@
 # coding: utf-8
 
-import pandas
-import datetime
+from __future__ import annotations # Für zukünftige Typ-Hints
+from typing import Any, Dict, List, Tuple
+
 import calendar
-import config
+import datetime
+
+import pandas as pd
 import pymongo
 
+import config
 import utils
-
-from data.fish.catch_month import CatchMonth
-from data.fish.catch_hour import CatchHour
-from data.fish.catch_date import CatchDate
-from data.fish.fish_type import FishType
-
-from data.cache import DataCache
-from data.cache import DatabaseDataCache
-
-from data.environment.water_temperature import WaterTemperature
+from data.cache import DataCache, DatabaseDataCache
 from data.environment.air_temperature import AirTemperature
-from data.environment.wind_direction import WindDirection
+from data.environment.ground_temperature import (GroundTemperature5,
+                                               GroundTemperature10,
+                                               GroundTemperature20,
+                                               GroundTemperature50,
+                                               GroundTemperature100)
 from data.environment.precipitation_amount import PrecipitationAmount
 from data.environment.precipitation_amount_day import PrecipitationAmountDay
-from data.environment.relative_humidity import RelativeHumidity
-from data.environment.sun_minutes_day import SunMinutesDay
-from data.environment.sun_minutes import SunMinutes
-from data.environment.wind_strength import WindStrength
-from data.environment.ground_temperature import GroundTemperature5
-from data.environment.ground_temperature import GroundTemperature10
-from data.environment.ground_temperature import GroundTemperature20
-from data.environment.ground_temperature import GroundTemperature50
-from data.environment.ground_temperature import GroundTemperature100
 from data.environment.record_date_hour import RecordDateHour
+from data.environment.relative_humidity import RelativeHumidity
+from data.environment.sun_minutes import SunMinutes
+from data.environment.sun_minutes_day import SunMinutesDay
+from data.environment.water_temperature import WaterTemperature
+from data.environment.wind_direction import WindDirection
+from data.environment.wind_strength import WindStrength
+from data.fish.catch_date import CatchDate
+from data.fish.catch_hour import CatchHour
+from data.fish.catch_month import CatchMonth
+from data.fish.fish_type import FishType
 
 
 class FishBaseModel:
+    """Basismodell für Fischdaten, das verschiedene Attribute wie Fangdatum und Fischtyp kapselt."""
 
-    def __init__(self, database_model=None):
+    def __init__(self, database_model: Any = None) -> None:
         # data attributes form the fish database
-        self.catch_date = CatchDate(database_model=database_model)
-        self.fish_type = FishType(database_model=database_model)
-        self.catch_hour = CatchHour(database_model=database_model)
-        self.catch_month = CatchMonth(database_model=database_model)
+        self.catch_date: CatchDate = CatchDate(database_model=database_model)
+        self.fish_type: FishType = FishType(database_model=database_model)
+        self.catch_hour: CatchHour = CatchHour(database_model=database_model)
+        self.catch_month: CatchMonth = CatchMonth(database_model=database_model)
 
 
 class EnvironmentBaseModel:

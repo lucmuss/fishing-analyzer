@@ -1,35 +1,32 @@
 # Version 1
 # IntelliJ Files
-.idea/*
+.idea/
 
-# Git Files
-.git/*
+# Git Files - .git/ is handled by Git itself, no need to explicitly ignore
+
+# Python Virtual Environment
+venv/
 
 # Python Cache
-__pycache__/*
-
-# Data Cache Files
-data/cache/*
+__pycache__/
 
 # Bytecode-compiled
 *.pyc
-
-# Bytecode-compiled optimized
 *.pyo
 *.pyd
+
+# Data Cache Files (shelve database)
+data/store.cache*
 
 # Log Files
 *.log
 
-# Html Files
-*.html
-
-# Html Files
+# Html Files (generated plotly plots)
 *.html
 
 # Jupyter Notebook Folder
-notebooks/*
-.ipynb_checkpoints/*
+notebooks/
+.ipynb_checkpoints/
 
 # Jupyter Notebook Files
 *.ipynb

@@ -1,45 +1,68 @@
 # coding: utf-8
 
-import dash_html_components as html
-import dash_core_components as dcc
-from dash.dependencies import Input
-from dash.dependencies import Output
-import plotly
+from typing import Any, Dict, List, Tuple
 
-import utils
+import dash_core_components as dcc
+import dash_html_components as html
+import plotly.graph_objs as go
+from dash.dependencies import Input, Output
+
 import config
-from apps.utils import generate_year_options, generate_attribute_options, generate_method_options
-from mainapp import app
+import utils
+from apps.utils import (generate_attribute_options,
+                        generate_method_options, generate_year_options)
 from data.model import ModelFactory
+from mainapp import app
+
+model_factory: ModelFactory = ModelFactory()
+statistic_model: Any = model_factory.statistic_model
 
 model_factory = ModelFactory()
 statistic_model = model_factory.statistic_model
 
 
-def extract_data_values(year, attribute, method, month_statistics):
-    data_dict = month_statistics[(year, attribute)]
+def extract_data_values(
+    year: str,
+    attribute: str,
+    method: str,
+    month_statistics: Dict[Tuple[str, str], Dict[int, Dict[str, float]]]
+) -> Tuple[List[str], List[float]]:
+    """Extrahiert X- und Y-Werte für die Diagrammerstellung aus den Monatsstatistiken.
 
-    x_values = [config.get_month_name(month_index) for month_index in data_dict.keys()]
-    y_values = [value[method] for key, value in data_dict.items()]
+    Args:
+        year: Das Jahr, für das Daten extrahiert werden sollen.
+        attribute: Das Attribut (z.B. Wassertemperatur), für das Daten extrahiert werden sollen.
+        method: Die statistische Methode (z.B. 'mean', 'max'), die angewendet werden soll.
+        month_statistics: Ein verschachteltes Dictionary mit Monatsstatistiken.
+
+    Returns:
+        Ein Tupel, das zwei Listen enthält: X-Werte (Monatsnamen) und Y-Werte (statistische Werte).
+    """
+    data_dict: Dict[int, Dict[str, float]] = month_statistics[(year, attribute)]
+
+    x_values: List[str] = [config.get_month_name(month_index) for month_index in data_dict.keys()]
+    y_values: List[float] = [value[method] for key, value in data_dict.items()]
 
     return x_values, y_values
 
 
-month_statistics = statistic_model.month_statistics
+month_statistics: Dict[Tuple[str, str], Dict[int, Dict[str, float]]] = statistic_model.month_statistics
 
-year_options = generate_year_options()
-default_year = config.DEFAULT_YEAR
+year_options: List[Dict[str, str]] = generate_year_options()
+default_year: str = config.DEFAULT_YEAR
 
-method_options = generate_method_options()
-default_method = config.DEFAULT_STATISTIC_METHOD
+method_options: List[Dict[str, str]] = generate_method_options()
+default_method: str = config.DEFAULT_STATISTIC_METHOD
 
-attribute_options = generate_attribute_options(statistic_model)
-default_attribute = config.DEFAULT_ATTRIBUTE
+attribute_options: List[Dict[str, str]] = generate_attribute_options(statistic_model)
+default_attribute: str = config.DEFAULT_ATTRIBUTE
 
-default_name = utils.attribute_to_name(default_attribute)
-default_title = utils.get_graph_name(attribute_name=default_attribute,
+default_name: str = utils.attribute_to_name(default_attribute)
+default_title: str = utils.get_graph_name(attribute_name=default_attribute,
                                      fish_type=default_year)
 
+default_x_values: List[str]
+default_y_values: List[float]
 default_x_values, default_y_values = extract_data_values(default_year, default_attribute,
                                                          default_method,
                                                          month_statistics)

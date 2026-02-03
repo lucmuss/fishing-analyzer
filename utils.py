@@ -1,11 +1,21 @@
 # coding: utf-8
 
-import numpy
+import numpy as np
+import pandas as pd
+
 import config
 
 
-def clean_series(attribute_series):
-    nan_series = attribute_series.replace([numpy.inf, -numpy.inf], numpy.nan)
+def clean_series(attribute_series: pd.Series) -> pd.Series:
+    """Bereinigt eine Pandas Series von NaN, Inf und -Inf Werten durch Ersetzen durch 0.0.
+
+    Args:
+        attribute_series: Die zu bereinigende Pandas Series.
+
+    Returns:
+        Die bereinigte Pandas Series.
+    """
+    nan_series = attribute_series.replace([np.inf, -np.inf], np.nan)
     clean_series = nan_series.fillna(0.0)
     return clean_series
 
@@ -13,16 +23,16 @@ def clean_series(attribute_series):
 def get_database_document(fish_type, catch_date, fisher_id, river_id):
     return_dict = dict(config.DATABASE_DOCUMENT)
 
-    return_dict['fish_type'] = fish_type
-    return_dict['catch_date'] = catch_date
-    return_dict['fisher_id'] = fisher_id
-    return_dict['river_id'] = river_id
+    return_dict["fish_type"] = fish_type
+    return_dict["catch_date"] = catch_date
+    return_dict["fisher_id"] = fisher_id
+    return_dict["river_id"] = river_id
 
     return return_dict
 
 
 def attribute_to_name(attribute_name):
-    return attribute_name.title().replace('_', ' ')
+    return attribute_name.title().replace("_", " ")
 
 
 def fish_type_to_name(fishtype):
@@ -37,7 +47,7 @@ def get_graph_name(attribute_name, fish_type):
 
 
 def is_plotable(series):
-    return series.dtype == 'float64'
+    return series.dtype == "float64"
 
 
 def fish_and_attribute(fish_type, attribute_name):
@@ -79,17 +89,18 @@ def validate_water_row(row):
     return len(row) >= 3 and row[2] == "Rohdaten"
 
 
-def get_layout_dict(title='Default', x_title='Werte', y_title='Anzahl', height=config.DIAGRAM_HEIGTH,
-                    width=config.DIAGRAM_WIDTH):
+def get_layout_dict(
+    title="Default",
+    x_title="Werte",
+    y_title="Anzahl",
+    height=config.DIAGRAM_HEIGTH,
+    width=config.DIAGRAM_WIDTH,
+):
     return_dict = {
-        'title': title,
-        'xaxis': dict(
-            title=x_title
-        ),
-        'yaxis': dict(
-            title=y_title
-        ),
-        'bargap': 0.1,
+        "title": title,
+        "xaxis": dict(title=x_title),
+        "yaxis": dict(title=y_title),
+        "bargap": 0.1,
     }
     return return_dict
 

@@ -2,235 +2,114 @@
 
 import csv
 import datetime
-import config
+from typing import Any, Dict, List, Optional, Tuple, Type, Union
 
+import config
 import utils
+from data.cache import DataCache
 from data.environment.base_attribute import BaseAttribute
 
 
-class GroundTemperature2(BaseAttribute):
-    file_location = 'raw_data/ground_temperature/produkt_eb_stunde_19490101_20171231_00282.txt'
-    attribute_name = 'ground_temperature_2'
+class GroundTemperatureBase(BaseAttribute):
+    """Basisklasse für Bodentemperaturdaten in verschiedenen Tiefen."""
 
-    def __init__(self, data_cache=None):
+    file_location: str = 'raw_data/ground_temperature/produkt_eb_stunde_19490101_20171231_00282.txt'
+    _depth_index: int
+    data_cache: DataCache
+    data_dict: Dict[str, float]
 
-        BaseAttribute.__init__(self,
-                               attribute_name=self.attribute_name,
-                               file_location=self.file_location)
-
+    def __init__(self, data_cache: DataCache, attribute_name: str, depth_index: int) -> None:
+        super().__init__(attribute_name=attribute_name,
+                         file_location=self.file_location)
         self.data_cache = data_cache
-        self.data_dict = self.data_cache.load_dict(attribute_name=self.attribute_name)
+        self._depth_index = depth_index
+        self.data_dict = self.data_cache.load_dict(attribute_name=attribute_name)
 
         if not self.data_dict:
             self.__read()
-            self.data_cache.store_dict(attribute_name=self.attribute_name, store_dict=self.data_dict)
+            self.data_cache.store_dict(attribute_name=attribute_name, store_dict=self.data_dict)
 
-    def __read(self):
+    def __read(self) -> None:
+        """Liest Bodentemperaturdaten aus der CSV-Datei und füllt data_dict."""
+        if not self.abs_file_location:
+            print(f"Error: file_location not set for {self.attribute_name}")
+            return
 
-        with open(self.abs_file_location, newline='') as csv_file:
+        with open(self.abs_file_location, newline='', encoding='utf-8') as csv_file:
             csv_reader = csv.reader(csv_file, delimiter=';', quotechar='"')
 
-            next(csv_reader)
+            next(csv_reader)  # Überspringt die Kopfzeile
 
-            for row in csv_reader:
+            for row_raw in csv_reader:
+                row: Tuple[str, ...] = tuple(utils.strip_row(row_raw)) # type: ignore
 
-                station, date, typ, temp2, temp5, temp10, temp20, temp50, temp100, e = utils.strip_row(row)
+                # Sicherstellen, dass die Zeile genügend Elemente hat
+                if len(row) < 10: # Mindestens 10 Spalten erwartet
+                    print(f"Skipping malformed row: {row_raw}")
+                    continue
 
-                if utils.has_correct_year_range(date):
-                    if utils.validate_row(row, station):
-                        date_time = datetime.datetime.strptime(date, "%Y%m%d%H")
-                        formatted_string = date_time.strftime(config.CATCH_DATE_FORMAT)
+                station, date_str, _, temp2_str, temp5_str, temp10_str, temp20_str, temp50_str, temp100_str, _ = row # type: ignore
 
-                        ground_temperature = float(temp2)
+                if utils.has_correct_year_range(date_str) and utils.validate_row(row_raw, station): # type: ignore
+                    try:
+                        date_time: datetime.datetime = datetime.datetime.strptime(date_str, "%Y%m%d%H")
+                        formatted_string: str = date_time.strftime(config.CATCH_DATE_FORMAT)
 
+                        # Extrahiere die Temperatur basierend auf _depth_index
+                        ground_temperature_str: str
+                        if self._depth_index == 2: 
+                            ground_temperature_str = temp2_str
+                        elif self._depth_index == 5:
+                            ground_temperature_str = temp5_str
+                        elif self._depth_index == 10:
+                            ground_temperature_str = temp10_str
+                        elif self._depth_index == 20:
+                            ground_temperature_str = temp20_str
+                        elif self._depth_index == 50:
+                            ground_temperature_str = temp50_str
+                        elif self._depth_index == 100:
+                            ground_temperature_str = temp100_str
+                        else:
+                            continue # Ungültiger Tiefenindex
+
+                        ground_temperature: float = float(ground_temperature_str)
                         self.data_dict[formatted_string] = ground_temperature
+                    except ValueError as e:
+                        print(f"Error parsing row {row_raw}: {e}")
+                        continue
 
 
-class GroundTemperature5(BaseAttribute):
-    file_location = 'raw_data/ground_temperature/produkt_eb_stunde_19490101_20171231_00282.txt'
-    attribute_name = 'ground_temperature_5'
+class GroundTemperature2(GroundTemperatureBase):
+    """Bodentemperatur in 2 cm Tiefe."""
+    def __init__(self, data_cache: DataCache) -> None:
+        super().__init__(data_cache, 'ground_temperature_2', depth_index=2)
 
-    def __init__(self, data_cache=None):
 
-        BaseAttribute.__init__(self,
-                               attribute_name=self.attribute_name,
-                               file_location=self.file_location)
+class GroundTemperature5(GroundTemperatureBase):
+    """Bodentemperatur in 5 cm Tiefe."""
+    def __init__(self, data_cache: DataCache) -> None:
+        super().__init__(data_cache, 'ground_temperature_5', depth_index=5)
 
-        self.data_cache = data_cache
-        self.data_dict = self.data_cache.load_dict(attribute_name=self.attribute_name)
 
-        if not self.data_dict:
-            self.__read()
-            self.data_cache.store_dict(attribute_name=self.attribute_name, store_dict=self.data_dict)
+class GroundTemperature10(GroundTemperatureBase):
+    """Bodentemperatur in 10 cm Tiefe."""
+    def __init__(self, data_cache: DataCache) -> None:
+        super().__init__(data_cache, 'ground_temperature_10', depth_index=10)
 
-    def __read(self):
 
-        with open(self.abs_file_location, newline='') as csv_file:
-            csv_reader = csv.reader(csv_file, delimiter=';', quotechar='"')
+class GroundTemperature20(GroundTemperatureBase):
+    """Bodentemperatur in 20 cm Tiefe."""
+    def __init__(self, data_cache: DataCache) -> None:
+        super().__init__(data_cache, 'ground_temperature_20', depth_index=20)
 
-            next(csv_reader)
 
-            for row in csv_reader:
+class GroundTemperature50(GroundTemperatureBase):
+    """Bodentemperatur in 50 cm Tiefe."""
+    def __init__(self, data_cache: DataCache) -> None:
+        super().__init__(data_cache, 'ground_temperature_50', depth_index=50)
 
-                station, date, typ, temp2, temp5, temp10, temp20, temp50, temp100, e = utils.strip_row(row)
 
-                if utils.has_correct_year_range(date):
-                    if utils.validate_row(row, station):
-                        date_time = datetime.datetime.strptime(date, "%Y%m%d%H")
-                        formatted_string = date_time.strftime(config.CATCH_DATE_FORMAT)
-
-                        ground_temperature = float(temp5)
-
-                        self.data_dict[formatted_string] = ground_temperature
-
-
-class GroundTemperature10(BaseAttribute):
-    file_location = 'raw_data/ground_temperature/produkt_eb_stunde_19490101_20171231_00282.txt'
-    attribute_name = 'ground_temperature_10'
-
-    def __init__(self, data_cache=None):
-
-        BaseAttribute.__init__(self,
-                               attribute_name=self.attribute_name,
-                               file_location=self.file_location)
-
-        self.data_cache = data_cache
-        self.data_dict = self.data_cache.load_dict(attribute_name=self.attribute_name)
-
-        if not self.data_dict:
-            self.__read()
-            self.data_cache.store_dict(attribute_name=self.attribute_name, store_dict=self.data_dict)
-
-    def __read(self):
-
-        with open(self.abs_file_location, newline='') as csv_file:
-            csv_reader = csv.reader(csv_file, delimiter=';', quotechar='"')
-
-            next(csv_reader)
-
-            for row in csv_reader:
-
-                station, date, typ, temp2, temp5, temp10, temp20, temp50, temp100, e = utils.strip_row(row)
-
-                if utils.has_correct_year_range(date):
-                    if utils.validate_row(row, station):
-                        date_time = datetime.datetime.strptime(date, "%Y%m%d%H")
-                        formatted_string = date_time.strftime(config.CATCH_DATE_FORMAT)
-
-                        ground_temperature = float(temp10)
-
-                        self.data_dict[formatted_string] = ground_temperature
-
-
-class GroundTemperature20(BaseAttribute):
-    file_location = 'raw_data/ground_temperature/produkt_eb_stunde_19490101_20171231_00282.txt'
-    attribute_name = 'ground_temperature_20'
-
-    def __init__(self, data_cache=None):
-
-        BaseAttribute.__init__(self,
-                               attribute_name=self.attribute_name,
-                               file_location=self.file_location)
-
-        self.data_cache = data_cache
-        self.data_dict = self.data_cache.load_dict(attribute_name=self.attribute_name)
-
-        if not self.data_dict:
-            self.__read()
-            self.data_cache.store_dict(attribute_name=self.attribute_name, store_dict=self.data_dict)
-
-    def __read(self):
-
-        with open(self.abs_file_location, newline='') as csv_file:
-            csv_reader = csv.reader(csv_file, delimiter=';', quotechar='"')
-
-            next(csv_reader)
-
-            for row in csv_reader:
-
-                station, date, typ, temp2, temp5, temp10, temp20, temp50, temp100, e = utils.strip_row(row)
-
-                if utils.has_correct_year_range(date):
-                    if utils.validate_row(row, station):
-                        date_time = datetime.datetime.strptime(date, "%Y%m%d%H")
-                        formatted_string = date_time.strftime(config.CATCH_DATE_FORMAT)
-
-                        ground_temperature = float(temp20)
-
-                        self.data_dict[formatted_string] = ground_temperature
-
-
-class GroundTemperature50(BaseAttribute):
-    file_location = 'raw_data/ground_temperature/produkt_eb_stunde_19490101_20171231_00282.txt'
-    attribute_name = 'ground_temperature_50'
-
-    def __init__(self, data_cache=None):
-
-        BaseAttribute.__init__(self,
-                               attribute_name=self.attribute_name,
-                               file_location=self.file_location)
-
-        self.data_cache = data_cache
-        self.data_dict = self.data_cache.load_dict(attribute_name=self.attribute_name)
-
-        if not self.data_dict:
-            self.__read()
-            self.data_cache.store_dict(attribute_name=self.attribute_name, store_dict=self.data_dict)
-
-    def __read(self):
-
-        with open(self.abs_file_location, newline='') as csv_file:
-            csv_reader = csv.reader(csv_file, delimiter=';', quotechar='"')
-
-            next(csv_reader)
-
-            for row in csv_reader:
-
-                station, date, typ, temp2, temp5, temp10, temp20, temp50, temp100, e = utils.strip_row(row)
-
-                if utils.has_correct_year_range(date):
-                    if utils.validate_row(row, station):
-                        date_time = datetime.datetime.strptime(date, "%Y%m%d%H")
-                        formatted_string = date_time.strftime(config.CATCH_DATE_FORMAT)
-
-                        ground_temperature = float(temp50)
-
-                        self.data_dict[formatted_string] = ground_temperature
-
-
-class GroundTemperature100(BaseAttribute):
-    file_location = 'raw_data/ground_temperature/produkt_eb_stunde_19490101_20171231_00282.txt'
-    attribute_name = 'ground_temperature_100'
-
-    def __init__(self, data_cache=None):
-
-        BaseAttribute.__init__(self,
-                               attribute_name=self.attribute_name,
-                               file_location=self.file_location)
-
-        self.data_cache = data_cache
-        self.data_dict = self.data_cache.load_dict(attribute_name=self.attribute_name)
-
-        if not self.data_dict:
-            self.__read()
-            self.data_cache.store_dict(attribute_name=self.attribute_name, store_dict=self.data_dict)
-
-    def __read(self):
-
-        with open(self.abs_file_location, newline='') as csv_file:
-            csv_reader = csv.reader(csv_file, delimiter=';', quotechar='"')
-
-            next(csv_reader)
-
-            for row in csv_reader:
-
-                station, date, typ, temp2, temp5, temp10, temp20, temp50, temp100, e = utils.strip_row(row)
-
-                if utils.has_correct_year_range(date):
-                    if utils.validate_row(row, station):
-                        date_time = datetime.datetime.strptime(date, "%Y%m%d%H")
-                        formatted_string = date_time.strftime(config.CATCH_DATE_FORMAT)
-
-                        ground_temperature = float(temp100)
-
-                        self.data_dict[formatted_string] = ground_temperature
+class GroundTemperature100(GroundTemperatureBase):
+    """Bodentemperatur in 100 cm Tiefe."""
+    def __init__(self, data_cache: DataCache) -> None:
+        super().__init__(data_cache, 'ground_temperature_100', depth_index=100)

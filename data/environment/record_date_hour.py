@@ -2,22 +2,25 @@
 
 import csv
 import datetime
-import config
+from typing import Any, Dict, Optional, Tuple
 
+import config
 import utils
+from data.cache import DataCache
 from data.environment.base_attribute import BaseAttribute
 
 
 class RecordDateHour(BaseAttribute):
-    file_location = 'raw_data/relativ_humidity_air_temperature/produkt_tu_stunde_19490101_20171231_00282.txt'
-    attribute_name = 'record_date_hour'
+    """Repräsentiert den Datums- und Stundenstempel der Aufzeichnungen, abgeleitet von BaseAttribute."""
 
-    def __init__(self, data_cache=None):
+    file_location: str = 'raw_data/relativ_humidity_air_temperature/produkt_tu_stunde_19490101_20171231_00282.txt'
+    attribute_name: str = 'record_date_hour'
+    data_cache: DataCache
+    data_dict: Dict[str, str]
 
-        BaseAttribute.__init__(self,
-                               attribute_name=self.attribute_name,
-                               file_location=self.file_location)
-
+    def __init__(self, data_cache: DataCache) -> None:
+        super().__init__(attribute_name=self.attribute_name,
+                         file_location=self.file_location)
         self.data_cache = data_cache
         self.data_dict = self.data_cache.load_dict(attribute_name=self.attribute_name)
 
@@ -25,20 +28,31 @@ class RecordDateHour(BaseAttribute):
             self.__read()
             self.data_cache.store_dict(attribute_name=self.attribute_name, store_dict=self.data_dict)
 
-    def __read(self):
+    def __read(self) -> None:
+        """Liest die Datums- und Zeitstempel aus der CSV-Datei und füllt data_dict."""
+        if not self.abs_file_location:
+            print(f"Error: file_location not set for {self.attribute_name}")
+            return
 
-        with open(self.abs_file_location, newline='') as csv_file:
+        with open(self.abs_file_location, newline='', encoding='utf-8') as csv_file:
             csv_reader = csv.reader(csv_file, delimiter=';', quotechar='"')
 
-            next(csv_reader)
+            next(csv_reader)  # Überspringt die Kopfzeile
 
-            for row in csv_reader:
+            for row_raw in csv_reader:
+                row: Tuple[str, ...] = tuple(utils.strip_row(row_raw)) # type: ignore
 
-                station, date, typ, temperature, humidity, error = utils.strip_row(row)
+                if len(row) < 6:
+                    print(f"Skipping malformed row: {row_raw}")
+                    continue
 
-                if utils.has_correct_year_range(date):
-                    if utils.validate_row(row, station):
-                        date_time = datetime.datetime.strptime(date, "%Y%m%d%H")
-                        formatted_string = date_time.strftime(config.CATCH_DATE_FORMAT)
+                station, date_str, _, _, _, _ = row
 
+                if utils.has_correct_year_range(date_str) and utils.validate_row(row_raw, station):
+                    try:
+                        date_time: datetime.datetime = datetime.datetime.strptime(date_str, "%Y%m%d%H")
+                        formatted_string: str = date_time.strftime(config.CATCH_DATE_FORMAT)
                         self.data_dict[formatted_string] = formatted_string
+                    except ValueError as e:
+                        print(f"Error parsing row {row_raw}: {e}")
+                        continue

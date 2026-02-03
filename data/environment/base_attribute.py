@@ -1,13 +1,24 @@
 # coding: utf-8
 
-import pandas
-import config
+from __future__ import annotations
+from typing import Any, Dict, List, Optional
+
 import os
+
+import pandas as pd
+
+import config
 
 
 class BaseAttribute:
+    """Basisklasse für Umweltattribute, die grundlegende Eigenschaften und Datenverarbeitung bereitstellt."""
 
-    def __init__(self, file_location=None, attribute_name=None):
+    attribute_name: Optional[str]
+    file_location: Optional[str]
+    data_dict: Dict[Any, Any]
+
+    def __init__(self, file_location: Optional[str] = None,
+                 attribute_name: Optional[str] = None) -> None:
         self.attribute_name = attribute_name
         self.file_location = file_location
         self.data_dict = dict()

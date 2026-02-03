@@ -1,50 +1,55 @@
 # coding: utf-8
 
-import dash_html_components as html
+from typing import Any, List, Tuple
+
 import dash_core_components as dcc
+import dash_html_components as html
+import plotly.graph_objs as go
 from dash.dependencies import Input, Output
 
-import plotly
-import utils
 import config
+import utils
 from apps.utils import generate_attribute_options, generate_fish_type_options
-from mainapp import app
 from data.model import ModelFactory
+from mainapp import app
 
-model_factory = ModelFactory()
-fish_frame_model = model_factory.fish_frame_model
+model_factory: ModelFactory = ModelFactory()
+fish_frame_model: Any = model_factory.fish_frame_model
 
-fish_options = generate_fish_type_options(fish_model=fish_frame_model)
-default_fish_type = config.DEFAULT_FISH_TYPE
+fish_options: list[dict[str, str]] = generate_fish_type_options(fish_model=fish_frame_model)
+default_fish_type: str = config.DEFAULT_FISH_TYPE
 
-attribute_options = generate_attribute_options(fish_frame_model)
-default_attribute = config.DEFAULT_ATTRIBUTE
+attribute_options: list[dict[str, str]] = generate_attribute_options(fish_frame_model)
+default_attribute: str = config.DEFAULT_ATTRIBUTE
 
-default_data_selection = fish_frame_model.get_fish_frame(default_fish_type)
+default_data_selection: Any = fish_frame_model.get_fish_frame(default_fish_type)
 
-default_data_series = default_data_selection[default_attribute]
+default_data_series: Any = default_data_selection[default_attribute]
 
+default_y_values: list[float]
+default_x_values: list[float]
 default_y_values, default_x_values = utils.safe_series_to_graph(default_data_series)
 
-default_name = utils.attribute_to_name(default_attribute)
+default_name: str = utils.attribute_to_name(default_attribute)
 
-default_title = utils.get_graph_name(attribute_name=default_attribute,
-                                     fish_type=default_fish_type)
+default_title: str = utils.get_graph_name(
+    attribute_name=default_attribute, fish_type=default_fish_type
+)
 
 
-def generate_histogram(x_values=default_x_values,
-                       name=default_name,
-                       attribute_name=default_attribute,
-                       title=default_title):
+def generate_histogram(
+    x_values=default_x_values,
+    name=default_name,
+    attribute_name=default_attribute,
+    title=default_title,
+):
     color = config.ATTRIBUTE_COLOR_DICT[attribute_name]
 
     histogram = plotly.graph_objs.Histogram(
         x=x_values,
         nbinsx=config.HISTOGRAM_BINS,
         name=name,
-        marker=dict(
-            color=color
-        ),
+        marker=dict(color=color),
     )
 
     data = [histogram]
@@ -59,42 +64,46 @@ def generate_histogram(x_values=default_x_values,
     return figure
 
 
-layout = html.Div(children=[
-
-    dcc.Graph(
-        id='fish_histograms',
-        figure=generate_histogram()
-    ),
-
-    html.Form(children=[
-
-        html.Div(className='form-group float-left col-sm-6', children=[
-            html.Label('Fish Selection'),
-            dcc.Dropdown(
-                id='fish_histograms_fish_selection',
-                options=fish_options,
-                value=default_fish_type
-            ),
-        ]),
-
-        html.Div(className='form-group float-left col-sm-6', children=[
-            html.Label('Attribute Selection'),
-            dcc.Dropdown(
-                id='fish_histograms_attribute_selection',
-                options=attribute_options,
-                value=default_attribute
-            ),
-        ]),
-
-    ]),
-
-])
+layout = html.Div(
+    children=[
+        dcc.Graph(id="fish_histograms", figure=generate_histogram()),
+        html.Form(
+            children=[
+                html.Div(
+                    className="form-group float-left col-sm-6",
+                    children=[
+                        html.Label("Fish Selection"),
+                        dcc.Dropdown(
+                            id="fish_histograms_fish_selection",
+                            options=fish_options,
+                            value=default_fish_type,
+                        ),
+                    ],
+                ),
+                html.Div(
+                    className="form-group float-left col-sm-6",
+                    children=[
+                        html.Label("Attribute Selection"),
+                        dcc.Dropdown(
+                            id="fish_histograms_attribute_selection",
+                            options=attribute_options,
+                            value=default_attribute,
+                        ),
+                    ],
+                ),
+            ]
+        ),
+    ]
+)
 
 
 @app.callback(
-    Output('fish_histograms', 'figure'),
-    [Input('fish_histograms_fish_selection', 'value'),
-     Input('fish_histograms_attribute_selection', 'value')])
+    Output("fish_histograms", "figure"),
+    [
+        Input("fish_histograms_fish_selection", "value"),
+        Input("fish_histograms_attribute_selection", "value"),
+    ],
+)
 def update_data_graph(fish_type, attribute_name):
     data_selection = fish_frame_model
 
@@ -108,9 +117,8 @@ def update_data_graph(fish_type, attribute_name):
     name = utils.attribute_to_name(attribute_name)
     title = utils.get_graph_name(attribute_name=attribute_name, fish_type=fish_type)
 
-    figure = generate_histogram(x_values=x_values,
-                                title=title,
-                                attribute_name=attribute_name,
-                                name=name)
+    figure = generate_histogram(
+        x_values=x_values, title=title, attribute_name=attribute_name, name=name
+    )
 
     return figure

@@ -1,35 +1,58 @@
 # coding: utf-8
 
+from __future__ import annotations # Für zukünftige Typ-Hints
+from typing import Any, Dict, Type
+
 import os
 import shelve
+
 import pymongo
+
 import config
 
 
 class DataCache:
-    main_db = 'store.cache'
+    """Ein Cache-System, das Shelve zur Persistenz verwendet."""
 
-    def __init__(self):
-        script_dir = os.path.dirname(__file__)
-        abs_file_path = os.path.join(script_dir, self.main_db)
+    main_db: str = 'store.cache'
+
+    def __init__(self) -> None:
+        script_dir: str = os.path.dirname(__file__)
+        abs_file_path: str = os.path.join(script_dir, self.main_db)
 
         self.shelve_db = shelve.open(abs_file_path)
 
-    def load_dict(self, attribute_name):
-        return_dict = dict()
+    def load_dict(self, attribute_name: str) -> Dict[str, Any]:
+        """Lädt ein Dictionary aus dem Cache.
+
+        Args:
+            attribute_name: Der Name des Attributs, dessen Dictionary geladen werden soll.
+
+        Returns:
+            Das geladene Dictionary oder ein leeres Dictionary, falls nicht vorhanden.
+        """
+        return_dict: Dict[str, Any] = dict()
 
         if attribute_name in self.shelve_db:
             return_dict = self.shelve_db[attribute_name]
 
         return return_dict
 
-    def store_dict(self, attribute_name, store_dict):
+    def store_dict(self, attribute_name: str, store_dict: Dict[str, Any]) -> None:
+        """Speichert ein Dictionary im Cache.
+
+        Args:
+            attribute_name: Der Name des Attributs, dessen Dictionary gespeichert werden soll.
+            store_dict: Das zu speichernde Dictionary.
+        """
         self.shelve_db[attribute_name] = store_dict
 
-    def __enter__(self):
+    def __enter__(self) -> DataCache:
         return self
 
-    def __exit__(self, exc_type, exc_val, exc_tb):
+    def __exit__(self, exc_type: Type[BaseException] | None,
+                 exc_val: BaseException | None,
+                 exc_tb: Any | None) -> None:
         self.shelve_db.close()
 
 

@@ -1,0 +1,10 @@
+numpy
+colorlover
+plotly
+flask
+dash
+scipy
+pymongo
+pandas
+dash-html-components
+dash-core-components

@@ -1,24 +1,32 @@
 # coding: utf-8
 
+import datetime
+from typing import Any, Dict, List, Optional
+
 import config
 from data.environment.base_attribute import BaseAttribute
 
 
 class CatchHour(BaseAttribute):
-    attribute_name = 'fish_catch_hour'
+    """Repräsentiert die Fangstunde von Fischen, abgeleitet von BaseAttribute."""
 
-    def __init__(self, database_model=None):
-        BaseAttribute.__init__(self,
-                               attribute_name=self.attribute_name,
-                               )
+    attribute_name: str = 'fish_catch_hour'
+    data_dict: Dict[str, float]
 
-        self.__read(fish_list=database_model.fish_list)
+    def __init__(self, database_model: Any = None) -> None:
+        super().__init__(attribute_name=self.attribute_name)
 
-    def __read(self, fish_list):
+        if database_model:
+            self.__read(fish_list=database_model.fish_list) # type: ignore
+
+    def __read(self, fish_list: List[Dict[str, Any]]) -> None:
+        """Liest die Fangstunden aus der Fischliste und füllt data_dict."""
         for document in fish_list:
-            catch_date = document['catch_date']
+            catch_date: datetime.datetime = document['catch_date']
 
-            formatted_string = catch_date.strftime(config.CATCH_DATE_FORMAT)
-            catch_hour = catch_date.strftime("%H")
+            # Formatiert das Datum in das im config definierte Format für den Schlüssel
+            formatted_string: str = catch_date.strftime(config.CATCH_DATE_FORMAT)
+            # Extrahiert die Stunde und konvertiert sie in einen Float
+            catch_hour: float = float(catch_date.strftime("%H"))
 
-            self.data_dict[formatted_string] = float(catch_hour)
+            self.data_dict[formatted_string] = catch_hour
