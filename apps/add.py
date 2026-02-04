@@ -150,7 +150,6 @@ def update_data_graph(n_clicks, fish_type, river_id, fisher_id, catch_date, catc
     return_message = ""
 
     if n_clicks and fish_type and river_id and fisher_id and catch_date and catch_hour:
-
         full_date_string = " ".join([catch_date, catch_hour])
 
         date_time = datetime.datetime.strptime(full_date_string, "%Y-%m-%d %H:%M")

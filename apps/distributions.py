@@ -43,8 +43,8 @@ def generate_distribution(
     attribute_name: str = default_attribute,
     title: str = default_title
 ) -> dict:
-    """Generiert eine Plotly-Verteilungsfigur basierend auf den Eingabedaten."
-    attribute_list: List[str] = [name]  # Hier wurde '' zu name ge‰ndert, da es sonst leer w‰re
+    """Generiert eine Plotly-Verteilungsfigur basierend auf den Eingabedaten."""
+    attribute_list: List[str] = [name]  # Hier wurde '' zu name ge√§ndert, da es sonst leer w√§re
     attribute_value_list: List[List[float]] = [x_values]
     colors: List[Tuple[int, int, int]] = [config.ATTRIBUTE_COLOR_DICT[attribute_name]]
 

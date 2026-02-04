@@ -1,75 +1,75 @@
-# Data Analysis: Fish Catches River Baunach
+# Fishing Analyzer
 
-This is a small example project, where all
-catched fishes are tracked in the river baunach. 
-
+This is a small example project where all caught fishes are tracked in the river Baunach.
 
 ## Technologies
-The project was realized with the technologies,
-MongoDB, Pandas, Plotly, Dash and Numpy.
-
+The project uses MongoDB, Pandas, Plotly, Dash, and NumPy.
 
 ## Prerequisites
-In the first step you have to 
-install a [Python Interpreter](https://www.python.org/). 
-The project 
-was created with Python 3.6. Additionally,
-you have to install package managers, 
-[Pip](https://pypi.org/project/pip/) and 
-[Pipenv](https://github.com/pypa/pipenv).
+Install [Python Interpreter](https://www.python.org/) (Python 3.8+).
 
-### Pip Installation
-```
-python -m pip install --upgrade pip
-pip install --upgrade setuptools
+Install [uv](https://github.com/astral-sh/uv) package manager:
+```bash
+curl -LsSf https://astral.sh/uv/install.sh | sh
 ```
 
-### Pipenv Installation
-```
-pip install pipenv
-```
+## Setup
+```bash
+# Install dependencies and setup environment
+just setup
 
-## Installing Dependencies
-Run the following command to install all 
-required software packages. The python packages 
-(bottleneck, numexpr) require 
-[Build Tools for Visual Studio](https://visualstudio.microsoft.com/de/thank-you-downloading-visual-studio/?sku=BuildTools&rel=15).
+# For development with dev dependencies
+uv sync --extra dev
 ```
-pipenv install -r requirements.txt
-```
-
 
 ## Database Prerequisites
-For the setup process you frist need to install 
-[MongoDB](https://www.mongodb.com) on your computer.
-After his step you can access to your 
-MongoDB Instance with the Python package 
-**pymongo**.
-```
-pipenv install pymongo
-```
-The configuration of this app is located in the 
-_config.py_ file. Here you can setup up the name 
-of your database or the name of your collection.
+Install [MongoDB](https://www.mongodb.com) on your computer.
 
+Configuration is in `config.py`.
 
 ## Data Import
-For the setup process you have to run the file 
-install.py. During this process all data points 
-of the fish catches are imported to your MongoDB 
-Instance.
-```
+Run data import:
+```bash
 python install.py
 ```
 
+## Running the App
+```bash
+# Development mode
+just dev
 
-## Running Dash Server
-You can run the app with the command.
+# Or directly
+python run.py
 ```
-python index.py
+
+## Development Commands
+```bash
+# Format code
+just format
+
+# Lint code
+just lint
+
+# Run tests
+just test
+
+# Full check (lint + typecheck + test)
+just check
+
+# Clean artifacts
+just clean
 ```
 
+## Docker
+```bash
+# Build and run
+just docker-up
 
-## Author
-* Datapoints - **[Angel Verein Ebern](http://www.av-ebern.de/)**
-* Datapoints - **[Angel Verein Baunach](http://www.anglerverein-baunach.de)**
+# Stop
+just docker-down
+```
+
+## Authors
+* Data points - [Angel Verein Ebern](http://www.av-ebern.de/)
+* Data points - [Angel Verein Baunach](http://www.anglerverein-baunach.de/)
+

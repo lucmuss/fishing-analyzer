@@ -6,6 +6,10 @@
 
 # Python Virtual Environment
 venv/
+.venv/
+
+# uv
+.uv/
 
 # Python Cache
 __pycache__/
@@ -30,3 +34,6 @@ notebooks/
 
 # Jupyter Notebook Files
 *.ipynb
+
+# Ruff cache
+.ruff_cache/

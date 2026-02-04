@@ -106,6 +106,6 @@ def display_page(pathname: str) -> html.Div:
 
 if __name__ == "__main__":
     if config.RUN_AS_PRODUCTION:
-        app.run_server(host="0.0.0.0", port=80)
+        app.run_server(host="0.0.0.0", port=8085)
     else:
-        app.run_server(debug=True, port=80)
+        app.run_server(debug=True, port=8085)
