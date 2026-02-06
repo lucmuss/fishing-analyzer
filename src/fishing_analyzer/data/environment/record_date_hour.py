@@ -1,6 +1,5 @@
 import csv
 import datetime
-from typing import Any, Dict, Optional, Tuple
 
 from fishing_analyzer import config, utils
 from fishing_analyzer.data.cache import DataCache
@@ -40,7 +39,7 @@ class RecordDateHour(BaseAttribute):
             next(csv_reader)  # Überspringt die Kopfzeile
 
             for row_raw in csv_reader:
-                row: tuple[str, ...] = tuple(utils.strip_row(row_raw))  # type: ignore
+                row: tuple[str, ...] = tuple(utils.strip_row(row_raw))
 
                 if len(row) < 6:
                     print(f"Skipping malformed row: {row_raw}")

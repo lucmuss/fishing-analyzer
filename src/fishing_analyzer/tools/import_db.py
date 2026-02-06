@@ -1,7 +1,7 @@
 import csv
 import datetime
 import os
-from typing import Any, Optional, Tuple
+from typing import Any
 
 from fishing_analyzer import config, utils
 
@@ -30,7 +30,7 @@ def import_to_db(
         csv_reader = csv.reader(csv_file, delimiter=";", quotechar='"')
 
         for row_raw in csv_reader:
-            row: tuple[str, ...] = tuple(utils.strip_row(row_raw))  # type: ignore
+            row: tuple[str, ...] = tuple(utils.strip_row(row_raw))
 
             if len(row) < 3:
                 print(f"Skipping malformed row: {row_raw}")

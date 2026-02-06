@@ -1,10 +1,8 @@
-from typing import Any, List, Tuple
+from typing import Any, cast
 
-import dash_core_components as dcc
-import dash_html_components as html
 import plotly.figure_factory as ff
 import plotly.graph_objs as go  # noqa: F401
-from dash.dependencies import Input, Output
+from dash import Input, Output, dcc, html
 
 from fishing_analyzer import config, utils
 from fishing_analyzer.apps.utils import generate_attribute_options, generate_fish_type_options
@@ -68,7 +66,7 @@ layout = html.Div(
                         html.Label("Fish Selection"),
                         dcc.Dropdown(
                             id="fish_distributions_fish_selection",
-                            options=fish_options,
+                            options=cast(Any, fish_options),
                             value=default_fish_type,
                         ),
                     ],
@@ -79,7 +77,7 @@ layout = html.Div(
                         html.Label("Attribute Selection"),
                         dcc.Dropdown(
                             id="fish_distributions_attribute_selection",
-                            options=attribute_options,
+                            options=cast(Any, attribute_options),
                             value=default_attribute,
                         ),
                     ],

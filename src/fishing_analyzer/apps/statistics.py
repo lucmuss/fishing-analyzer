@@ -1,9 +1,7 @@
-from typing import Any, Dict, List, Tuple
+from typing import Any, cast
 
-import dash_core_components as dcc
-import dash_html_components as html
 import plotly.graph_objs as go
-from dash.dependencies import Input, Output
+from dash import Input, Output, dcc, html
 
 from fishing_analyzer import config, utils
 from fishing_analyzer.apps.utils import (
@@ -82,7 +80,7 @@ def generate_bar(
         x=x_values,
         y=y_values,
         name=name,
-        marker=dict(color=color),
+        marker={"color": color},
     )
 
     data = [bar]
@@ -108,7 +106,7 @@ layout = html.Div(
                         html.Label("Year Selection"),
                         dcc.Dropdown(
                             id="month_statistics_year_selection",
-                            options=year_options,
+                            options=cast(Any, year_options),
                             value=default_year,
                         ),
                     ],
@@ -119,7 +117,7 @@ layout = html.Div(
                         html.Label("Attribute Selection"),
                         dcc.Dropdown(
                             id="month_statistics_attribute_selection",
-                            options=attribute_options,
+                            options=cast(Any, attribute_options),
                             value=default_attribute,
                         ),
                     ],
@@ -130,7 +128,7 @@ layout = html.Div(
                         html.Label("Method Selection"),
                         dcc.Dropdown(
                             id="month_statistics_method_selection",
-                            options=method_options,
+                            options=cast(Any, method_options),
                             value=default_method,
                         ),
                     ],

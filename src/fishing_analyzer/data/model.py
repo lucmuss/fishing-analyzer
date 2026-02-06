@@ -2,13 +2,13 @@ from __future__ import annotations  # Für zukünftige Typ-Hints
 
 import calendar
 import datetime
-from typing import Any, Dict, List, Tuple
+from typing import Any
 
 import pandas as pd
 import pymongo
 
 from fishing_analyzer import config, utils
-from fishing_analyzer.data.cache import DatabaseDataCache, DataCache
+from fishing_analyzer.data.cache import DatabaseDataCache
 from fishing_analyzer.data.environment.air_temperature import AirTemperature
 from fishing_analyzer.data.environment.ground_temperature import (
     GroundTemperature5,
@@ -71,8 +71,11 @@ class FullBaseModel:
 
 class DatabaseModel:
     def __init__(self):
+        self.mongo_client: Any
+        self.mongo_db: Any
+        self.mongo_collection: Any
         self.__initialize_mongo_db()
-        self.__fish_list = list()
+        self.__fish_list = []
 
     def __enter__(self):
         return self
@@ -85,7 +88,7 @@ class DatabaseModel:
         self.mongo_client = pymongo.MongoClient(config.MONGODB_URI)
         self.mongo_db = self.mongo_client.get_database(name=config.DATABASE_NAME)
 
-        collection_names = self.mongo_db.collection_names()
+        collection_names: list[str] = self.mongo_db.collection_names()
 
         if config.DATABASE_FISH_COLLECTION_NAME not in collection_names:
             self.mongo_db.create_collection(config.DATABASE_FISH_COLLECTION_NAME)
@@ -107,10 +110,11 @@ class DatabaseModel:
         if fish_type in config.FISH_TYPES:
             document = utils.get_database_document(fish_type, catch_date, fisher_id, river_id)
 
-            cursor = self.mongo_collection.find(document).limit(1)
+            mongo_collection: Any = self.mongo_collection
+            cursor = mongo_collection.find(document).limit(1)
 
             if cursor.count() <= 0:
-                self.mongo_collection.insert_one(document)
+                mongo_collection.insert_one(document)
                 return_value = True
 
         return return_value
@@ -129,10 +133,11 @@ class DatabaseModel:
         if fish_type in config.FISH_TYPES:
             document = utils.get_database_document(fish_type, catch_date, fisher_id, river_id)
 
-            cursor = self.mongo_collection.find(document).limit(1)
+            mongo_collection: Any = self.mongo_collection
+            cursor = mongo_collection.find(document).limit(1)
 
             if cursor.count() >= 0:
-                self.mongo_collection.delete_one(document)
+                mongo_collection.delete_one(document)
                 return_value = True
 
         return return_value
@@ -141,7 +146,8 @@ class DatabaseModel:
     def fish_list(self):
 
         if not self.__fish_list:
-            cursor = self.mongo_collection.find()
+            mongo_collection: Any = self.mongo_collection
+            cursor = mongo_collection.find()
 
             for document in cursor:
                 self.__fish_list.append(document)
@@ -153,11 +159,11 @@ class DataFrameModel:
     def __init__(self, full_base_model):
         self.full_base_model = full_base_model
 
-        data_set = dict()
+        data_set = {}
 
-        plotable_attributes = list()
-        environment_attributes = list()
-        fish_attributes = list()
+        plotable_attributes = []
+        environment_attributes = []
+        fish_attributes = []
 
         for attribute, value in self.full_base_model.environment_model.__dict__.items():
             series = value.series
@@ -170,7 +176,7 @@ class DataFrameModel:
 
             data_set[value.attribute_name] = series
 
-        for attribute, value in self.full_base_model.fish_model.__dict__.items():
+        for _attribute, value in self.full_base_model.fish_model.__dict__.items():
             series = value.series
 
             fish_attributes.append(value.attribute_name)
@@ -203,7 +209,7 @@ class FishFrameModel:
         fish_data = self.data_frame
 
         if fish_type in config.FISH_TYPES:
-            fish_data = fish_data.query(f"fish_type == '{fish_type}'")
+            fish_data = fish_data.query("fish_type == @fish_type")
 
         return fish_data
 
@@ -220,22 +226,27 @@ class StatisticModel:
 
     def __process_month_statistics(self):
 
-        return_dict = dict()
+        return_dict = {}
 
         for year in config.YEAR_RANGE:
             for attribute in self.plotable_attributes:
-                month_dict = dict()
+                month_dict = {}
 
-                for month_index, month_name in config.MONTH_NAME_DICT.items():
+                for month_index, _month_name in config.MONTH_NAME_DICT.items():
                     month_data = self.get_frame_by_month(year, month_index)
                     data_series = month_data[attribute]
 
-                    mean = data_series.mean()
-                    sum = data_series.sum()
-                    max = data_series.max()
-                    min = data_series.min()
+                    mean_value = data_series.mean()
+                    sum_value = data_series.sum()
+                    max_value = data_series.max()
+                    min_value = data_series.min()
 
-                    month_dict[month_index] = {"mean": mean, "sum": sum, "min": min, "max": max}
+                    month_dict[month_index] = {
+                        "mean": mean_value,
+                        "sum": sum_value,
+                        "min": min_value,
+                        "max": max_value,
+                    }
 
                 return_dict[(year, attribute)] = month_dict
 
@@ -249,8 +260,8 @@ class StatisticModel:
     def get_frame_by_year(self, year):
         date_start = f"{year}-01-01 00:00:00"
         date_end = f"{year}-12-31 00:00:00"
-
-        return self.data_frame_model.data_frame[date_start:date_end]
+        frame: Any = self.data_frame_model.data_frame
+        return frame[(frame.index >= date_start) & (frame.index <= date_end)]
 
     def get_frame_by_month(self, year, month):
 
@@ -259,10 +270,10 @@ class StatisticModel:
 
         maximal_month_days = calendar.monthrange(year_int, month_int)[1]
 
-        date_start = f"{year_int}-{month_int:02d}-{1:02d} 00:00:00"
+        date_start = f"{year_int}-{month_int:02d}-01 00:00:00"
         date_end = f"{year_int}-{month_int:02d}-{maximal_month_days:02d} 00:00:00"
-
-        return self.data_frame_model.data_frame[date_start:date_end]
+        frame: Any = self.data_frame_model.data_frame
+        return frame[(frame.index >= date_start) & (frame.index <= date_end)]
 
     def get_frame_by_day(self, year, month, day):
 
@@ -278,8 +289,8 @@ class StatisticModel:
 
         date_start = f"{year_int}-{month_int:02d}-{day_int:02d} 00:00:00"
         date_end = f"{year_int}-{month_int:02d}-{day_int:02d} 23:00:00"
-
-        return self.data_frame_model.data_frame[date_start:date_end]
+        frame: Any = self.data_frame_model.data_frame
+        return frame[(frame.index >= date_start) & (frame.index <= date_end)]
 
 
 class Singleton(type):

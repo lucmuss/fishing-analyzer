@@ -1,6 +1,5 @@
 import csv
 import datetime
-from typing import Any, Dict, List, Optional, Tuple, Type, Union
 
 from fishing_analyzer import config, utils
 from fishing_analyzer.data.cache import DataCache
@@ -37,7 +36,7 @@ class GroundTemperatureBase(BaseAttribute):
             next(csv_reader)  # Überspringt die Kopfzeile
 
             for row_raw in csv_reader:
-                row: tuple[str, ...] = tuple(utils.strip_row(row_raw))  # type: ignore
+                row: tuple[str, ...] = tuple(utils.strip_row(row_raw))
 
                 # Sicherstellen, dass die Zeile genügend Elemente hat
                 if len(row) < 10:  # Mindestens 10 Spalten erwartet
@@ -55,9 +54,9 @@ class GroundTemperatureBase(BaseAttribute):
                     temp50_str,
                     temp100_str,
                     _,
-                ) = row  # type: ignore
+                ) = row
 
-                if utils.has_correct_year_range(date_str) and utils.validate_row(row_raw, station):  # type: ignore
+                if utils.has_correct_year_range(date_str) and utils.validate_row(row_raw, station):
                     try:
                         date_time: datetime.datetime = datetime.datetime.strptime(
                             date_str, "%Y%m%d%H"

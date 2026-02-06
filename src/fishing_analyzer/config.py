@@ -15,7 +15,7 @@ def get_month_days_dict() -> dict[int, int]:
     Diese Funktion ist hier vereinfacht und gibt für jeden Monat die Tage 1-31 zurück.
     Für eine genauere Implementierung müsste das Jahr berücksichtigt werden.
     """
-    return_dict: dict[int, int] = dict()
+    return_dict: dict[int, int] = {}
 
     # Die ursprüngliche Implementierung war fehlerhaft und wies jedem Monat
     # die Zahlen 1-31 zu. Hier wird nur ein Platzhalter erstellt.
@@ -55,7 +55,7 @@ def get_month_name_dict() -> dict[str, str]:
     Returns:
         Ein Dictionary, z.B. {'1': 'January', '2': 'February', ...}.
     """
-    return_dict: dict[str, str] = dict()
+    return_dict: dict[str, str] = {}
 
     for month_index in range(1, 12 + 1):
         month_string = str(month_index)
@@ -94,14 +94,14 @@ def get_color_dict(attribute_list: list[str]) -> dict[str, tuple[int, int, int]]
         )
         color_list_rgb.append(rgb)
 
-    return_dict = dict(zip(attribute_list, color_list_rgb))
+    return_dict = dict(zip(attribute_list, color_list_rgb, strict=False))
     return return_dict
 
 
 RUN_AS_PRODUCTION: bool = os.getenv("RUN_AS_PRODUCTION", "false").lower() == "true"
 MONGODB_URI: str = os.getenv("MONGODB_URI", "mongodb://localhost:27017")
 
-ATTRIBUTE_COLOR_DICT: dict = dict()
+ATTRIBUTE_COLOR_DICT: dict = {}
 
 MAXIMAL_PREVIOUS_DAYS: int = 1
 

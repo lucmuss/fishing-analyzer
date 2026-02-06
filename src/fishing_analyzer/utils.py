@@ -96,8 +96,8 @@ def get_layout_dict(
 ):
     return_dict = {
         "title": title,
-        "xaxis": dict(title=x_title),
-        "yaxis": dict(title=y_title),
+        "xaxis": {"title": x_title},
+        "yaxis": {"title": y_title},
         "bargap": 0.1,
     }
     return return_dict

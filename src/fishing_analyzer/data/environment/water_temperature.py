@@ -1,6 +1,5 @@
 import csv
 import datetime
-from typing import Any, Dict, Optional, Tuple
 
 from fishing_analyzer import config, utils
 from fishing_analyzer.data.cache import DataCache
@@ -38,9 +37,9 @@ class WaterTemperature(BaseAttribute):
             next(csv_reader)  # Überspringt die Kopfzeile
 
             for row_raw in csv_reader:
-                row: tuple[str, ...] = tuple(utils.strip_row(row_raw))  # type: ignore
+                row: tuple[str, ...] = tuple(utils.strip_row(row_raw))
 
-                if utils.validate_water_row(row_raw):  # type: ignore
+                if utils.validate_water_row(row_raw):
                     date_str, temp_str, _ = row
 
                     try:

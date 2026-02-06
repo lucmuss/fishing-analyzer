@@ -1,6 +1,5 @@
 import csv
 import datetime
-from typing import Any, Dict, Optional, Tuple
 
 from fishing_analyzer import config, utils
 from fishing_analyzer.data.cache import DataCache
@@ -40,7 +39,7 @@ class RelativeHumidity(BaseAttribute):
             next(csv_reader)  # Überspringt die Kopfzeile
 
             for row_raw in csv_reader:
-                row: tuple[str, ...] = tuple(utils.strip_row(row_raw))  # type: ignore
+                row: tuple[str, ...] = tuple(utils.strip_row(row_raw))
 
                 if len(row) < 6:
                     print(f"Skipping malformed row: {row_raw}")
@@ -48,7 +47,7 @@ class RelativeHumidity(BaseAttribute):
 
                 station, date_str, _, _, humidity_str, _ = row
 
-                if utils.has_correct_year_range(date_str) and utils.validate_row(row_raw, station):  # type: ignore
+                if utils.has_correct_year_range(date_str) and utils.validate_row(row_raw, station):
                     try:
                         date_time: datetime.datetime = datetime.datetime.strptime(
                             date_str, "%Y%m%d%H"

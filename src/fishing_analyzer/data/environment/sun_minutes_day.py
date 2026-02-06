@@ -1,6 +1,5 @@
 import csv
 import datetime
-from typing import Any, Dict, Optional, Tuple
 
 from fishing_analyzer import config, utils
 from fishing_analyzer.data.cache import DataCache
@@ -38,7 +37,7 @@ class SunMinutesDay(BaseAttribute):
             print(f"Error: file_location not set for {self.attribute_name}")
             return
 
-        daily_sun_minutes_sums: dict[str, float] = dict()
+        daily_sun_minutes_sums: dict[str, float] = {}
 
         with open(self.abs_file_location, newline="", encoding="utf-8") as csv_file:
             csv_reader = csv.reader(csv_file, delimiter=";", quotechar='"')
@@ -46,7 +45,7 @@ class SunMinutesDay(BaseAttribute):
             next(csv_reader)  # Überspringt die Kopfzeile
 
             for row_raw in csv_reader:
-                row: tuple[str, ...] = tuple(utils.strip_row(row_raw))  # type: ignore
+                row: tuple[str, ...] = tuple(utils.strip_row(row_raw))
 
                 if (
                     len(row) < 5
@@ -56,7 +55,7 @@ class SunMinutesDay(BaseAttribute):
 
                 station, date_str, _, sun_minutes_str, _ = row
 
-                if utils.has_correct_year_range(date_str) and utils.validate_row(row_raw, station):  # type: ignore
+                if utils.has_correct_year_range(date_str) and utils.validate_row(row_raw, station):
                     try:
                         date_time: datetime.datetime = datetime.datetime.strptime(
                             date_str, "%Y%m%d%H"

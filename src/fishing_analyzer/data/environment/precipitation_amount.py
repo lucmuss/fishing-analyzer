@@ -1,6 +1,5 @@
 import csv
 import datetime
-from typing import Dict, Tuple
 
 from fishing_analyzer import config, utils
 from fishing_analyzer.data.cache import DataCache

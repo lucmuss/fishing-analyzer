@@ -1,6 +1,4 @@
-import dash_core_components as dcc
-import dash_html_components as html
-from dash.dependencies import Input, Output
+from dash import Input, Output, dcc, html
 
 from fishing_analyzer import config
 from fishing_analyzer.apps import add, distributions, environment, histograms, mainpage, statistics

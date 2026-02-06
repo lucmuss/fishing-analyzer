@@ -1,9 +1,7 @@
-from typing import Any
+from typing import Any, cast
 
-import dash_core_components as dcc
-import dash_html_components as html
 import plotly.graph_objs as go
-from dash.dependencies import Input, Output
+from dash import Input, Output, dcc, html
 
 from fishing_analyzer import config, utils
 from fishing_analyzer.apps.utils import (
@@ -66,7 +64,7 @@ layout = html.Div(
                         html.Label("Year Selection"),
                         dcc.Dropdown(
                             id="environment_data_year_selection",
-                            options=year_options,
+                            options=cast(Any, year_options),
                             value=default_year,
                         ),
                     ],
@@ -77,7 +75,7 @@ layout = html.Div(
                         html.Label("Month Selection"),
                         dcc.Dropdown(
                             id="environment_data_month_selection",
-                            options=month_options,
+                            options=cast(Any, month_options),
                             value=default_month,
                         ),
                     ],
@@ -88,7 +86,7 @@ layout = html.Div(
                         html.Label("Day Selection"),
                         dcc.Dropdown(
                             id="environment_data_day_selection",
-                            options=day_options,
+                            options=cast(Any, day_options),
                             value=default_day,
                         ),
                     ],
@@ -99,7 +97,7 @@ layout = html.Div(
                         html.Label("Attribute Selection"),
                         dcc.Dropdown(
                             id="environment_data_attribute_selection",
-                            options=attribute_options,
+                            options=cast(Any, attribute_options),
                             value=default_attribute,
                         ),
                     ],

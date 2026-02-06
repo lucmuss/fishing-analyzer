@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import os
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 import pandas as pd
 
@@ -18,7 +18,7 @@ class BaseAttribute:
     def __init__(self, file_location: str | None = None, attribute_name: str | None = None) -> None:
         self.attribute_name = attribute_name
         self.file_location = file_location
-        self.data_dict = dict()
+        self.data_dict = {}
 
     @property
     def series(self):
@@ -27,7 +27,10 @@ class BaseAttribute:
         series = pd.Series(data_values, index=index_values, name=self.attribute_name)
         series = series.sort_index()
 
-        reduced_series = series[config.MINIMAL_BEGIN_DATE : config.MAXIMAL_END_DATE]
+        mask = (series.index >= config.MINIMAL_BEGIN_DATE) & (
+            series.index <= config.MAXIMAL_END_DATE
+        )
+        reduced_series = series.loc[mask]
         return reduced_series
 
     @property
@@ -47,4 +50,4 @@ class BaseAttribute:
         return return_value
 
     def __repr__(self):
-        return "<%s [%s]>" % (self.__class__.__name__, self.attribute_name)
+        return f"<{self.__class__.__name__} [{self.attribute_name}]>"

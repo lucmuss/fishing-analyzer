@@ -1,9 +1,7 @@
 import datetime
-from typing import Any, Dict, List, Union
+from typing import Any, cast
 
-import dash_core_components as dcc
-import dash_html_components as html
-from dash.dependencies import Input, Output, State
+from dash import Input, Output, State, dcc, html
 
 from fishing_analyzer import config
 from fishing_analyzer.data.model import ModelFactory
@@ -14,7 +12,7 @@ data_base_model: Any = model_factory.database_model
 
 
 def generate_fish_type_options():
-    return_list = list()
+    return_list = []
 
     for fish_type in config.FISH_TYPES:
         return_list.append({"label": fish_type, "value": fish_type})
@@ -23,7 +21,7 @@ def generate_fish_type_options():
 
 
 def generate_river_id_options():
-    return_list = list()
+    return_list = []
 
     for river_id in config.RIVER_IDS:
         return_list.append({"label": river_id, "value": river_id})
@@ -32,7 +30,7 @@ def generate_river_id_options():
 
 
 def generate_fisher_id_options():
-    return_list = list()
+    return_list = []
 
     for fisher in config.FISHER_IDS:
         return_list.append({"label": fisher, "value": fisher})
@@ -64,7 +62,7 @@ layout = html.Div(
                         html.Label("Fish Type"),
                         dcc.Dropdown(
                             id="add_fish_fish_type",
-                            options=fish_type_options,
+                            options=cast(Any, fish_type_options),
                             value=default_fish_type,
                         ),
                     ],
@@ -75,7 +73,7 @@ layout = html.Div(
                         html.Label("Fisher"),
                         dcc.Dropdown(
                             id="add_fish_fisher_id",
-                            options=fisher_id_options,
+                            options=cast(Any, fisher_id_options),
                             value=default_fisher_id,
                         ),
                     ],
@@ -86,7 +84,7 @@ layout = html.Div(
                         html.Label("River"),
                         dcc.Dropdown(
                             id="add_fish_river_id",
-                            options=river_id_options,
+                            options=cast(Any, river_id_options),
                             value=default_river_id,
                         ),
                     ],
@@ -97,7 +95,7 @@ layout = html.Div(
                         html.Label("Catch Date"),
                         dcc.Input(
                             id="add_fish_catch_date",
-                            type="date",
+                            type=cast(Any, "date"),
                             value=default_catch_date,
                             className="form-control",
                         ),
@@ -109,7 +107,7 @@ layout = html.Div(
                         html.Label("Catch Hour"),
                         dcc.Input(
                             id="add_fish_catch_hour",
-                            type="time",
+                            type=cast(Any, "time"),
                             value=default_catch_hour,
                             className="form-control",
                         ),

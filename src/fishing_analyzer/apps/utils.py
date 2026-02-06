@@ -1,4 +1,4 @@
-from typing import Any, Dict, List
+from typing import Any
 
 from fishing_analyzer import config, utils
 
@@ -12,7 +12,7 @@ def generate_attribute_options(fish_model: Any) -> list[dict[str, str]]:
     Returns:
         Eine Liste von Dictionaries, die "label" und "value" für jedes Attribut enthalten.
     """
-    return_list: list[dict[str, str]] = list()
+    return_list: list[dict[str, str]] = []
 
     for attribute in fish_model.plotable_attributes:
         name: str = utils.attribute_to_name(attribute)
@@ -22,7 +22,7 @@ def generate_attribute_options(fish_model: Any) -> list[dict[str, str]]:
 
 
 def generate_fish_type_options(fish_model: Any) -> list[dict[str, str]]:
-    return_list: list[dict[str, str]] = list()
+    return_list: list[dict[str, str]] = []
 
     for fish_type in config.FISH_TYPES:
         fish_frame: Any = fish_model.get_fish_frame(fish_type)
@@ -34,7 +34,7 @@ def generate_fish_type_options(fish_model: Any) -> list[dict[str, str]]:
 
 
 def generate_year_options() -> list[dict[str, str]]:
-    return_list: list[dict[str, str]] = list()
+    return_list: list[dict[str, str]] = []
 
     for year in config.YEAR_RANGE:
         return_list.append({"label": year, "value": year})
@@ -43,7 +43,7 @@ def generate_year_options() -> list[dict[str, str]]:
 
 
 def generate_month_options() -> list[dict[str, str]]:
-    return_list: list[dict[str, str]] = list()
+    return_list: list[dict[str, str]] = []
 
     for month_index, month_name in config.MONTH_NAME_DICT.items():
         return_list.append({"label": month_name.title(), "value": month_index})
@@ -52,16 +52,16 @@ def generate_month_options() -> list[dict[str, str]]:
 
 
 def generate_day_options() -> list[dict[str, str]]:
-    return_list: list[dict[str, str]] = list()
+    return_list: list[dict[str, str]] = []
 
-    for day_index, day_value in config.MONTH_DAYS_DICT.items():
+    for day_index, _day_value in config.MONTH_DAYS_DICT.items():
         return_list.append({"label": str(day_index), "value": str(day_index)})
 
     return return_list
 
 
 def generate_method_options() -> list[dict[str, str]]:
-    return_list: list[dict[str, str]] = list()
+    return_list: list[dict[str, str]] = []
 
     for method in config.STATISTIC_METHODS:
         return_list.append({"label": method.title(), "value": method})

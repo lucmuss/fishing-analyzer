@@ -1,5 +1,5 @@
 import os
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any
 
 import numpy as np
 import plotly
@@ -159,10 +159,10 @@ def store_distributions_summary(fish_model: Any) -> None:
         fish_frame: Any = fish_model.get_fish_frame(fish_type)
 
         if is_valid_fish_frame(fish_frame):
-            attribute_list: list[str] = list()
-            attribute_value_list: list[list[Any]] = list()
+            attribute_list: list[str] = []
+            attribute_value_list: list[list[Any]] = []
 
-            for index, attribute in enumerate(fish_model.plotable_attributes):
+            for _index, attribute in enumerate(fish_model.plotable_attributes):
                 attribute_series: Any = fish_frame[attribute]
                 cleaned_attribute_values: np.ndarray = get_clean_values(attribute_series)
 

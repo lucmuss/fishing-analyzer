@@ -1,5 +1,5 @@
 import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from fishing_analyzer import config
 from fishing_analyzer.data.environment.base_attribute import BaseAttribute
@@ -15,7 +15,7 @@ class FishType(BaseAttribute):
         super().__init__(attribute_name=self.attribute_name)
 
         if database_model:
-            self.__read(fish_list=database_model.fish_list)  # type: ignore
+            self.__read(fish_list=database_model.fish_list)
 
     def __read(self, fish_list: list[dict[str, Any]]) -> None:
         """Liest die Fischtypen aus der Fischliste und füllt data_dict."""
