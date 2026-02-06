@@ -1,0 +1,68 @@
+name: Build Binaries
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    env:
+      UV_PROJECT_ENVIRONMENT: .venv
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4
+
+      - name: Sync dependencies
+        run: |
+          uv venv
+          uv sync --extra dev --frozen
+
+      - name: Build binary
+        run: uv run --with pyinstaller pyinstaller --onefile --name fishing-analyzer src/fishing_analyzer/run.py
+
+      - name: Normalize artifact name
+        shell: bash
+        run: |
+          mkdir -p artifacts
+          if [ -f dist/fishing-analyzer.exe ]; then
+            cp dist/fishing-analyzer.exe artifacts/fishing-analyzer-windows.exe
+          elif [ "${{ matrix.os }}" = "macos-latest" ]; then
+            cp dist/fishing-analyzer artifacts/fishing-analyzer-macos
+          else
+            cp dist/fishing-analyzer artifacts/fishing-analyzer-linux
+          fi
+
+      - name: Upload binary artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: binary-${{ matrix.os }}
+          path: artifacts/*
+
+  release:
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: release-assets
+
+      - name: Publish GitHub release assets
+        uses: softprops/action-gh-release@v2
+        with:
+          files: release-assets/**/*

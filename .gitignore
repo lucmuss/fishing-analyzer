@@ -1,39 +1,40 @@
-# Version 1
-# IntelliJ Files
+# IDE
 .idea/
+.vscode/
 
-# Git Files - .git/ is handled by Git itself, no need to explicitly ignore
+# Local environment and secrets
+.env
+.env.*
+!.env.example
+.cline/
 
-# Python Virtual Environment
-venv/
+# Virtual environments and tooling
 .venv/
-
-# uv
+venv/
 .uv/
+.ruff_cache/
+.mypy_cache/
+.pytest_cache/
 
-# Python Cache
+# Python build artifacts
 __pycache__/
+*.py[cod]
+*.so
+*.egg-info/
+.eggs/
+build/
+dist/
 
-# Bytecode-compiled
-*.pyc
-*.pyo
-*.pyd
+# Coverage
+.coverage
+htmlcov/
 
-# Data Cache Files (shelve database)
-data/store.cache*
-
-# Log Files
+# Runtime artifacts
 *.log
-
-# Html Files (generated plotly plots)
 *.html
-
-# Jupyter Notebook Folder
 notebooks/
 .ipynb_checkpoints/
 
-# Jupyter Notebook Files
-*.ipynb
-
-# Ruff cache
-.ruff_cache/
+# Generated app output
+src/fishing_analyzer/data/store.cache*
+diagrams/

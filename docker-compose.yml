@@ -1,0 +1,36 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    ports:
+      - "8085:8085"
+    environment:
+      RUN_AS_PRODUCTION: "true"
+      MONGODB_URI: "mongodb://mongo:27017"
+      RUN_TESTS: "false"
+      RUN_DATA_IMPORT: "true"
+      SECRET_KEY: "replace-me-for-local-dev"
+    depends_on:
+      mongo:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:8085/"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+
+  mongo:
+    image: mongo:7
+    ports:
+      - "27018:27017"
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.runCommand({ ping: 1 }).ok"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    volumes:
+      - mongo-data:/data/db
+
+volumes:
+  mongo-data:

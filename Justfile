@@ -1,50 +1,54 @@
-set shell := ["bash", "-c"]
+set shell := ["bash", "-euo", "pipefail", "-c"]
 set dotenv-load := true
 
 default:
     @just --list
 
-# Initializes the project (uv-based)
 setup:
-    uv sync
+    uv venv
+    UV_PROJECT_ENVIRONMENT=.venv uv sync --extra dev
     cp -n .env.example .env || true
 
-# Starts development environment (fast prototyping)
 dev:
-    bash docker/entrypoint.sh
+    uv run python -m fishing_analyzer.run
 
-# Formats code (Ruff)
 format:
-    uv run ruff format .
-    uv run ruff check --fix .
+    uv run ruff format src tests
+    uv run ruff check --fix src tests
 
-# Checks code quality (read-only)
 lint:
-    uv run ruff check .
-    uv run ruff format --check .
+    uv run ruff check src tests
+    uv run ruff format --check src tests
+    uv run --with black black --check src tests
+    uv run --with flake8 flake8 src tests
 
-# Type-checking
 typecheck:
-    uv run mypy .
+    uv run mypy src tests
 
-# Runs tests
 test:
     uv run pytest
 
-# Complete quality check (CI simulation)
 check: lint typecheck test
 
-# Starts Docker container (deployment testing)
+build:
+    rm -rf dist build
+    uv run --with build python -m build
+    uv run --with twine twine check dist/*
+
+binary:
+    rm -rf dist build
+    uv run --with pyinstaller pyinstaller --onefile --name fishing-analyzer src/fishing_analyzer/run.py
+
+ci: check build
+
 docker-up:
-    docker-compose up -d --build
-    docker-compose logs -f
+    docker compose up -d --build
+    docker compose logs -f app
 
-# Stops Docker container
 docker-down:
-    docker-compose down
+    docker compose down --remove-orphans
 
-# Cleans artifacts
 clean:
     find . -type d -name "__pycache__" -exec rm -rf {} +
     find . -type f -name "*.pyc" -delete
-    rm -rf .pytest_cache .coverage htmlcov .ruff_cache
+    rm -rf .pytest_cache .coverage htmlcov .ruff_cache .mypy_cache build dist .pyinstaller

@@ -1,75 +1,125 @@
 # Fishing Analyzer
 
-This is a small example project where all caught fishes are tracked in the river Baunach.
+Fishing Analyzer is a Dash application for exploring fish catch records together with
+weather and water-related attributes.
 
-## Technologies
-The project uses MongoDB, Pandas, Plotly, Dash, and NumPy.
+## Features
+- Interactive Dash UI with pages for statistics, histograms, distributions, and data entry.
+- MongoDB-backed fish record storage.
+- Import tooling for fish CSV and environment raw datasets.
+- Reproducible local workflow with `uv`, `Justfile`, and pre-commit hooks.
+- Modular GitHub Actions workflows for lint, typecheck, tests, build, binary, and release.
+
+## Repository Layout
+- `src/fishing_analyzer/`: application source code.
+- `assets/`: static frontend assets used by Dash.
+- `docker/`: container Dockerfile and entrypoint.
+- `docs/`: development and release documentation.
+- `examples/`: small usage examples.
+- `.github/workflows/`: CI and release pipelines.
 
 ## Prerequisites
-Install [Python Interpreter](https://www.python.org/) (Python 3.8+).
+- Python 3.11+
+- [uv](https://docs.astral.sh/uv/)
+- MongoDB (local or remote)
+- Docker (optional)
 
-Install [uv](https://github.com/astral-sh/uv) package manager:
+## Installation
 ```bash
-curl -LsSf https://astral.sh/uv/install.sh | sh
-```
-
-## Setup
-```bash
-# Install dependencies and setup environment
 just setup
-
-# For development with dev dependencies
-uv sync --extra dev
 ```
 
-## Database Prerequisites
-Install [MongoDB](https://www.mongodb.com) on your computer.
-
-Configuration is in `config.py`.
-
-## Data Import
-Run data import:
+Manual equivalent:
 ```bash
-python install.py
+uv venv
+UV_PROJECT_ENVIRONMENT=.venv uv sync --extra dev
+cp -n .env.example .env
 ```
 
-## Running the App
+## Configuration
+Copy `.env.example` to `.env` and adjust values:
+- `SECRET_KEY`: Flask secret key.
+- `MONGODB_URI`: MongoDB connection string.
+- `RUN_AS_PRODUCTION`: set `true` for non-debug server mode.
+- `RUN_TESTS`: optional container startup test execution.
+- `RUN_DATA_IMPORT`: optional startup data import.
+
+## Usage
+Run the app locally:
 ```bash
-# Development mode
 just dev
-
-# Or directly
-python run.py
 ```
 
-## Development Commands
+Or directly:
 ```bash
-# Format code
+uv run python -m fishing_analyzer.run
+```
+
+Import source data into MongoDB:
+```bash
+uv run python -m fishing_analyzer.tools.import_db
+```
+
+Run complete bootstrap (import + diagram generation):
+```bash
+uv run python -m fishing_analyzer.install
+```
+
+## Examples
+```bash
+uv run python examples/basic_usage.py
+```
+
+## Development Workflow
+Main commands:
+```bash
 just format
-
-# Lint code
 just lint
-
-# Run tests
+just typecheck
 just test
-
-# Full check (lint + typecheck + test)
 just check
-
-# Clean artifacts
-just clean
+just ci
 ```
 
-## Docker
+Pre-commit:
 ```bash
-# Build and run
-just docker-up
+uv run pre-commit install
+uv run pre-commit run --all-files
+```
 
-# Stop
+## Docker Workflow
+Build and start:
+```bash
+just docker-up
+```
+
+Stop:
+```bash
 just docker-down
 ```
 
-## Authors
-* Data points - [Angel Verein Ebern](http://www.av-ebern.de/)
-* Data points - [Angel Verein Baunach](http://www.anglerverein-baunach.de/)
+Default app port: `8085`.
 
+## CI/CD and Release
+- Main CI entry: `.github/workflows/ci.yml`
+- Reusable workflows:
+  - `ci-lint.yml`
+  - `ci-typecheck.yml`
+  - `ci-tests.yml`
+  - `ci-build.yml`
+  - `ci-binary.yml`
+- Release workflows:
+  - `publish-to-pypi.yml`
+  - `build-binaries.yml`
+
+Release steps:
+1. Run `just ci`.
+2. Tag a release: `git tag vX.Y.Z && git push origin vX.Y.Z`.
+3. Tag push publishes package and triggers binary build/release assets.
+4. For TestPyPI, trigger `publish-to-pypi.yml` manually with `target=testpypi`.
+
+## Troubleshooting
+- `ModuleNotFoundError: fishing_analyzer`: run `just setup` again.
+- Mongo connection errors: verify `MONGODB_URI` and Mongo health.
+- CI lock mismatch: refresh lock with `uv lock` and commit `uv.lock`.
+- Dash page errors after import changes: clear generated caches with `just clean`.

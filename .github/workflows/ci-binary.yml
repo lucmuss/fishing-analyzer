@@ -1,0 +1,34 @@
+name: CI Binary
+
+on:
+  workflow_call:
+
+jobs:
+  binary:
+    runs-on: ubuntu-latest
+    env:
+      UV_PROJECT_ENVIRONMENT: .venv
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4
+
+      - name: Sync dependencies
+        run: |
+          uv venv
+          uv sync --extra dev --frozen
+
+      - name: Build binary
+        run: uv run --with pyinstaller pyinstaller --onefile --name fishing-analyzer src/fishing_analyzer/run.py
+
+      - name: Upload binary
+        uses: actions/upload-artifact@v4
+        with:
+          name: fishing-analyzer-binary
+          path: dist/*
