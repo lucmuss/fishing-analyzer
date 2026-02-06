@@ -1,0 +1,4 @@
+/* Minimal custom overrides on top of Tailwind CDN classes */
+:root {
+  color-scheme: light;
+}

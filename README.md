@@ -1,77 +1,49 @@
 # Fishing Analyzer
 
-Fishing Analyzer is a Dash application for exploring fish catch records together with
-weather and water-related attributes.
+Fishing Analyzer now runs as a lightweight server-rendered dashboard with:
+- FastAPI
+- Jinja2 templates
+- HTMX for partial updates
+- Tailwind (CDN)
 
-## Features
-- Interactive Dash UI with pages for statistics, histograms, distributions, and data entry.
-- MongoDB-backed fish record storage.
-- Import tooling for fish CSV and environment raw datasets.
-- Reproducible local workflow with `uv`, `Justfile`, and pre-commit hooks.
-- Modular GitHub Actions workflows for lint, typecheck, tests, build, binary, and release.
+A legacy Dash implementation is still present under `src/fishing_analyzer/apps/`.
+
+## Why this stack
+- Python-first and minimal operational overhead
+- No SPA build pipeline required
+- Easy server-side rendering and progressive enhancement with HTMX
+- Good fit for dashboard-only use cases without auth/admin complexity
 
 ## Repository Layout
-- `src/fishing_analyzer/`: application source code.
-- `assets/`: static frontend assets used by Dash.
-- `docker/`: container Dockerfile and entrypoint.
-- `docs/`: development and release documentation.
-- `examples/`: small usage examples.
-- `.github/workflows/`: CI and release pipelines.
+- `src/fishing_analyzer/web/`: FastAPI app, templates, dashboard service
+- `src/fishing_analyzer/data/`: fish dataset and legacy environment loaders
+- `src/fishing_analyzer/apps/`: legacy Dash pages
+- `docker/`: container Dockerfile and entrypoint
+- `docs/`: development and release notes
+- `tests/`: unit tests
 
 ## Prerequisites
 - Python 3.11+
 - [uv](https://docs.astral.sh/uv/)
-- MongoDB (local or remote)
-- Docker (optional)
 
-## Installation
+## Setup
 ```bash
 just setup
 ```
 
-Manual equivalent:
-```bash
-uv venv
-UV_PROJECT_ENVIRONMENT=.venv uv sync --extra dev
-cp -n .env.example .env
-```
-
-## Configuration
-Copy `.env.example` to `.env` and adjust values:
-- `SECRET_KEY`: Flask secret key.
-- `MONGODB_URI`: MongoDB connection string.
-- `RUN_AS_PRODUCTION`: set `true` for non-debug server mode.
-- `RUN_TESTS`: optional container startup test execution.
-- `RUN_DATA_IMPORT`: optional startup data import.
-
-## Usage
-Run the app locally:
+## Run (FastAPI dashboard)
 ```bash
 just dev
 ```
 
-Or directly:
+Open: `http://localhost:8085`
+
+## Legacy Dash mode
 ```bash
-uv run python -m fishing_analyzer.run
+just dev-legacy
 ```
 
-Import source data into MongoDB:
-```bash
-uv run python -m fishing_analyzer.tools.import_db
-```
-
-Run complete bootstrap (import + diagram generation):
-```bash
-uv run python -m fishing_analyzer.install
-```
-
-## Examples
-```bash
-uv run python examples/basic_usage.py
-```
-
-## Development Workflow
-Main commands:
+## Development Commands
 ```bash
 just format
 just lint
@@ -81,45 +53,32 @@ just check
 just ci
 ```
 
-Pre-commit:
-```bash
-uv run pre-commit install
-uv run pre-commit run --all-files
-```
-
-## Docker Workflow
-Build and start:
+## Docker
 ```bash
 just docker-up
-```
-
-Stop:
-```bash
 just docker-down
 ```
 
-Default app port: `8085`.
+By default Docker runs the FastAPI dashboard and does not require MongoDB.
 
-## CI/CD and Release
-- Main CI entry: `.github/workflows/ci.yml`
-- Reusable workflows:
-  - `ci-lint.yml`
-  - `ci-typecheck.yml`
-  - `ci-tests.yml`
-  - `ci-build.yml`
-  - `ci-binary.yml`
-- Release workflows:
-  - `publish-to-pypi.yml`
-  - `build-binaries.yml`
+## Optional Mongo Integration
+If you want to run legacy Mongo-backed imports in container mode:
+- set `RUN_WITH_MONGO=true`
+- set `RUN_DATA_IMPORT=true`
+- provide `MONGODB_URI`
 
-Release steps:
-1. Run `just ci`.
-2. Tag a release: `git tag vX.Y.Z && git push origin vX.Y.Z`.
-3. Tag push publishes package and triggers binary build/release assets.
-4. For TestPyPI, trigger `publish-to-pypi.yml` manually with `target=testpypi`.
+## Release Workflow
+- CI entry: `.github/workflows/ci.yml`
+- Reusable jobs: lint, typecheck, tests, build, binary
+- Release jobs: PyPI/TestPyPI + binaries
+
+Tag-based release:
+```bash
+git tag vX.Y.Z
+git push origin vX.Y.Z
+```
 
 ## Troubleshooting
-- `ModuleNotFoundError: fishing_analyzer`: run `just setup` again.
-- Mongo connection errors: verify `MONGODB_URI` and Mongo health.
-- CI lock mismatch: refresh lock with `uv lock` and commit `uv.lock`.
-- Dash page errors after import changes: clear generated caches with `just clean`.
+- `ModuleNotFoundError`: run `just setup` again.
+- If template changes do not show: restart `just dev`.
+- If lockfile drift happens: run `uv lock` and commit `uv.lock`.

@@ -12,6 +12,8 @@ just setup
 
 ## Daily Commands
 ```bash
+just dev
+just dev-legacy
 just format
 just check
 just ci

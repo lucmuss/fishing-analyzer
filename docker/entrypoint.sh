@@ -9,9 +9,10 @@ wait_for_mongo() {
   for _ in $(seq 1 "$retries"); do
     if uv run python - <<'PY'
 from pymongo import MongoClient
-from fishing_analyzer import config
+import os
 
-client = MongoClient(config.MONGODB_URI, serverSelectionTimeoutMS=1000)
+uri = os.getenv("MONGODB_URI", "mongodb://localhost:27017")
+client = MongoClient(uri, serverSelectionTimeoutMS=1000)
 client.admin.command("ping")
 print("MongoDB is reachable")
 PY
@@ -25,17 +26,19 @@ PY
   return 1
 }
 
-wait_for_mongo
+if [ "${RUN_WITH_MONGO:-false}" = "true" ]; then
+  wait_for_mongo
+
+  if [ "${RUN_DATA_IMPORT:-false}" = "true" ]; then
+    echo "Running data import..."
+    uv run python -m fishing_analyzer.tools.import_db
+  fi
+fi
 
 if [ "${RUN_TESTS:-false}" = "true" ]; then
   echo "Running test suite before app startup..."
   uv run pytest tests -m "not slow" --tb=short
 fi
 
-if [ "${RUN_DATA_IMPORT:-true}" = "true" ]; then
-  echo "Running data import..."
-  uv run python -m fishing_analyzer.tools.import_db
-fi
-
-echo "Starting Fishing Analyzer on port 8085..."
-exec uv run python -m fishing_analyzer.run
+echo "Starting FastAPI dashboard on port 8085..."
+exec uv run uvicorn fishing_analyzer.web.main:app --host 0.0.0.0 --port 8085

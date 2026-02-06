@@ -10,6 +10,9 @@ setup:
     cp -n .env.example .env || true
 
 dev:
+    uv run uvicorn fishing_analyzer.web.main:app --host 0.0.0.0 --port 8085 --reload
+
+dev-legacy:
     uv run python -m fishing_analyzer.run
 
 format:
